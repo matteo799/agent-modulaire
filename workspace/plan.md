@@ -1,9 +1,8 @@
 # Plan
 
-Tâche : D'après les documents, de combien augmente le coût d'exploitation annuel du projet Alpha avec la hausse tarifaire, en euros et en pourcentage ?
+Tâche : Combien coûte le projet Alpha au total si on ajoute le budget initial et la hausse du coût d'exploitation annuel ?
 
-1. Utiliser rag_search pour trouver la hausse tarifaire
-2. Utiliser rag_search pour localiser l'information sur le coût d'exploitation annuel initial du projet Alpha
-3. Calculer l'augmentation du coût d'exploitation annuel en utilisant calculator
-4. Calculer le pourcentage d'augmentation en utilisant calculator
-5. Écrire un rapport avec write_file contenant les résultats
+1. Rechercher le budget initial du projet Alpha
+2. Rechercher la hausse annuelle du coût d'exploitation du projet Alpha
+3. Calculer la nouvelle estimation totale en additionnant le budget initial et l'hypothèse de croissance annuelle
+4. Écrire le rapport final avec les informations trouvées et le coût total calculé
