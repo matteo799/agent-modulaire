@@ -19,16 +19,16 @@ Résultats des étapes précédentes (mémoire de travail) :
 {memory}
 
 Choisis UN outil et ses arguments pour exécuter cette étape.
+
+Règles importantes :
+- Les arguments doivent être des valeurs concrètes, jamais des noms de variables.
+- Pour calculator : remplace chaque grandeur par sa valeur numérique exacte tirée
+  de la mémoire de travail (ex. "92000 - 80000"), et vérifie que l'expression
+  calcule bien ce que demande l'étape — ne recopie pas une expression précédente.
+- Pour write_file : ne réutilise que des chiffres réellement présents dans la
+  mémoire de travail ; n'invente aucune valeur.
+
 Retourne uniquement un objet JSON : {{"tool": "<nom>", "args": {{...}}}}
-"""
-
-REFLECT_PROMPT = """Étape : {step}
-
-Résultat obtenu :
-{result}
-
-Ce résultat est-il suffisant pour considérer l'étape comme réussie ?
-Retourne uniquement un objet JSON : {{"sufficient": true ou false, "feedback": "<comment améliorer si insuffisant>"}}
 """
 
 
@@ -53,14 +53,16 @@ def choose_tool(user_query: str, step: str, memory: list[dict], feedback: str = 
 
 
 def reflect(step: str, result: str) -> dict:
-    """Auto-correction : le LLM juge si le résultat de l'étape suffit."""
-    prompt = REFLECT_PROMPT.format(step=step, result=result[:2000])
-    try:
-        verdict = llm.chat_json(prompt, system=SELECT_SYSTEM)
-        return {"sufficient": bool(verdict.get("sufficient")),
-                "feedback": str(verdict.get("feedback", ""))}
-    except Exception:
-        return {"sufficient": True, "feedback": ""}
+    """Auto-correction : on ne retente que si l'outil a renvoyé une vraie erreur.
+
+    Décision déterministe plutôt que confiée au LLM : un modèle 7B juge sans
+    cesse « insuffisant » des résultats corrects, ce qui déclenche des retries
+    parasites. Un résultat est considéré réussi sauf s'il est vide ou commence
+    par « Erreur » (convention de tous les outils)."""
+    clean = result.strip()
+    if not clean or clean.startswith("Erreur"):
+        return {"sufficient": False, "feedback": clean[:200] or "résultat vide"}
+    return {"sufficient": True, "feedback": ""}
 
 
 def execute_step(choice: dict) -> str:

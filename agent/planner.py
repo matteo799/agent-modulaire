@@ -15,6 +15,9 @@ Outils disponibles :
 Règles :
 - 3 à 6 étapes maximum.
 - Chaque étape doit être une action simple, faisable avec UN seul outil.
+- Pour consulter les documents internes, utilise rag_search avec une requête.
+  N'invente jamais de nom de fichier pour read_file : tu ne connais pas les noms
+  des fichiers, seul rag_search sait y accéder.
 - La dernière étape doit produire le livrable final (souvent : écrire un rapport avec write_file).
 
 Retourne uniquement un objet JSON. Exemple :
