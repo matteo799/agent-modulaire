@@ -13,15 +13,39 @@ from agent import llm
 DOCUMENTS_DIR = Path(__file__).resolve().parent.parent / "documents"
 CHUNK_SIZE = 800  # caractères
 CHUNK_OVERLAP = 150
+MIN_CHUNK = 30  # ignore les fragments trop courts (artefacts de découpage)
+
+
+def _split_sections(text: str) -> list[str]:
+    """Découpe le document sur les titres markdown ; chaque section conserve
+    son titre, ce qui garde des chunks sémantiquement cohérents."""
+    sections, current = [], []
+    for line in text.splitlines():
+        if line.startswith("#") and current:
+            sections.append("\n".join(current).strip())
+            current = [line]
+        else:
+            current.append(line)
+    if current:
+        sections.append("\n".join(current).strip())
+    return [s for s in sections if s]
 
 
 def _chunk(text: str, source: str) -> list[dict]:
+    """Un chunk par section ; les sections trop longues sont redécoupées en
+    fenêtres glissantes. Évite les fragments minuscules que produisait
+    l'ancien découpage aveugle par tranches de caractères."""
     chunks = []
     step = CHUNK_SIZE - CHUNK_OVERLAP
-    for start in range(0, max(len(text), 1), step):
-        piece = text[start:start + CHUNK_SIZE].strip()
-        if piece:
-            chunks.append({"source": source, "text": piece})
+    for section in _split_sections(text):
+        if len(section) <= CHUNK_SIZE:
+            pieces = [section]
+        else:
+            pieces = [section[i:i + CHUNK_SIZE].strip()
+                      for i in range(0, len(section), step)]
+        for piece in pieces:
+            if len(piece) >= MIN_CHUNK:
+                chunks.append({"source": source, "text": piece})
     return chunks
 
 
@@ -74,7 +98,7 @@ _index = RagIndex()
 
 def rag_search(query: str, top_k: int = 3) -> str:
     """Recherche les passages les plus pertinents dans les documents indexés."""
-    results = _index.search(query, top_k=int(top_k))
+    results = _index.search(query, top_k=max(int(top_k), 3))
     if not results:
         return "Aucun document trouvé dans le dossier documents/."
     return "\n\n".join(
