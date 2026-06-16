@@ -142,6 +142,18 @@ a deux conséquences voulues :
   description mentionne explicitement les noms et types des arguments, car
   c'est la seule information dont dispose le LLM pour construire `args`.
 
+**Les descriptions disent aussi quand NE PAS utiliser l'outil.** Une
+description qui se contente d'énoncer ce que fait l'outil laisse un petit
+modèle confondre des outils proches (chercher une info vs. faire un calcul).
+Chaque description porte donc une frontière d'usage explicite : `calculator`
+précise « sur des nombres DÉJÀ connus… ne pas l'utiliser pour chercher une
+information : pour ça, utiliser rag_search » ; `read_file` renvoie vers
+`rag_search` pour explorer les documents ; etc. Comme le catalogue est la
+seule information dont le LLM dispose pour choisir, c'est là que le cadrage
+est le plus rentable — à coût nul (aucun appel LLM supplémentaire). C'est le
+versant « prévention » du cas 4, complémentaire de la justification `raison`
+(cf. §6).
+
 Alternative écartée : le function calling natif (schémas JSON d'outils passés
 à l'API). Ollama le supporte partiellement selon les modèles, mais le faire
 "à la main" via le prompt est plus portable et rend le mécanisme visible.
@@ -178,13 +190,38 @@ Alternative écartée : le function calling natif (schémas JSON d'outils passé
 
 À chaque étape, un appel LLM dédié reçoit : la tâche globale, l'étape
 courante, le catalogue d'outils, et la mémoire de travail. Il retourne
-`{"tool": ..., "args": {...}}`. Donner la tâche globale **et** la mémoire
-permet au modèle de choisir des arguments cohérents avec ce qui a déjà été
-trouvé (ex. : écrire le rapport en réutilisant les passages extraits).
+`{"raison": ..., "tool": ..., "args": {...}}`. Donner la tâche globale **et**
+la mémoire permet au modèle de choisir des arguments cohérents avec ce qui a
+déjà été trouvé (ex. : écrire le rapport en réutilisant les passages extraits).
 
 `execute_step` valide que l'outil existe et rattrape les `TypeError`
 (mauvais arguments) en les renvoyant comme texte — même logique que pour les
 outils : l'erreur nourrit la boucle au lieu de la casser.
+
+**Le champ `raison` (justification avant le choix).** La sortie JSON commence
+par une justification, *avant* le nom de l'outil. Ce n'est pas cosmétique :
+obliger le modèle à écrire pourquoi un outil convient à l'étape l'oblige à
+raisonner avant de répondre (un mini *chain-of-thought*), ce qui réduit les
+choix absurdes — typiquement lancer `calculator` là où il fallait `rag_search`.
+Bonus : la raison est affichée dans les logs, donc le raisonnement de l'agent
+devient inspectable. Coût nul : c'est le même appel LLM, juste un champ de plus.
+
+Ce mécanisme attaque le **« cas 4 »** — un outil sémantiquement inadapté mais
+qui renvoie un résultat valide (donc non détecté par la réflexion
+déterministe, qui ne repère que les erreurs franches). Le cas 4 ne pouvant pas
+être *détecté* à moindre coût sur un 7B, on le *prévient* à la source : la
+justification (ici) plus des descriptions d'outils qui cadrent l'usage (cf.
+§5). C'est volontairement de la prévention, pas de la détection — réintroduire
+un juge sémantique resterait la solution de détection, mais seulement avec un
+modèle plus fiable (cf. §6, réflexion).
+
+**Limite résiduelle assumée.** Ces deux garde-fous corrigent le *choix* de
+l'outil, pas le *raisonnement à l'intérieur* d'un outil bien choisi. Un appel
+`calculator` peut être correctement sélectionné tout en encodant une expression
+qui traduit une mauvaise interprétation de la question (confondre « la hausse
+du coût » avec « 15 % du budget », par exemple). Le bon outil n'a jamais
+garanti le bon calcul ; ça relève de la qualité de raisonnement du modèle, hors
+de portée de la sélection d'outil.
 
 ### Mémoire de travail : une liste + un fichier
 

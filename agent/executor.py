@@ -21,6 +21,9 @@ Résultats des étapes précédentes (mémoire de travail) :
 Choisis UN outil et ses arguments pour exécuter cette étape.
 
 Règles importantes :
+- Justifie d'abord ton choix en relisant la description de l'outil : il doit
+  correspondre à ce que demande l'étape (ne pas confondre chercher une
+  information et faire un calcul).
 - Les arguments doivent être des valeurs concrètes, jamais des noms de variables.
 - Pour calculator : remplace chaque grandeur par sa valeur numérique exacte tirée
   de la mémoire de travail (ex. "92000 - 80000"), et vérifie que l'expression
@@ -28,7 +31,8 @@ Règles importantes :
 - Pour write_file : ne réutilise que des chiffres réellement présents dans la
   mémoire de travail ; n'invente aucune valeur.
 
-Retourne uniquement un objet JSON : {{"tool": "<nom>", "args": {{...}}}}
+Retourne uniquement un objet JSON, en commençant par la justification :
+{{"raison": "<pourquoi cet outil convient à l'étape>", "tool": "<nom>", "args": {{...}}}}
 """
 
 
@@ -88,6 +92,8 @@ def run(user_query: str, plan: list[str]) -> list[dict]:
         feedback = ""
         for attempt in range(MAX_RETRIES + 1):
             choice = choose_tool(user_query, step, memory, feedback)
+            if choice.get("raison"):
+                print(f"    Raison : {choice['raison']}")
             print(f"    Outil : {choice.get('tool')} | args : {choice.get('args')}")
             result = execute_step(choice)
             verdict = reflect(step, result)

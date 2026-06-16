@@ -40,19 +40,28 @@ TOOLS = {
     "rag_search": {
         "function": rag_search,
         "description": "Recherche sémantique dans les documents internes (dossier documents/). "
+                       "À utiliser pour TOUTE information à retrouver dans les documents "
+                       "(faits, chiffres, dates). NE PAS deviner de nom de fichier. "
                        "Arguments : query (str), top_k (int, optionnel).",
     },
     "read_file": {
         "function": read_file,
-        "description": "Lit un fichier texte. Arguments : path (str).",
+        "description": "Lit un fichier texte dont le nom est DÉJÀ connu (ex. une note écrite "
+                       "à une étape précédente). Pour explorer les documents internes, "
+                       "utiliser plutôt rag_search. Arguments : path (str).",
     },
     "write_file": {
         "function": write_file,
-        "description": "Écrit un fichier dans le workspace. Arguments : path (str), content (str).",
+        "description": "Écrit un fichier dans le workspace : à réserver à la production du "
+                       "livrable final. Ne reprendre que des valeurs présentes dans la "
+                       "mémoire de travail. Arguments : path (str), content (str).",
     },
     "calculator": {
         "function": calculator,
-        "description": "Évalue une expression arithmétique. Arguments : expression (str).",
+        "description": "Évalue une expression arithmétique sur des nombres DÉJÀ connus "
+                       "(présents dans la mémoire de travail). NE PAS l'utiliser pour "
+                       "chercher une information : pour ça, utiliser rag_search. "
+                       "Arguments : expression (str).",
     },
 }
 
