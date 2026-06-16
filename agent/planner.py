@@ -18,6 +18,8 @@ Règles :
 - Pour consulter les documents internes, utilise rag_search avec une requête.
   N'invente jamais de nom de fichier pour read_file : tu ne connais pas les noms
   des fichiers, seul rag_search sait y accéder.
+- Ne calcule chaque grandeur qu'UNE seule fois : ne crée pas deux étapes de
+  calcul pour le même résultat (cela produit des valeurs contradictoires).
 - La dernière étape doit produire le livrable final (souvent : écrire un rapport avec write_file).
 
 Retourne uniquement un objet JSON. Exemple :

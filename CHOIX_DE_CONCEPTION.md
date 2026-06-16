@@ -354,8 +354,16 @@ Ces simplifications sont volontaires, à l'échelle d'un projet de démonstratio
   la correction locale par étape existe.
 - **Pas de persistance de l'index RAG** ni de gestion de gros corpus
   (l'embedding de tous les chunks se refait à chaque lancement).
-- **Troncatures fixes** (1500/2000 caractères) plutôt qu'un comptage de
-  tokens : approximation suffisante, mais grossière.
+- **Troncature fixe** (1500 caractères par résultat dans la mémoire injectée)
+  plutôt qu'un comptage de tokens : approximation suffisante, mais grossière.
+- **Calcul multi-étapes peu fiable** : enchaîner « récupérer des chiffres puis
+  les combiner » reste à la limite de ce qu'un modèle 7B fait correctement.
+  Même avec une récupération RAG fiable, l'agent peut mal interpréter une
+  grandeur (confondre une hausse et un total) ou produire deux calculs
+  contradictoires que la synthèse arbitre mal. Le planner est nudgé pour ne
+  calculer chaque grandeur qu'une fois (§4), ce qui réduit le risque sans le
+  supprimer ; une vérification systématique des calculs a été écartée car elle
+  ajoutait trop de complexité pour un gain incertain sur un 7B.
 - **Pas de tests automatisés** : le système étant non déterministe de bout en
   bout, la validation s'est faite par exécutions répétées sur le scénario
   `documents/projet_alpha.md` (analyse de risques), dont le résultat est
