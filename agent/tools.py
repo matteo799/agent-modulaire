@@ -4,16 +4,16 @@ from pathlib import Path
 from agent.rag import rag_search
 
 WORKSPACE_DIR = Path(__file__).resolve().parent.parent / "workspace"
+DOCUMENTS_DIR = Path(__file__).resolve().parent.parent / "documents"
 
 
 def read_file(path: str) -> str:
-    """Lit un fichier du workspace (ou un chemin relatif au projet)."""
-    candidate = WORKSPACE_DIR / path
-    if not candidate.exists():
-        candidate = Path(path)
-    if not candidate.exists():
-        return f"Erreur : fichier introuvable : {path}"
-    return candidate.read_text(encoding="utf-8")
+    """Lit un fichier depuis le workspace, les documents sources ou un chemin direct."""
+    name = path.removeprefix("workspace/").removeprefix("documents/")
+    for candidate in (WORKSPACE_DIR / name, DOCUMENTS_DIR / name, Path(path)):
+        if candidate.exists():
+            return candidate.read_text(encoding="utf-8")
+    return f"Erreur : fichier introuvable : {path}"
 
 
 def write_file(path: str, content: str) -> str:

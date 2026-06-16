@@ -1,9 +1,9 @@
 # Plan
 
-Tâche : Analyse les documents internes et fais un résumé des risques du projet Alpha.
+Tâche : D'après les documents, de combien augmente le coût d'exploitation annuel du projet Alpha avec la hausse tarifaire, en euros et en pourcentage ?
 
-1. Utiliser rag_search pour rechercher les risques associés au projet Alpha dans les documents internes
-2. Utiliser read_file pour lire le document contenant l'analyse initiale du projet Alpha
-3. Utiliser rag_search pour identifier et extraire les informations clés concernant les risques du projet Alpha
-4. Écrire un résumé des risques identifiés dans un fichier temporaire avec write_file
-5. Réviser le résumé et l'affiner avant de le finaliser
+1. Utiliser rag_search pour trouver la hausse tarifaire
+2. Utiliser rag_search pour localiser l'information sur le coût d'exploitation annuel initial du projet Alpha
+3. Calculer l'augmentation du coût d'exploitation annuel en utilisant calculator
+4. Calculer le pourcentage d'augmentation en utilisant calculator
+5. Écrire un rapport avec write_file contenant les résultats

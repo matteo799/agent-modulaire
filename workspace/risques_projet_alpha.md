@@ -1,13 +1,13 @@
-# Résumé des Risques du Projet Alpha
+Risques identifiés pour le projet Alpha:
 
-## Risques Techniques
-- **Risque de perte de données** : La base de données actuelle utilise un schéma propriétaire non documenté, ce qui pourrait entraîner des pertes de données lors de la migration si le mapping n'est pas validé par des tests exhaustifs.
+### Risque technique
+La base de données actuelle utilise un schéma propriétaire non documenté. La migration des 12 millions d'enregistrements pourrait entraîner des pertes de données si le mapping n'est pas validé par des tests exhaustifs.
 
-## Risques de Planning
-- **Risque de retard du projet** : Deux développeurs seniors quittent l'entreprise en septembre 2026, ce qui pourrait faire prendre 3 à 4 mois de retard au projet sans plan de transfert de connaissances.
+### Risque de planning
+Deux développeurs seniors quittent l'entreprise en septembre 2026. Sans plan de transfert de connaissances, le projet pourrait prendre 3 à 4 mois de retard.
 
-## Risques Financiers
-- **Augmentation des coûts d'exploitation** : Le coût d'exploitation annuel pourrait passer de 80 000 € à 92 000 € en raison d'une hausse tarifaire de 15 % du fournisseur cloud applicable en 2027, ce qui n'est pas prévu dans le budget actuel.
+### Risque financier
+Le fournisseur cloud a annoncé une hausse tarifaire de 15 % applicable en 2027. Le coût d'exploitation annuel passerait de 80 000 € à 92 000 €, ce qui n'est pas prévu dans le budget actuel.
 
-## Risques de Conformité
-- **Conformité RGPD** : Les données de facturation contiennent des informations personnelles soumises au RGPD. L'hébergement doit rester dans l'Union européenne, excluant deux des trois régions cloud envisagées.
+### Risque de conformité
+Les données de facturation contiennent des informations personnelles soumises au RGPD. L'hébergement doit rester dans l'Union européenne, ce qui exclut deux des trois régions cloud envisagées.

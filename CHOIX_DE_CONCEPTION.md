@@ -83,9 +83,10 @@ vectorielle (Chroma, FAISS) :
 
 ## 3. Couche LLM (`agent/llm.py`) : fiabiliser le JSON
 
-Toute la machinerie agentique repose sur des réponses JSON (plan, choix
-d'outil, verdict de réflexion). Or un modèle 7B local produit régulièrement du
-JSON imparfait. Trois mécanismes de défense, empilés :
+Plusieurs étapes de la machinerie agentique reposent sur des réponses JSON du
+modèle (le plan, le choix d'outil — la réflexion, elle, est déterministe, cf.
+§6). Or un modèle 7B local produit régulièrement du JSON imparfait. Trois
+mécanismes de défense, empilés :
 
 1. **`format="json"` côté Ollama** (`json_mode=True`) : contraint le décodage
    du modèle au niveau du sampling. C'est la première ligne de défense.
@@ -203,26 +204,47 @@ Alternative écartée : un historique de conversation complet (tous les
 messages). Trop volumineux pour un petit contexte, et la mémoire structurée
 par étape est plus facile à tronquer et à relire.
 
-### Réflexion / auto-correction
+### Réflexion / auto-correction : déterministe, pas confiée au LLM
 
-Après chaque exécution, un appel LLM distinct juge le résultat :
-`{"sufficient": bool, "feedback": str}`. Si insuffisant, le feedback est
-injecté dans une nouvelle tentative de sélection d'outil ("Tentative
-précédente insuffisante. Conseil : …").
+Après chaque exécution, la fonction `reflect()` juge si l'étape a réussi et,
+si non, le feedback est injecté dans une nouvelle tentative de sélection
+d'outil ("Tentative précédente insuffisante. Conseil : …").
 
-Choix de paramétrage :
+**La décision est déterministe** : une étape est considérée réussie sauf si
+son résultat est vide ou commence par "Erreur". Aucun appel LLM n'est fait
+ici. Ce choix repose sur une convention du projet — tous les outils renvoient
+leurs échecs sous forme de texte commençant par "Erreur" (cf. §5). Le seul
+signal dont la réflexion a réellement besoin ("l'outil a-t-il planté ?") est
+donc déjà lisible directement dans la chaîne renvoyée.
 
-- **`MAX_RETRIES = 1`** : une seule correction par étape. Au-delà, on observe
-  des boucles où le modèle juge éternellement "insuffisant" sans converger ;
-  une tentative corrigée capture l'essentiel du bénéfice pour un coût borné.
+**Pourquoi avoir retiré le juge LLM ?** La version initiale demandait à un
+appel LLM distinct de juger chaque résultat (`{"sufficient": bool,
+"feedback": str}`). En pratique, sur un modèle 7B local, ce juge produisait
+beaucoup de **faux positifs** : il marquait "insuffisant" des résultats
+parfaitement corrects (un nombre déjà calculé, un document déjà extrait) en
+réclamant un perfectionnement inutile, ce qui déclenchait des relances
+parasites à presque chaque étape. La règle déterministe a deux bénéfices
+mesurés : elle **supprime ces retries inutiles** et elle **économise un appel
+LLM par étape** (sur un plan de 5 étapes, 5 allers-retours modèle en moins par
+exécution), donc des runs plus rapides.
+
+**Le compromis assumé** : la réflexion est désormais "bête" — elle ne détecte
+que les vrais plantages, pas les résultats subtilement incomplets (un résumé
+qui oublierait un risque, par exemple). Pour ce projet c'est le bon arbitrage,
+parce que le juge LLM 7B faisait plus de faux positifs que de vraies
+détections utiles. Avec un modèle plus gros et plus fiable, on pourrait
+réintroduire un jugement sémantique — mais **en complément** de la règle
+déterministe (d'abord filtrer les erreurs franches, puis juger la qualité),
+pas à sa place.
+
+Autres choix de paramétrage :
+
+- **`MAX_RETRIES = 1`** : une seule correction par étape. Au-delà, le risque
+  de boucler sans converger l'emporte ; une tentative corrigée capture
+  l'essentiel du bénéfice pour un coût borné.
 - **Après la dernière tentative, le résultat est gardé tel quel** : un
   résultat imparfait dans la mémoire vaut mieux qu'une étape vide, et la
   synthèse finale peut souvent compenser.
-- **Si la réflexion elle-même plante** (JSON invalide), on considère l'étape
-  réussie (`sufficient: True`). C'est un choix "fail-open" assumé : la
-  réflexion est une optimisation, pas un point de défaillance acceptable.
-- Le résultat est tronqué à 2000 caractères pour le juge : il évalue la
-  *forme* de la réussite, pas chaque détail.
 
 ---
 
