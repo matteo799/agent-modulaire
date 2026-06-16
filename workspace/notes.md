@@ -21,34 +21,48 @@ pas prévu dans le budget actuel.
 Deux développeurs seniors quittent l'entreprise en septembre 2026. Sans plan
 de transfert de connaissances, le projet pourrait prendre 3 à 4 mois de retard.
 
-### Étape : Chercher la hausse annuelle du coût d'exploitation du projet Alpha avec rag_search
-Outil : rag_search
-Résultat :
-[projet_alpha.md — score 0.74]
-### Risque financier
-Le fournisseur cloud a annoncé une hausse tarifaire de 15 % applicable en 2027.
-Le coût d'exploitation annuel passerait de 80 000 € à 92 000 €, ce qui n'est
-pas prévu dans le budget actuel.
-
-[projet_alpha.md — score 0.68]
-### Risque technique
-La base de données actuelle utilise un schéma propriétaire non documenté.
-La migration des 12 millions d'enregistrements pourrait entraîner des pertes
-de données si le mapping n'est pas validé par des tests exhaustifs.
-
-[projet_alpha.md — score 0.66]
+[projet_alpha.md — score 0.48]
 ## Recommandations
 
 - Lancer un audit du schéma de base de données dès juillet 2026.
 - Documenter les connaissances critiques avant le départ des seniors.
 - Renégocier le contrat cloud avant la hausse tarifaire.
 
-### Étape : Utiliser calculator pour additionner le budget initial et l'historique des hausses annuelles
-Outil : calculator
-Résultat :
-542000
+[projet_alpha.md — score 0.45]
+### Risque technique
+La base de données actuelle utilise un schéma propriétaire non documenté.
+La migration des 12 millions d'enregistrements pourrait entraîner des pertes
+de données si le mapping n'est pas validé par des tests exhaustifs.
 
-### Étape : Écrire le rapport final avec write_file
+### Étape : Chercher la hausse annuelle de coût d'exploitation du projet Alpha avec rag_search
+Outil : rag_search
+Résultat :
+[projet_alpha.md — score 0.71]
+### Risque financier
+Le fournisseur cloud a annoncé une hausse tarifaire de 15 % applicable en 2027.
+Le coût d'exploitation annuel passerait de 80 000 € à 92 000 €, ce qui n'est
+pas prévu dans le budget actuel.
+
+[projet_alpha.md — score 0.67]
+## Recommandations
+
+- Lancer un audit du schéma de base de données dès juillet 2026.
+- Documenter les connaissances critiques avant le départ des seniors.
+- Renégocier le contrat cloud avant la hausse tarifaire.
+
+[projet_alpha.md — score 0.65]
+## Contexte
+
+Le projet Alpha vise à migrer le système de facturation vers une nouvelle
+plateforme cloud d'ici décembre 2026. Le budget alloué est de 450 000 €
+et l'équipe compte 8 personnes.
+
+### Étape : Utiliser calculator pour additionner le budget initial et l'historique des augmentations annuelles
 Outil : calculator
 Résultat :
 462000
+
+### Étape : Écrire le rapport final avec write_file
+Outil : write_file
+Résultat :
+Fichier écrit : workspace/rapport_alpha.md (47 caractères)
