@@ -1,15 +1,12 @@
 # Rapport final
 
-Tâche : Combien coûte le projet Alpha au total si on ajoute le budget initial et la hausse du coût d'exploitation annuel ?
+Tâche : Quels risques du projet Alpha sont liés à un facteur humain plutôt que technique, et que recommande-t-on pour les atténuer ?
 
-### Rapport Final du Projet Alpha
+### Rapport sur les risques du projet Alpha liés aux facteurs humains:
 
-#### Sommaire
-- **Budget Initial** : 450 000 €
-- **Hausse Annuelle de Coût d'Exploitation** : +12 000 € (de 80 000 € à 92 000 €)
-- **Coût Total du Projet Alpha** : 462 000 €
+#### Risque de planning
 
-#### Détails
-Le projet Alpha, visant la migration du système de facturation vers une nouvelle plateforme cloud d'ici décembre 2026, avait initialement un budget fixé à 450 000 €. En tenant compte de l'historique des augmentations annuelles de coût d'exploitation annoncées par le fournisseur cloud (passage du coût d'exploitation annuel de 80 000 € à 92 000 €, soit une hausse de 12 000 €), le budget total du projet s'élève à **462 000 €**.
+**Description**: Deux développeurs seniors quittent l'entreprise en septembre 2026. Sans plan de transfert de connaissances, le projet pourrait prendre 3 à 4 mois de retard.
 
-Ce rapport met en lumière l'importance d'une rénovation préventive du contrat cloud et des audits réguliers afin de prévenir les surcoûts futurs.
+**Recommandations**:
+- Documenter les connaissances critiques avant le départ des seniors.

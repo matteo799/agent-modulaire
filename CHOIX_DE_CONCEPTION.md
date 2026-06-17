@@ -329,10 +329,14 @@ la fiabilité des passages.
 - **CLI minimaliste** (`python main.py "question"`) : pas d'argparse ni de
   config — un seul argument, la tâche. Les mots de `sys.argv` sont joints
   pour tolérer une question non quotée.
-- **La synthèse finale est un appel LLM séparé**, hors de la boucle : il
-  reçoit la tâche initiale et toute la mémoire de travail, et rédige la
-  réponse utilisateur. Séparer "agir" et "rédiger" donne une réponse beaucoup
-  plus propre que de retourner le résultat brut de la dernière étape.
+- **La synthèse finale est un appel LLM séparé**, hors de la boucle. Séparer
+  "agir" et "rédiger" donne une réponse plus propre que de retourner le
+  résultat brut de la dernière étape. **Elle s'ancre sur le livrable, pas sur
+  la mémoire** : si l'agent a écrit un fichier pendant la boucle
+  (`last_deliverable`), la synthèse reçoit *uniquement* ce livrable et le
+  reformule, sans voir la mémoire de travail. Sinon (aucun fichier écrit),
+  elle retombe sur l'ancien mode "synthèse à partir de toute la mémoire". Le
+  pourquoi de cette séparation stricte est détaillé en §9.
 - **Le rapport est toujours écrit dans `workspace/rapport.md`** par le code
   (pas seulement si le plan l'a prévu) : garantie qu'un livrable existe quoi
   qu'il arrive.
@@ -346,7 +350,53 @@ la fiabilité des passages.
 
 ---
 
-## 9. Limites connues et assumées
+## 9. Principe transversal : une garantie structurelle plutôt qu'une consigne de prompt
+
+C'est le fil conducteur des choix les plus importants du projet, et il vient
+d'une contrainte concrète : **un modèle 7B local n'obéit pas de façon fiable à
+une interdiction formulée dans le prompt.** Lui écrire « ne fais pas X » réduit
+la fréquence de X, mais ne le supprime jamais — surtout si le matériau qui
+permet de faire X reste sous ses yeux. À chaque fois qu'un comportement *doit*
+être garanti, on l'a donc retiré au LLM pour le confier au code (une règle
+déterministe ou une restriction de ce qu'il voit), au lieu de l'espérer d'une
+consigne.
+
+Trois applications concrètes, toutes nées du même échec « le prompt ne suffit
+pas » :
+
+1. **Réflexion / auto-correction (§6).** Version prompt : demander au LLM de ne
+   juger « insuffisant » que les vrais échecs → il marquait sans cesse
+   insuffisants des résultats corrects. Version structurelle : une règle
+   déterministe (échec = résultat vide ou commençant par « Erreur »), aucun
+   appel LLM. Le jugement n'est plus *demandé*, il est *calculé*.
+
+2. **Cohérence de la synthèse finale (§8).** Version prompt : passer le
+   livrable *et* toute la mémoire à la synthèse en lui disant « n'ajoute rien
+   qui ne soit dans le livrable » → elle réintroduisait quand même des éléments
+   tirés des chunks RAG encore présents dans le contexte. Version structurelle :
+   ne plus passer la mémoire du tout quand un livrable existe. Privé de la
+   source, le modèle **ne peut plus** ajouter d'éléments absents — la cohérence
+   est garantie par construction, pas espérée d'une consigne.
+
+3. **Sélection d'outil (§5, §6).** Cas plus nuancé, qui montre la limite du
+   principe. On a *prévenu* les mauvais choix par des descriptions d'outils qui
+   cadrent l'usage et un champ `raison` obligatoire — mais ce sont encore des
+   leviers de prompt, donc partiels. La garantie structurelle complète
+   (imposer l'outil dès la planification) a été écartée car elle retirait trop
+   de souplesse. C'est le rappel que tout ne peut pas être verrouillé sans coût.
+
+**La leçon, et son revers.** Quand un invariant compte, le faire respecter par
+le code (ou en privant le modèle de la possibilité de le violer) est plus
+robuste que toute formulation de prompt. Le revers : une garantie structurelle
+est plus « bête » — la réflexion déterministe ne détecte que les plantages
+francs (§6), et la synthèse ancrée sur le livrable garantit la *cohérence* mais
+pas la *justesse* (si le livrable est faux, elle reproduit fidèlement le faux,
+§8). On échange de la finesse contre de la fiabilité — un bon échange sur un
+7B, à reconsidérer avec un modèle plus capable.
+
+---
+
+## 10. Limites connues et assumées
 
 Ces simplifications sont volontaires, à l'échelle d'un projet de démonstration :
 

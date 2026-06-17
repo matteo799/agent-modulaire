@@ -1,0 +1,9 @@
+Rapport sur les risques humains identifiés pour le projet Alpha:
+
+### Risque de planning
+Deux développeurs seniors quittent l'entreprise en septembre 2026. Sans plan de transfert de connaissances, le projet pourrait prendre 3 à 4 mois de retard.
+Recommandations: Documenter les connaissances critiques avant le départ des seniors.
+
+### Risque financier
+Le fournisseur cloud a annoncé une hausse tarifaire de 15 % applicable en 2027. Le coût d'exploitation annuel passerait de 80 000 € à 92 000 €, ce qui n'est pas prévu dans le budget actuel.
+Recommandations: Renégocier le contrat cloud avant la hausse tarifaire.
