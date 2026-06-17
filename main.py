@@ -37,6 +37,15 @@ def synthesize(user_query: str, memory: list) -> str:
     reformule SANS voir la mémoire : privée des chunks RAG, elle ne peut pas
     réintroduire d'éléments absents du livrable (source unique de vérité).
     Sinon, repli sur la mémoire."""
+    # Garde-fou hors-sujet (déterministe) : si l'agent a cherché dans les
+    # documents et que TOUTES les recherches sont revenues sans passage
+    # pertinent, on refuse — sans quoi le LLM répond depuis ses connaissances
+    # générales (hallucination hors corpus), comme observé sur le golden.
+    rag_results = [m["result"] for m in memory if m.get("tool") == "rag_search"]
+    if rag_results and all("Aucun passage pertinent" in r for r in rag_results):
+        return ("Les documents fournis ne permettent pas de répondre à cette "
+                "question.")
+
     deliverable = last_deliverable(memory)
     if deliverable:
         return llm.chat(SYNTHESIS_FROM_DELIVERABLE.format(

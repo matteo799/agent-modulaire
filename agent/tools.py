@@ -1,7 +1,7 @@
 """Registre d'outils : l'agent connaît ses capacités via TOOLS."""
 from pathlib import Path
 
-from agent.rag import rag_search
+from agent.rag import rag_search, list_sources
 
 WORKSPACE_DIR = Path(__file__).resolve().parent.parent / "workspace"
 DOCUMENTS_DIR = Path(__file__).resolve().parent.parent / "documents"
@@ -42,7 +42,16 @@ TOOLS = {
         "description": "Recherche sémantique dans les documents internes (dossier documents/). "
                        "À utiliser pour TOUTE information à retrouver dans les documents "
                        "(faits, chiffres, dates). NE PAS deviner de nom de fichier. "
-                       "Arguments : query (str), top_k (int, optionnel).",
+                       "Si la réponse indique qu'aucun passage pertinent n'existe, c'est que "
+                       "les documents ne couvrent pas le sujet : ne pas inventer. "
+                       "Arguments : query (str), top_k (int, optionnel), "
+                       "source (str, optionnel : restreint la recherche à un document, ex. un ISIN).",
+    },
+    "list_documents": {
+        "function": list_sources,
+        "description": "Liste les documents/fonds disponibles dans documents/. Sans argument. "
+                       "Utile en première étape pour comparer plusieurs fonds un par un "
+                       "(via le paramètre source de rag_search).",
     },
     "read_file": {
         "function": read_file,
