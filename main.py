@@ -6,11 +6,22 @@ Usage :
 import sys
 
 from agent import llm
-from agent.executor import run, _format_memory
+from agent.executor import run, last_deliverable, _format_memory
 from agent.planner import make_plan
 from agent.tools import write_file
 
-SYNTHESIS_PROMPT = """Tâche initiale de l'utilisateur :
+SYNTHESIS_FROM_DELIVERABLE = """Tâche initiale de l'utilisateur :
+{user_query}
+
+L'agent a produit ce livrable :
+{deliverable}
+
+Reformule-le en une réponse finale claire et structurée pour l'utilisateur.
+N'ajoute, ne retire et ne modifie AUCUNE information : reprends uniquement ce
+qui figure dans le livrable ci-dessus.
+"""
+
+SYNTHESIS_FROM_MEMORY = """Tâche initiale de l'utilisateur :
 {user_query}
 
 Résultats de chaque étape du plan :
@@ -37,8 +48,16 @@ def main():
     memory = run(user_query, plan)
 
     print("\n=== 3. Synthèse finale ===")
-    answer = llm.chat(SYNTHESIS_PROMPT.format(
-        user_query=user_query, memory=_format_memory(memory)))
+    # Si l'agent a écrit un livrable, la synthèse le reformule SANS voir la
+    # mémoire : privée des chunks RAG, elle ne peut pas réintroduire d'éléments
+    # absents du livrable (source unique de vérité). Sinon, repli sur la mémoire.
+    deliverable = last_deliverable(memory)
+    if deliverable:
+        answer = llm.chat(SYNTHESIS_FROM_DELIVERABLE.format(
+            user_query=user_query, deliverable=deliverable))
+    else:
+        answer = llm.chat(SYNTHESIS_FROM_MEMORY.format(
+            user_query=user_query, memory=_format_memory(memory)))
     write_file("rapport.md", f"# Rapport final\n\nTâche : {user_query}\n\n{answer}")
     print(answer)
     print("\n(Plan, notes et rapport sauvegardés dans workspace/)")

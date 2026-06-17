@@ -101,7 +101,17 @@ def run(user_query: str, plan: list[str]) -> list[dict]:
                 break
             feedback = verdict["feedback"]
             print(f"    Réflexion : insuffisant — {feedback}")
-        memory.append({"step": step, "tool": choice.get("tool", "?"), "result": result})
+        entry = {"step": step, "tool": choice.get("tool", "?"), "result": result}
+        # On garde le contenu réellement écrit (write_file ne renvoie qu'une
+        # confirmation) pour que la synthèse finale s'appuie sur le livrable.
+        if entry["tool"] == "write_file" and not result.startswith("Erreur"):
+            entry["content"] = (choice.get("args") or {}).get("content", "")
+        memory.append(entry)
         write_file("notes.md", "# Mémoire de travail\n\n" + _format_memory(memory))
         print(f"    Résultat : {result[:200].replace(chr(10), ' ')}...")
     return memory
+
+
+def last_deliverable(memory: list[dict]) -> str:
+    """Contenu du dernier fichier écrit par l'agent (le livrable), s'il existe."""
+    return next((m["content"] for m in reversed(memory) if m.get("content")), "")
