@@ -14,6 +14,22 @@ DOCUMENTS_DIR = Path(__file__).resolve().parent.parent / "documents"
 CHUNK_SIZE = 800  # caractères
 CHUNK_OVERLAP = 150
 MIN_CHUNK = 30  # ignore les fragments trop courts (artefacts de découpage)
+SUPPORTED = {".txt", ".md", ".pdf"}
+
+
+def _read_document(path: Path) -> str:
+    """Texte d'un document. .txt/.md lus directement ; .pdf extrait via pypdf.
+
+    Si pypdf est absent ou le PDF illisible, renvoie une chaîne vide : le
+    document est alors ignoré (dégradation gracieuse, comme pour les embeddings)."""
+    if path.suffix.lower() == ".pdf":
+        try:
+            import pypdf
+            reader = pypdf.PdfReader(str(path))
+            return "\n".join((page.extract_text() or "") for page in reader.pages)
+        except Exception:
+            return ""
+    return path.read_text(encoding="utf-8")
 
 
 def _split_sections(text: str) -> list[str]:
@@ -65,8 +81,10 @@ class RagIndex:
         self.built = True
         self.chunks = []
         for path in sorted(DOCUMENTS_DIR.glob("**/*")):
-            if path.suffix.lower() in {".txt", ".md"}:
-                self.chunks.extend(_chunk(path.read_text(encoding="utf-8"), path.name))
+            if path.suffix.lower() in SUPPORTED:
+                text = _read_document(path)
+                if text.strip():
+                    self.chunks.extend(_chunk(text, path.name))
         if not self.chunks:
             return
         try:

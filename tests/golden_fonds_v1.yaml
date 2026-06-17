@@ -1,0 +1,201 @@
+version: "fonds-generic-v1.0"
+description: |
+  Jeu de questions « golden » GÉNÉRIQUES sur un prospectus / document
+  d'information d'un fonds (OPCVM, FCP, FCPI, FCPE, SCPI, FIA…).
+
+  Contrairement au golden lié à un corpus précis, ces questions ne nomment
+  aucun fonds particulier : elles parlent du « fonds » / « produit » et
+  doivent pouvoir être posées contre N'IMPORTE QUEL prospectus déposé dans
+  documents/. Les réponses-types décrivent donc le PRINCIPE attendu, pas une
+  valeur chiffrée précise (qui dépend du fonds testé).
+
+  Format adapté à l'agent Harness :
+  - on garde question / expected_answer / tags ;
+  - on retire expected_chunk_ids et expected_source_files (sans objet quand
+    la question doit valoir pour tout fonds) ;
+  - expected_answer = critère de justesse (ce qu'une bonne réponse doit
+    contenir), à comparer manuellement au rapport produit par l'agent.
+
+  Convention d'id : gfg1-<nn>-<slug>
+
+items:
+# ─────────────────────────────────────────────────────────────
+#  Identité & gouvernance du fonds
+# ─────────────────────────────────────────────────────────────
+  - id: gfg1-01-identite
+    question: "Quelles sont les caractéristiques générales du fonds : dénomination, forme juridique, date de création et durée de vie prévue ?"
+    expected_answer: |
+      La réponse doit donner le nom du fonds, sa forme juridique (FCP, SICAV,
+      SCPI, FIA…), l'État de constitution, la date de création et la durée
+      d'existence prévue, telles qu'indiquées dans les caractéristiques générales.
+    tags: [identite, forme-juridique, duree-vie]
+
+  - id: gfg1-02-societe-gestion
+    question: "Quelle société de gestion administre le fonds, et est-elle agréée par une autorité de tutelle ?"
+    expected_answer: |
+      La réponse doit nommer la société de gestion et préciser son agrément par
+      l'autorité compétente (en France, l'AMF), idéalement avec le numéro
+      d'agrément s'il figure dans le document.
+    tags: [societe-gestion, agrement, amf]
+
+  - id: gfg1-03-objectif-strategie
+    question: "Quel est l'objectif de gestion du fonds et quelle stratégie d'investissement met-il en œuvre ?"
+    expected_answer: |
+      La réponse doit résumer l'objectif de gestion (rendement visé, indice de
+      référence éventuel) et les grands axes de la stratégie : classes d'actifs,
+      zones, style de gestion, éventuels critères extra-financiers (ESG).
+    tags: [objectif, strategie, investissement]
+
+  - id: gfg1-04-composition-actifs
+    question: "Dans quels types d'actifs le fonds investit-il et existe-t-il un quota ou une contrainte réglementaire d'investissement ?"
+    expected_answer: |
+      La réponse doit décrire la composition de l'actif (actions, obligations,
+      immobilier, titres non cotés…) et mentionner tout quota réglementaire
+      applicable au type de fonds (ex. : un FCPI investit ≥ 70 % dans des
+      sociétés innovantes), si le document le précise.
+    tags: [actifs, composition, quota-reglementaire]
+
+# ─────────────────────────────────────────────────────────────
+#  Frais & souscription
+# ─────────────────────────────────────────────────────────────
+  - id: gfg1-05-frais-gestion
+    question: "Quels sont les frais de gestion maximum du fonds et comment sont-ils calculés ?"
+    expected_answer: |
+      La réponse doit indiquer le taux de frais de gestion maximum (en % de
+      l'actif net, souvent TTC), en distinguant les différentes parts si le
+      fonds en comporte plusieurs, et préciser l'assiette/la base de calcul.
+    tags: [frais-gestion, couts, parts]
+
+  - id: gfg1-06-frais-investisseur
+    question: "Quels frais sont prélevés à la charge de l'investisseur lors de la souscription et du rachat ?"
+    expected_answer: |
+      La réponse doit lister les commissions de souscription et de rachat, les
+      éventuelles commissions de mouvement, et les frais courants annuels
+      prélevés sur l'actif, avec leurs taux maximum quand ils sont fournis.
+    tags: [frais, souscription, rachat, investisseur]
+
+  - id: gfg1-07-souscription
+    question: "Comment se déroule la souscription au fonds et quelle est la nature de l'engagement du souscripteur ?"
+    expected_answer: |
+      La réponse doit décrire les modalités de souscription (montant minimum,
+      bulletin, libération des fonds) et la nature de l'engagement (ferme et
+      irrévocable le cas échéant), ainsi que la valeur liquidative d'origine si
+      elle est mentionnée.
+    tags: [souscription, engagement, montant-minimum]
+
+  - id: gfg1-08-valeur-liquidative
+    question: "Comment est déterminée la valeur liquidative des parts du fonds et à quelle fréquence est-elle calculée ?"
+    expected_answer: |
+      La réponse doit expliquer que la valeur liquidative est obtenue en
+      divisant l'actif net par le nombre de parts, mentionner la fréquence de
+      calcul, et la valeur nominale/d'origine si elle figure au document.
+    tags: [valeur-liquidative, valeur-nominale, calcul]
+
+# ─────────────────────────────────────────────────────────────
+#  Revenus, fiscalité & sortie
+# ─────────────────────────────────────────────────────────────
+  - id: gfg1-09-distribution
+    question: "Quelle est la politique de distribution des revenus du fonds (capitalisation ou distribution) ?"
+    expected_answer: |
+      La réponse doit préciser si le fonds capitalise ou distribue ses revenus,
+      l'origine des sommes distribuables et l'instance qui décide de la
+      distribution (ex. : assemblée générale, société de gestion).
+    tags: [distribution, revenus, capitalisation]
+
+  - id: gfg1-10-fiscalite
+    question: "Quel est le régime fiscal applicable au fonds, et la souscription ouvre-t-elle droit à un avantage fiscal ?"
+    expected_answer: |
+      La réponse doit décrire le traitement fiscal des revenus et plus-values
+      pour un investisseur, et signaler tout avantage fiscal (ex. : réduction
+      d'IR pour un FCPI/FIP) avec sa condition de durée de conservation.
+    tags: [fiscalite, avantage-fiscal, plus-values]
+
+  - id: gfg1-11-duree-detention
+    question: "Quelle est la durée de détention recommandée du fonds et les parts sont-elles bloquées pendant une période ?"
+    expected_answer: |
+      La réponse doit donner la durée de détention recommandée et indiquer toute
+      période de blocage (ex. : 5 ans pour conserver l'avantage fiscal d'un
+      FCPI), ainsi que les conséquences d'un rachat anticipé.
+    tags: [duree-detention, blocage, horizon]
+
+  - id: gfg1-12-cession-parts
+    question: "Quelles sont les règles applicables à la cession, au transfert ou au nantissement des parts du fonds ?"
+    expected_answer: |
+      La réponse doit décrire l'encadrement des opérations sur les parts (vente,
+      transfert, apport, nantissement), les restrictions éventuelles et les
+      conditions de liquidité (marché secondaire, périodes de blocage).
+    tags: [cession, transfert, nantissement, liquidite]
+
+  - id: gfg1-13-dissolution
+    question: "Dans quelles circonstances le fonds peut-il être dissous ou liquidé par anticipation ?"
+    expected_answer: |
+      La réponse doit citer les cas de dissolution anticipée prévus (ex. : la
+      société de gestion cesse d'être agréée, actif sous un seuil…) et décrire
+      le déroulé de la liquidation et du remboursement des porteurs.
+    tags: [dissolution, liquidation, sortie]
+
+# ─────────────────────────────────────────────────────────────
+#  Risques & protection des porteurs
+# ─────────────────────────────────────────────────────────────
+  - id: gfg1-14-profil-risque
+    question: "Quels sont les principaux risques associés au fonds ?"
+    expected_answer: |
+      La réponse doit énumérer les risques identifiés dans le document (risque de
+      perte en capital, de marché, de crédit, de liquidité, de change, lié aux
+      petites capitalisations…), sans en inventer hors du prospectus.
+    tags: [risques, profil-risque, perte-capital]
+
+  - id: gfg1-15-risque-liquidite
+    question: "En quoi consiste le risque de liquidité pour ce fonds et comment est-il géré ?"
+    expected_answer: |
+      La réponse doit définir le risque de liquidité (incapacité à honorer les
+      rachats / actifs peu liquides) et mentionner tout dispositif de gestion,
+      notamment un mécanisme de plafonnement des rachats (Gates) s'il existe.
+    tags: [risque-liquidite, gates, rachats]
+
+  - id: gfg1-16-gates
+    question: "Le fonds prévoit-il un mécanisme de plafonnement des rachats (Gates), et comment fonctionne-t-il ?"
+    expected_answer: |
+      Si le document le prévoit, la réponse doit expliquer que les Gates
+      plafonnent le volume de rachats sur une même valeur liquidative pour
+      protéger les porteurs restants, avec traitement au prorata au-delà du
+      seuil. Sinon, indiquer que le document ne le mentionne pas.
+    tags: [gates, rachat, plafonnement]
+
+  - id: gfg1-17-responsabilite-porteurs
+    question: "Quelle est l'étendue de la responsabilité d'un porteur/associé à l'égard des dettes du fonds ?"
+    expected_answer: |
+      La réponse doit indiquer que la responsabilité du porteur est en principe
+      limitée au montant souscrit (il ne peut être appelé au-delà de sa mise),
+      en reprenant la formulation du document.
+    tags: [responsabilite, porteurs, dettes]
+
+  - id: gfg1-18-reclamation
+    question: "Comment un investisseur peut-il formuler une réclamation et quel recours a-t-il en cas de litige ?"
+    expected_answer: |
+      La réponse doit décrire la procédure de réclamation (écrit à la société de
+      gestion avec coordonnées et objet) et le recours possible (ex. : saisine de
+      l'AMF ou d'un médiateur) en cas de litige non résolu.
+    tags: [reclamation, recours, mediation]
+
+# ─────────────────────────────────────────────────────────────
+#  HORS-CORPUS (fallback) — la bonne réponse est de ne pas répondre
+# ─────────────────────────────────────────────────────────────
+  - id: gfg1-19-out-of-domain-tva
+    question: "Quel est le taux de TVA applicable aux loyers d'habitation en France ?"
+    expected_answer: |
+      Les documents fournis ne permettent pas de répondre à cette question.
+    tags: [out-of-domain, fallback, fiscalite]
+
+  - id: gfg1-20-out-of-domain-meteo
+    question: "Quelle sera la performance boursière de ce fonds l'an prochain ?"
+    expected_answer: |
+      Les documents ne permettent pas de prédire une performance future ; les
+      performances passées ne préjugent pas des performances futures.
+    tags: [out-of-domain, fallback, prediction]
+
+  - id: gfg1-21-out-of-domain-pret
+    question: "Quelles sont les étapes pour obtenir un prêt immobilier auprès d'une banque française ?"
+    expected_answer: |
+      Les documents fournis ne permettent pas de répondre à cette question.
+    tags: [out-of-domain, fallback, credit]

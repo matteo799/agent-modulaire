@@ -1,5 +1,0 @@
-Risques du projet Alpha:
-
-- Risque technique: Migration de la base de données avec 12 millions d'enregistrements, schéma propriétaire non documenté.
-- Risque de planning: Retard possible de 3 à 4 mois sans plan de transfert de connaissances.
-- Risque financier: Augmentation des coûts d'exploitation annuels de 80 000 € à 92 000 € en 2027.

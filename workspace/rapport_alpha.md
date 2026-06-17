@@ -1,1 +1,0 @@
-Le coût total du projet Alpha est de 462 000 €.
