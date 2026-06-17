@@ -1,0 +1,75 @@
+"""Fait tourner l'agent sur un golden set et juxtapose attendu / obtenu.
+
+Usage :
+    python tests/run_golden.py [fichier.yaml] [limite]
+
+- fichier.yaml : golden à utiliser (défaut : tests/golden_fonds_v1.yaml)
+- limite       : ne traiter que les N premières questions (défaut : toutes)
+
+Tout tourne dans UN seul processus : l'index RAG (et son embedding coûteux)
+n'est construit qu'une fois et réutilisé pour toutes les questions. Le rapport
+est écrit dans tests/golden_report.md.
+
+Il n'y a pas de notation automatique (le système est non déterministe et les
+réponses-types décrivent un critère, pas une chaîne exacte) : la comparaison
+attendu / obtenu se fait à l'œil dans le rapport.
+"""
+import sys
+import time
+from pathlib import Path
+
+import yaml
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from main import answer_query  # noqa: E402
+
+DEFAULT_GOLDEN = ROOT / "tests" / "golden_fonds_v1.yaml"
+REPORT_PATH = ROOT / "tests" / "golden_report.md"
+
+
+def main():
+    golden_path = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_GOLDEN
+    limit = int(sys.argv[2]) if len(sys.argv) > 2 else None
+
+    data = yaml.safe_load(golden_path.read_text(encoding="utf-8"))
+    items = data["items"][:limit] if limit else data["items"]
+
+    print(f"Golden : {golden_path.name} ({data.get('version', '?')}) — "
+          f"{len(items)} question(s)\n")
+
+    sections = []
+    t0 = time.time()
+    for n, item in enumerate(items, 1):
+        qid, question = item["id"], item["question"]
+        expected = (item.get("expected_answer") or "").strip()
+        print(f"\n########## {n}/{len(items)} — {qid} ##########")
+        try:
+            obtained = answer_query(question, verbose=False).strip()
+        except Exception as exc:  # une question ne doit pas tuer le batch
+            obtained = f"[ERREUR pendant l'exécution : {exc}]"
+        print(f"→ {obtained[:200].replace(chr(10), ' ')}...")
+        sections.append(
+            f"## {qid}\n\n"
+            f"**Question :** {question}\n\n"
+            f"**Réponse attendue (critère) :**\n\n{expected}\n\n"
+            f"**Réponse obtenue :**\n\n{obtained}\n\n"
+            f"---\n"
+        )
+
+    dt = time.time() - t0
+    header = (
+        f"# Rapport golden — {golden_path.name}\n\n"
+        f"Version : `{data.get('version', '?')}` — {len(items)} question(s) — "
+        f"temps total : {dt:.0f}s\n\n"
+        f"> Comparaison manuelle : la « réponse attendue » est un critère de "
+        f"justesse, pas une chaîne exacte.\n\n---\n\n"
+    )
+    REPORT_PATH.write_text(header + "\n".join(sections), encoding="utf-8")
+    print(f"\nRapport écrit dans {REPORT_PATH.relative_to(ROOT)} "
+          f"({len(items)} question(s), {dt:.0f}s).")
+
+
+if __name__ == "__main__":
+    main()
