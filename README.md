@@ -38,8 +38,12 @@ Synthèse finale → workspace/rapport.md
 
 ## Prérequis
 
-- [Ollama](https://ollama.com) lancé localement
-- Modèles : `ollama pull qwen2.5:7b` (agent) et le LLM juge du moteur (`mistral:7b-instruct`)
+- **LLM du moteur RAG** : par défaut Claude via la passerelle OpenAI-compatible
+  meai.cloud (`provider: openai` dans `rag_engine/configs/default.yaml`). La clé se
+  met dans un `.env` gitignoré (`RAG__LLM__OPENAI__API_KEY=…`), jamais dans la config.
+  Pour du 100 % local, basculer `provider: ollama`.
+- [Ollama](https://ollama.com) lancé localement pour **l'agent** (`ollama pull qwen2.5:7b`)
+  — et pour le moteur si tu choisis le mode local (`mistral:7b-instruct`).
 - Python ≥ 3.11, le moteur RAG installé en éditable : `pip install -e ./rag_engine`
   (tire les dépendances de récupération : bge-m3, reranker, Qdrant)
 

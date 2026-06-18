@@ -105,8 +105,12 @@ def build_llm(settings: Settings) -> LLMClient:
         return cast(
             LLMClient,
             OpenAIClient(
+                base_url=settings.llm.openai.base_url,
+                model=settings.llm.openai.model,
+                api_key=settings.llm.openai.api_key,
                 temperature=settings.llm.temperature,
                 max_tokens=settings.llm.max_tokens,
+                timeout_s=settings.llm.openai.timeout_s,
             ),
         )
     if provider == "lmstudio":
