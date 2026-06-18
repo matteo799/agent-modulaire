@@ -73,11 +73,17 @@ _LABEL_STYLE = {"relevant": ("g", "✓ pertinent"),
                 "irrelevant": ("r", "✗ hors-sujet")}
 
 
-def narrate_node(node: str, update) -> None:
+def _lat(dt: float) -> str:
+    """Étiquette de latence pour une étape (mise en évidence si > 5 s)."""
+    col = C["y"] if dt >= 5 else C["d"]
+    return f"  {col}⏱ {dt:.1f}s{C['x']}"
+
+
+def narrate_node(node: str, update, dt: float) -> None:
     if node == "retrieve":
         hits = get(update, "hits", []) or []
         print(f"   {C['cy']}● retrieve{C['x']} — dense BGE-M3 → parent-child → "
-              f"{C['b']}reranker (top {len(hits)}){C['x']}")
+              f"{C['b']}reranker (top {len(hits)}){C['x']}{_lat(dt)}")
         for i, h in enumerate(hits, 1):
             src = get(get(h, "metadata", {}) or {}, "source_file", "?")
             page = get(get(h, "metadata", {}) or {}, "page", None)
@@ -95,22 +101,22 @@ def narrate_node(node: str, update) -> None:
             if counts.get(lab):
                 parts.append(f"{C[col]}{counts[lab]} {txt}{C['x']}")
         print(f"   {C['cy']}● grade{C['x']} — le LLM juge chaque passage : "
-              + "  ".join(parts or [f"{C['d']}(aucun){C['x']}"]))
+              + "  ".join(parts or [f"{C['d']}(aucun){C['x']}"]) + _lat(dt))
     elif node == "decide":
         dec = str(get(get(update, "decision", ""), "value", get(update, "decision", "")))
-        print(f"   {C['cy']}● decide{C['x']} — décision corrective : {C['b']}{dec}{C['x']}")
+        print(f"   {C['cy']}● decide{C['x']} — décision corrective : {C['b']}{dec}{C['x']}{_lat(dt)}")
     elif node == "rewrite_query":
-        print(f"   {C['y']}● rewrite{C['x']} — passages insuffisants → reformulation et nouveau tour")
+        print(f"   {C['y']}● rewrite{C['x']} — passages insuffisants → reformulation et nouveau tour{_lat(dt)}")
     elif node == "generate":
-        print(f"   {C['cy']}● generate{C['x']} — rédaction ancrée sur les passages retenus")
+        print(f"   {C['cy']}● generate{C['x']} — rédaction ancrée sur les passages retenus{_lat(dt)}")
     elif node == "ground_check":
         ans = get(update, "answer", None)
         grounded = get(ans, "grounded", None) if ans else None
         tag = (f"{C['g']}✓ ancrée (grounded){C['x']}" if grounded
                else f"{C['r']}⚠ non ancrée{C['x']}")
-        print(f"   {C['cy']}● ground_check{C['x']} — vérification anti-hallucination : {tag}")
+        print(f"   {C['cy']}● ground_check{C['x']} — vérification anti-hallucination : {tag}{_lat(dt)}")
     elif node == "fallback_no_answer":
-        print(f"   {C['r']}● fallback{C['x']} — hors corpus : le système refuse d'inventer")
+        print(f"   {C['r']}● fallback{C['x']} — hors corpus : le système refuse d'inventer{_lat(dt)}")
 
 
 def main() -> int:
@@ -146,6 +152,7 @@ def main() -> int:
         print("\n\n" + rule("━"))
         print(f"{C['b']}  QUESTION {i}/3{C['x']}  «{C['h']} {q} {C['x']}»")
         print(rule("━"))
+        q_start = time.time()
 
         # 1) PLANIFICATION
         stage("1", "PLANIFICATION — l'agent décompose la tâche")
@@ -153,20 +160,22 @@ def main() -> int:
         plan = make_plan(q)
         for j, step in enumerate(plan, 1):
             print(f"   {C['g']}{j}.{C['x']} {step}")
-        print(f"   {C['d']}({time.time() - t:.1f}s){C['x']}")
+        print(f"   {C['b']}⏱ étape : {time.time() - t:.1f}s{C['x']}")
 
-        # 2) RÉCUPÉRATION + CRAG
+        # 2) RÉCUPÉRATION + CRAG  (latence affichée nœud par nœud)
         stage("2", "RÉCUPÉRATION + CRAG — dense → parent-child → reranker → boucle corrective")
         t = time.time()
         state = CRAGState(original_query=q, query=q, max_iterations=settings.crag.max_iterations)
         final_answer = None
+        t_node = time.time()
         for chunk in graph.stream(state):
             for node, update in chunk.items():
-                narrate_node(node, update)
+                narrate_node(node, update, time.time() - t_node)
+                t_node = time.time()
                 ans = get(update, "answer", None)
                 if ans is not None:
                     final_answer = ans
-        print(f"   {C['d']}({time.time() - t:.1f}s){C['x']}")
+        print(f"   {C['b']}⏱ total CRAG : {time.time() - t:.1f}s{C['x']}")
 
         # réponse ancrée + citations produites par le RAG
         if final_answer is not None:
@@ -193,7 +202,9 @@ def main() -> int:
         )
         for line in _wrap(client, 72):
             print(f"   {C['g']}{line}{C['x']}")
-        print(f"   {C['d']}({time.time() - t:.1f}s){C['x']}")
+        print(f"   {C['b']}⏱ étape : {time.time() - t:.1f}s{C['x']}")
+
+        print(f"\n  {C['h']}⏱ TOTAL QUESTION {i} : {time.time() - q_start:.1f}s{C['x']}")
 
     print("\n" + rule("═"))
     print(f"{C['b']}  Fin de la démo — 3 questions traitées de bout en bout.{C['x']}")
