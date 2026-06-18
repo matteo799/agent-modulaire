@@ -24,7 +24,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
-from rag.evaluation.golden import GoldenItem
+from .golden import GoldenItem
 from rag.interfaces.types import Answer
 
 

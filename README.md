@@ -53,3 +53,24 @@ Les documents source vivent dans `documents/<dataset>/` (PDF). Pour ajouter un
 corpus, déposez les fichiers dans `documents/<dataset>/` puis (ré)indexez avec le
 moteur — voir `rag_engine/README.md`. L'outil `rag_search` de l'agent interroge la
 collection configurée (un dataset à la fois).
+
+## Tests & éval
+
+Deux niveaux, testés séparément (le moteur RAG est un outil ; Harness le consomme) :
+
+| Quoi | Où | Lancer |
+|---|---|---|
+| **Agent de bout en bout** — l'agent produit-il un bon rapport ? | `tests/run_golden.py` + `tests/golden_fonds_v1.yaml` | `python tests/run_golden.py` |
+| **Récupération du moteur** — le RAG ramène-t-il les bons passages ? | `tests/rag_eval/` + `tests/golden/` + `tests/eval*.yaml` | voir ci-dessous |
+
+```bash
+# Métriques retrieval — corpus droit (rapide, sans LLM)
+python -m tests.rag_eval.run --config tests/eval.yaml
+# Métriques retrieval — corpus finance
+python -m tests.rag_eval.run --config tests/eval_finance.yaml
+# Comparatif des stacks (dense / hybrid / +reranker)
+python -m tests.rag_eval.compare --config tests/eval.yaml --output compare_report.md
+```
+
+> Une config d'éval par dataset (`eval.yaml` = droit, `eval_finance.yaml` = finance) :
+> on évalue chaque collection séparément — jamais combinées.

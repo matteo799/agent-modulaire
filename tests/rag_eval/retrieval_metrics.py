@@ -22,7 +22,7 @@ import time
 
 from pydantic import BaseModel, Field
 
-from rag.evaluation.golden import GoldenItem, GoldenSet
+from .golden import GoldenItem, GoldenSet
 from rag.interfaces import Retriever, SearchHit
 
 
