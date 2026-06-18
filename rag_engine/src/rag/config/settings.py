@@ -66,6 +66,17 @@ class LMStudioSettings(BaseModel):
     timeout_s: float = 120.0
 
 
+class OpenAISettings(BaseModel):
+    """API OpenAI ou toute passerelle compatible (ex. meai.cloud servant Claude)."""
+
+    base_url: str = "https://api.openai.com/v1"
+    model: str = "gpt-4o-mini"
+    # JAMAIS en clair dans la config versionnée. Renseignée par la variable
+    # d'env `RAG__LLM__OPENAI__API_KEY` (ou un `.env` gitignoré).
+    api_key: str = ""
+    timeout_s: float = 120.0
+
+
 class LLMSettings(BaseModel):
     provider: Literal["ollama", "vllm", "openai", "lmstudio"] = "ollama"
     temperature: float = 0.0  # we want determinism on a RAG, not creativity
@@ -73,6 +84,7 @@ class LLMSettings(BaseModel):
     ollama: OllamaSettings = OllamaSettings()
     vllm: VLLMSettings = VLLMSettings()
     lmstudio: LMStudioSettings = LMStudioSettings()
+    openai: OpenAISettings = OpenAISettings()
 
 
 class RerankerSettings(BaseModel):
@@ -188,15 +200,37 @@ def _apply_env_overrides(
         cur[path[-1]] = value
 
 
+def _load_dotenv(path: Path = Path(".env")) -> None:
+    """Injecte les paires `KEY=VALUE` d'un `.env` dans os.environ (sans écraser
+    une variable déjà définie). Sert à garder les secrets (clés API) hors de la
+    config versionnée : `_apply_env_overrides` les reprend ensuite normalement.
+
+    Volontairement minimal (pas de python-dotenv) : lignes `KEY=VALUE`, `#`
+    commentaires et lignes vides ignorées, guillemets optionnels retirés.
+    """
+    if not path.exists():
+        return
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
 def load_settings(configs_dir: Path | str = "configs") -> Settings:
-    """Charge `default.yaml` + `{env}.yaml` + env vars, dans cet ordre.
+    """Charge `.env` + `default.yaml` + `{env}.yaml` + env vars, dans cet ordre.
 
     Priorité finale (du plus fort au plus faible) :
-    1. env vars `RAG__SECTION__KEY`
+    1. env vars `RAG__SECTION__KEY` (un `.env` du cwd les pré-remplit)
     2. `configs/{env}.yaml`
     3. `configs/default.yaml`
     4. defaults pydantic
     """
+    _load_dotenv()
     configs_dir = Path(configs_dir)
     env = os.getenv("RAG__ENV", "dev")
 
