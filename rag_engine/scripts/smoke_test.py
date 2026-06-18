@@ -14,7 +14,7 @@ Usage :
 Sortie : par question, top-k chunks avec source + page + extrait + score.
 Pas d'appel LLM, pas besoin qu'Ollama tourne. Si ce script remonte des
 extraits qui ont l'air pertinents, ton retrieval marche → tu peux passer
-à `make run-api` et tester `/query` avec Ollama.
+à lancer l'API (`uvicorn rag.api.app:app`) et tester `/query` avec Ollama.
 
 Si ça plante au chargement de l'embedder (premier run) : c'est BGE-M3
 qui se télécharge depuis HuggingFace (~2 Go). Ça prend une fois.
@@ -87,7 +87,7 @@ def main(argv: list[str] | None = None) -> int:
     repo_root = Path(__file__).resolve().parent.parent
     if not (repo_root / "data" / "parents.sqlite").is_file():
         print(
-            "ERREUR : data/parents.sqlite introuvable. " "Lance `make ingest` avant ce smoke test.",
+            "ERREUR : data/parents.sqlite introuvable. " "Lance `python -m rag.ingestion.cli` avant ce smoke test.",
             flush=True,
         )
         return 2

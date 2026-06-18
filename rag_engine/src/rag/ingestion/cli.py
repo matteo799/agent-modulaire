@@ -1,4 +1,4 @@
-"""CLI for ingestion. Wired into `make ingest` and `python -m rag.ingestion.cli`.
+"""CLI for ingestion. Run with `python -m rag.ingestion.cli` (or `scripts/ingest.py`).
 
 We use Typer because we already depend on it and it gives us help text, typed
 options, and `--help` for free. Stays a thin shell over `pipeline.ingest_directory`.

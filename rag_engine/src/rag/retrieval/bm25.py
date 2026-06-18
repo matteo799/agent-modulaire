@@ -1,10 +1,10 @@
 """BM25Retriever — index lexical en mémoire (rank_bm25).
 
-Pourquoi BM25 à côté du dense : sur ce domaine (armement / nucléaire), les
-documents sont saturés de sigles techniques (« HEU », « LEU », « NPT »,
-« ZACEE ») et d'identifiants numériques. Un encodeur sémantique a tendance
-à diluer ces tokens rares ; un sac-de-mots classique les pondère bien (idf
-élevé). En hybride RRF (M3.3), le dense et le BM25 se complètent.
+Pourquoi BM25 à côté du dense : les corpus visés (finance, droit) sont saturés
+de sigles techniques (« SCPI », « FCPI », « FCPE », « SFDR », « SRI ») et
+d'identifiants (codes ISIN). Un encodeur sémantique a tendance à diluer ces
+tokens rares ; un sac-de-mots classique les pondère bien (idf élevé). En
+hybride RRF (M3.3), le dense et le BM25 se complètent.
 
 Choix d'implémentation :
 
@@ -13,7 +13,7 @@ Choix d'implémentation :
   à 10⁵ chunks tiennent en mémoire). Migration future : un index sur disque
   (BM25 dans Tantivy / Lucene) sans changer l'interface.
 - tokenisation maison ultra-simple : lowercase + split sur non-alphanumérique.
-  On ne stoppe pas les short tokens (« HEU » ferait 3 lettres) et on ne
+  On ne stoppe pas les short tokens (« SRI » ferait 3 lettres) et on ne
   stemise pas (perte d'information sur les acronymes). Tests en M3.2 valident
   qu'un sigle remonte.
 - normalisation des scores : on divise par le score max du top-k pour rester

@@ -8,7 +8,7 @@ description: |
 
   27 questions in-corpus + 3 hors-corpus.
   Les chunk IDs sont les IDs PARENTS retournés par le ParentChildRetriever
-  (stack dense + reranker) sur le corpus réel de data/raw/finance/.
+  (stack dense + reranker) sur le corpus réel de documents/finance/.
 
   Convention : gsf1-<nn>-<slug>
 

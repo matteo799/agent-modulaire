@@ -166,7 +166,7 @@ _RERANKER_SKIPPED_NOTE = """\
 > ou des temps de chargement de plusieurs minutes en mode CPU.
 > Pour exécuter les stacks `+reranker`, utiliser une machine avec au
 > moins 16 Go de RAM ou un GPU dédié (CUDA), et passer :
->     `RAG__RERANKER__ENABLED=true make eval-compare`
+>     `RAG__RERANKER__ENABLED=true python -m rag.evaluation.compare --config configs/eval.yaml`
 """
 
 
@@ -182,8 +182,8 @@ def _build_compare_report(
         "",
         "> **Note CRAG** : CRAG vs RAG simple partagent le même retriever et",
         "> donneraient des métriques retrieval **identiques**. Pour évaluer la",
-        "> qualité de génération (faithfulness, answer relevancy), lancer `make eval-full`",
-        "> avec Ollama up.",
+        "> qualité de génération (faithfulness, answer relevancy), activer `ragas.enabled`",
+        "> dans la config d'éval et relancer `python -m rag.evaluation.run` avec Ollama up.",
         "",
     ]
 

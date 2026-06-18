@@ -129,7 +129,7 @@ def main(argv: list[str] | None = None) -> int:
     repo_root = Path(__file__).resolve().parent.parent
     if not (repo_root / "data" / "parents.sqlite").is_file():
         print(
-            "ERREUR : data/parents.sqlite introuvable. Lance `make ingest` d'abord.",
+            "ERREUR : data/parents.sqlite introuvable. Lance `python -m rag.ingestion.cli` d'abord.",
             file=sys.stderr,
         )
         return 2

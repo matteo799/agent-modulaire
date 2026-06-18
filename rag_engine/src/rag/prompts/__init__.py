@@ -12,7 +12,7 @@ Pourquoi Jinja2 et pas autre chose :
 
 Utilisation :
     from rag.prompts import render
-    prompt = render("grade_documents", query="HEU", doc="Le HEU est…")
+    prompt = render("grade_documents", query="SCPI", doc="La SCPI investit dans…")
 """
 
 from __future__ import annotations

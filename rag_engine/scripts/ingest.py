@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Thin entry point so `python scripts/ingest.py --help` and the Makefile cible
-`make ingest` both work without remembering the module path.
+"""Thin entry point so `python scripts/ingest.py --help` works without
+remembering the module path (équivalent à `python -m rag.ingestion.cli`).
 """
 
 from __future__ import annotations
