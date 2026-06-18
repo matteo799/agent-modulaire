@@ -11,6 +11,7 @@ benchmarking. C'est un script de validation, pas un produit.
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
 
 import yaml
@@ -134,6 +135,9 @@ def run(config: EvalConfig, *, golden: GoldenSet | None = None) -> tuple[str, li
 
 
 def main(argv: list[str] | None = None) -> int:
+    # Éval = modèle économe par défaut (n'a d'effet que si RAGAS est activé ;
+    # les métriques retrieval ne touchent pas le LLM). Surchargeable par env.
+    os.environ.setdefault("RAG__LLM__OPENAI__MODEL", "claude-haiku-4-5")
     parser = argparse.ArgumentParser(prog="tests.rag_eval.run")
     parser.add_argument(
         "--config",

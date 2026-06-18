@@ -1,4 +1,4 @@
-# Mini Deep Agent local (Ollama)
+# Mini Deep Agent
 
 Un agent minimal qui transforme un RAG classique en système agentique :
 le LLM planifie, choisit ses outils, exécute en boucle, garde une mémoire
@@ -20,7 +20,7 @@ Synthèse finale → workspace/rapport.md
 
 | Fichier | Rôle |
 |---|---|
-| `agent/llm.py` | Accès à Ollama (chat, chat JSON, embeddings) |
+| `agent/llm.py` | Accès au LLM configuré (chat, chat JSON) — même provider que le moteur (Claude par défaut) |
 | `agent/planner.py` | Étape 1 — décompose la tâche en plan |
 | `agent/tools.py` | Étapes 2-3 — registre d'outils (`TOOLS`) |
 | `agent/rag.py` | Étape 7 — le RAG est un outil parmi d'autres |
@@ -38,12 +38,13 @@ Synthèse finale → workspace/rapport.md
 
 ## Prérequis
 
-- **LLM du moteur RAG** : par défaut Claude via la passerelle OpenAI-compatible
-  meai.cloud (`provider: openai` dans `rag_engine/configs/default.yaml`). La clé se
-  met dans un `.env` gitignoré (`RAG__LLM__OPENAI__API_KEY=…`), jamais dans la config.
-  Pour du 100 % local, basculer `provider: ollama`.
-- [Ollama](https://ollama.com) lancé localement pour **l'agent** (`ollama pull qwen2.5:7b`)
-  — et pour le moteur si tu choisis le mode local (`mistral:7b-instruct`).
+- **LLM (agent ET moteur)** : par défaut Claude via la passerelle OpenAI-compatible
+  meai.cloud (`provider: openai` dans `rag_engine/configs/default.yaml`, modèle
+  `claude-sonnet-4-6`). L'agent et le moteur partagent ce réglage. La clé se met dans
+  un `.env` gitignoré (`RAG__LLM__OPENAI__API_KEY=…`), jamais dans la config.
+  Les passes d'éval forcent `claude-haiku-4-5` (économe).
+- **Mode 100 % local** (optionnel) : basculer `provider: ollama` + lancer
+  [Ollama](https://ollama.com) (`ollama pull qwen2.5:7b` / `mistral:7b-instruct`).
 - Python ≥ 3.11, le moteur RAG installé en éditable : `pip install -e ./rag_engine`
   (tire les dépendances de récupération : bge-m3, reranker, Qdrant)
 
