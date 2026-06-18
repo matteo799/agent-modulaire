@@ -247,7 +247,7 @@ def make_rewrite_query_node(llm: LLMClient) -> NodeFn:
 
     def rewrite_query_node(state: CRAGState) -> dict[str, Any]:
         prompt = render("rewrite_query", query=state.query)
-        raw = llm.generate(prompt, max_tokens=128)
+        raw = llm.generate(prompt, max_tokens=200)
         rewritten = _clean_rewrite_output(raw)
         # Garde-fou : si la sortie LLM est vide, on ne casse pas la query.
         if not rewritten:
