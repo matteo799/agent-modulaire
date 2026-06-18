@@ -20,7 +20,7 @@ citation:
 
 ragas:
   # Off par défaut : RAGAS coûte cher (1 appel LLM par métrique par item).
-  # On l'active uniquement lors des passes longues (`make eval-full`).
+  # On l'active uniquement lors des passes longues (RAGAS activé, Ollama up).
   enabled: false
   thresholds:
     faithfulness: 0.65

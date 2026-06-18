@@ -14,13 +14,20 @@
 - **On-prem ready** : embeddings et LLM open-weights, pas d'appel cloud obligatoire.
 - **Petites PRs** : workflow pensé pour un dev assisté par Claude — quand un test casse, on sait quelle PR blâmer.
 
-## Documents à lire en premier
+## Où trouver quoi
 
-1. [`CLAUDE.md`](CLAUDE.md) — mémoire projet, chargée automatiquement par Claude Code.
-2. [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — vision globale, choix techniques, particularités du domaine.
-3. [`docs/ROADMAP.md`](docs/ROADMAP.md) — version détaillée et chiffrée de la roadmap ci-dessous.
-4. [`docs/adr/0001-parent-child-crag.md`](docs/adr/0001-parent-child-crag.md) — pourquoi Parent-Child + CRAG.
-5. [`CONTRIBUTING.md`](CONTRIBUTING.md) — workflow Git / PR.
+| Besoin | Fichier |
+|---|---|
+| **Choisir les modèles** (LLM, embeddings, reranker) | [`configs/default.yaml`](configs/default.yaml) (sections `llm`, `embedder`, `reranker`) |
+| **Paramètres RAG** (retrieval, reranker, CRAG) | [`configs/default.yaml`](configs/default.yaml) (sections `retrieval`, `crag`) |
+| **Schéma typé + valeurs par défaut commentées** | [`src/rag/config/settings.py`](src/rag/config/settings.py) — la référence des paramètres |
+| **Questions d'évaluation** (golden sets) | [`tests/fixtures/golden/`](tests/fixtures/golden/) — `golden_v1.yaml` (droit), `golden_finance_v1.yaml` (finance) |
+| **Vue d'ensemble du code** | section [Structure du repo](#structure-du-repo) plus bas |
+| **Intégration dans l'agent Harness** | le `README.md` à la racine du dépôt + `agent/rag.py` |
+
+> Ce moteur est **rapatrié comme module** dans le dépôt Harness : pas de `docs/`,
+> de `Makefile` ni de `.env.example` ici — la configuration passe par les fichiers
+> YAML de `configs/` et les variables d'environnement `RAG__SECTION__CLE`.
 
 ## Architecture en 30 secondes
 
@@ -47,10 +54,10 @@ Question → Retrieve (Hybrid + ParentChild + Rerank)
 
 ## Roadmap — la marche à suivre pour construire ce RAG
 
-Coche les cases au fur et à mesure. Chaque ligne = **une issue GitHub** = **une PR**.
-Pour le détail (sortie attendue, taille estimée), voir [`docs/ROADMAP.md`](docs/ROADMAP.md).
+Journal de construction du moteur, conservé comme historique des milestones
+(chaque ligne correspondait à une PR du repo d'origine).
 
-### Étape 0 — Squelette du repo (objectif : `make test` passe sur un repo vide mais cohérent)
+### Étape 0 — Squelette du repo (objectif : `pytest` passe sur un repo vide mais cohérent)
 
 - [x] **M0.1** Init repo + `pyproject.toml` + `.gitignore` + `.env.example`
 - [x] **M0.2** Ajouter `ruff`, `mypy`, `pre-commit` + hooks
@@ -142,21 +149,19 @@ Pour le détail (sortie attendue, taille estimée), voir [`docs/ROADMAP.md`](doc
 ## Quickstart
 
 ```bash
-# 1. Cloner et installer
-git clone git@github.com:matteo799/rag-defense.git
-cd rag-defense
-python -m venv .venv && source .venv/bin/activate
-make install-dev
+# 1. Installer le moteur (rapatrié dans Harness) en éditable, depuis la racine du dépôt
+pip install -e ./rag_engine          # extras : .[dev], .[qdrant]… selon besoin
 
 # 2. Configurer
-cp .env.example .env       # par défaut : Qdrant local embarqué + Ollama local
+# Aucun .env requis : défauts dans configs/default.yaml (Qdrant local embarqué +
+# Ollama local). Surcharge ponctuelle via variables d'env RAG__SECTION__CLE.
 
 # 3. Lancer Ollama (autre terminal)
 ollama serve
 ollama pull mistral:7b-instruct
 
-# 4. Lancer l'API
-make run-api
+# 4. Lancer l'API (depuis rag_engine/)
+uvicorn rag.api.app:app --host 127.0.0.1 --port 8000
 
 # 5. Ingérer un PDF — deux options équivalentes
 #    via CLI (source unique : documents/<dataset> à la racine du dépôt) :
@@ -171,12 +176,12 @@ curl -X POST http://localhost:8000/ingest \
 # 6. Poser une question (réponse synchrone, citée)
 curl -X POST http://localhost:8000/query \
   -H "Content-Type: application/json" \
-  -d '{"question": "Quelle est la demi-vie du tritium ?"}'
+  -d '{"question": "Quelle est la politique de distribution des revenus du produit SCPI ?"}'
 
 # 7. Ou en streaming (Server-Sent Events)
 curl -N -X POST http://localhost:8000/query/stream \
   -H "Content-Type: application/json" \
-  -d '{"question": "Qu'\''est-ce que le HEU ?"}'
+  -d '{"question": "Quels indicateurs de performance passée figurent dans le DIC ?"}'
 
 # 8. Probes santé
 curl http://localhost:8000/healthz   # process vivant
@@ -199,40 +204,40 @@ src/rag/
   graph/               # Nœuds LangGraph du CRAG
   generation/          # Prompts + post-processing (citations, grounding)
   evaluation/          # Golden set + RAGAS + métriques custom
-  api/                 # FastAPI + CLI
+  api/                 # FastAPI (routers query / search / ingest / health)
   prompts/             # Templates Jinja2 versionnés
-configs/               # YAML par environnement
-docs/                  # ARCHITECTURE, ROADMAP, ADRs
-tests/                 # unit/, integration/, fixtures/
+configs/               # YAML par environnement (default / prod / eval / eval_finance)
+tests/                 # fixtures/golden + tests
 ```
 
 ## Statut
 
-Milestones terminés : **M0 → M6, M7 (partiel — M7.1/M7.4/M7.5 ✓, M7.2/M7.3 restants)**.
+Milestones terminés : **M0 → M6, M7 (partiel — M7.1/M7.4/M7.5 ✓, M7.2 restant)**.
 Prochaine étape : **M8** (qualité : parser tableaux, glossaire domaine, query routing).
-Voir la roadmap ci-dessus et `docs/ROADMAP.md` pour le détail.
+Voir la roadmap ci-dessus pour le détail.
 
 ### Évaluation
 
 ```bash
+# (depuis rag_engine/)
+
 # Métriques retrieval — corpus juridique (rapide, pas de LLM)
-make eval
+python -m rag.evaluation.run --config configs/eval.yaml
 
 # Métriques retrieval — corpus financier (SCPI / FCPI / FCPE)
-make eval-finance
+python -m rag.evaluation.run --config configs/eval_finance.yaml
 
 # Comparatif toutes stacks (dense / hybrid / +reranker) — corpus juridique
-make eval-compare            # → compare_report.md
+python -m rag.evaluation.compare --config configs/eval.yaml --output compare_report.md
 
 # Comparatif toutes stacks — corpus financier
-make eval-compare-finance    # → eval_report_finance.md
+python -m rag.evaluation.compare --config configs/eval_finance.yaml --output eval_report_finance.md
 
 # Tracer un run dans Langfuse (local)
-make langfuse-up                 # docker-compose up
 export RAG__OBSERVABILITY__LANGFUSE_ENABLED=true
 export LANGFUSE_PUBLIC_KEY=…     # depuis http://localhost:3000
 export LANGFUSE_SECRET_KEY=…
-make run-api
+uvicorn rag.api.app:app --host 127.0.0.1 --port 8000
 ```
 
 Résultats actuels (corpus financier, 30 questions, k=5) :
