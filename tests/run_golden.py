@@ -19,11 +19,17 @@ Il n'y a pas de notation automatique (le système est non déterministe et les
 réponses-types décrivent un critère, pas une chaîne exacte) : la comparaison
 attendu / obtenu se fait à l'œil dans le rapport.
 """
+import os
 import sys
 import time
 from pathlib import Path
 
 import yaml
+
+# Éval = beaucoup d'appels LLM → on force un modèle économe (Claude Haiku) par
+# défaut, avant tout import qui construirait le client LLM. Surchargeable :
+# `RAG__LLM__OPENAI__MODEL=claude-opus-4-8 python tests/run_golden.py`.
+os.environ.setdefault("RAG__LLM__OPENAI__MODEL", "claude-haiku-4-5")
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
