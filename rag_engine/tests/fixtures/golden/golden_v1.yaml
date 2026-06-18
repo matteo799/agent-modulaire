@@ -1,0 +1,450 @@
+version: "v1.0"
+description: |
+  Golden set couvrant le corpus de cours de droit (pénal spécial,
+  procédure civile, droit public des affaires). 30 questions réparties
+  sur les trois sources, plus 3 questions hors-corpus pour tester le
+  fallback. Les chunk IDs correspondent aux vrais identifiants issus
+  de l'ingestion du corpus réel.
+
+  Convention d'ID : gs1-<nn>-<slug>  (triable, stable entre runs)
+
+# ─────────────────────────────────────────────────────────────
+#  PÉNAL SPÉCIAL  (penal-special.pdf)  — questions 01-13
+# ─────────────────────────────────────────────────────────────
+items:
+  - id: gs1-01-vol-elements
+    question: "Quels sont les éléments constitutifs du vol ?"
+    expected_answer: |
+      Le vol est défini par l'article 311-1 du Code pénal comme la soustraction
+      frauduleuse de la chose d'autrui. Il requiert trois éléments : un acte
+      matériel de soustraction, une chose appartenant à autrui (élément réel),
+      et un élément moral consistant en une intention frauduleuse de s'approprier
+      la chose sans consentement du propriétaire.
+    expected_chunk_ids:
+      - "35c924fc1ae6c6c5"
+      - "531b8185b0f6336c"
+      - "013a49866787213a"
+    expected_source_files: ["penal-special.pdf"]
+    tags: [penal-special, definition, elements-constitutifs, vol]
+
+  - id: gs1-02-vol-aggravant
+    question: "Dans quels cas le vol est-il aggravé ?"
+    expected_answer: |
+      Le vol est aggravé lorsqu'il est commis avec certaines circonstances :
+      en réunion, avec usage ou menace d'une arme, avec violences sur la victime,
+      par effraction, escalade ou fausses clés, ou encore lorsqu'il vise des
+      personnes vulnérables. Les peines passent alors de 3 ans (vol simple)
+      jusqu'à 20 ans de réclusion criminelle pour les formes les plus graves.
+    expected_chunk_ids:
+      - "531b8185b0f6336c"
+      - "013a49866787213a"
+    expected_source_files: ["penal-special.pdf"]
+    tags: [penal-special, aggravation, vol]
+
+  - id: gs1-03-meurtre-assassinat
+    question: "Quelle est la distinction entre meurtre et assassinat ?"
+    expected_answer: |
+      Le meurtre (art. 221-1 CP) est le fait de donner volontairement la mort
+      à autrui, punissable de 30 ans de réclusion criminelle. L'assassinat
+      (art. 221-3 CP) est le meurtre commis avec préméditation ou guet-apens ;
+      il est punissable de la réclusion criminelle à perpétuité. La préméditation
+      — dessein formé avant l'action — est l'élément distinctif décisif.
+    expected_chunk_ids:
+      - "3c1390649aa252dc"
+      - "3c863609bcd070b3"
+    expected_source_files: ["penal-special.pdf"]
+    tags: [penal-special, definition, distinction, meurtre, assassinat]
+
+  - id: gs1-04-viol-definition
+    question: "Comment le droit pénal définit-il le viol ?"
+    expected_answer: |
+      Selon l'article 222-23 du Code pénal, le viol est tout acte de pénétration
+      sexuelle de quelque nature qu'il soit commis sur la personne d'autrui par
+      violence, contrainte, menace ou surprise. L'absence de consentement est
+      l'élément central. Il est puni de 15 ans de réclusion criminelle, peine
+      pouvant être aggravée par diverses circonstances (victime mineure, auteur
+      ayant autorité, pluralité d'auteurs, etc.).
+    expected_chunk_ids:
+      - "67c6f3b752effcc3"
+      - "cec9e3c0c58e1bf5"
+    expected_source_files: ["penal-special.pdf"]
+    tags: [penal-special, definition, viol, agression-sexuelle]
+
+  - id: gs1-05-violences-formes
+    question: "Quelles sont les différentes formes de violences volontaires pénalement réprimées ?"
+    expected_answer: |
+      Les violences volontaires sont classifiées selon leur résultat. Les violences
+      ayant entraîné la mort sans intention de la donner (art. 222-7), celles ayant
+      causé une mutilation ou infirmité permanente (art. 222-9), celles ayant causé
+      une ITT supérieure à 8 jours (art. 222-11), et celles n'ayant entraîné aucune
+      ITT (art. 222-13). Chaque catégorie est assortie d'un régime de peines distinct
+      et de circonstances aggravantes propres.
+    expected_chunk_ids:
+      - "21a2ab70b8ca1233"
+      - "0f2f9afe863fca20"
+      - "2863b68c1996b177"
+    expected_source_files: ["penal-special.pdf"]
+    tags: [penal-special, definition, violences, classification]
+
+  - id: gs1-06-recel-elements
+    question: "Quels sont les éléments constitutifs du recel ?"
+    expected_answer: |
+      Le recel (art. 321-1 CP) consiste à dissimuler, détenir ou transmettre une
+      chose que l'on sait provenir d'un crime ou délit, ou à bénéficier de cette
+      chose. L'élément matériel peut être une détention, une dissimulation ou un
+      bénéfice. L'élément moral est la connaissance de l'origine délictueuse du bien.
+      C'est une infraction de conséquence : elle suppose l'existence d'une infraction
+      préalable dont le bien est le produit.
+    expected_chunk_ids:
+      - "fa29c9811a4429a9"
+      - "7f33d359158fbbe0"
+    expected_source_files: ["penal-special.pdf"]
+    tags: [penal-special, definition, elements-constitutifs, recel]
+
+  - id: gs1-07-abus-confiance
+    question: "Comment se caractérise l'abus de confiance ?"
+    expected_answer: |
+      L'abus de confiance (art. 314-1 CP) est le fait par une personne de détourner,
+      au préjudice d'autrui, des fonds, valeurs ou un bien quelconque qui lui ont été
+      remis et qu'elle a acceptés à charge de les rendre, de les représenter ou d'en
+      faire un usage déterminé. Il implique une remise préalable consentie, un
+      détournement de l'objet remis, et un préjudice causé au remettant.
+    expected_chunk_ids:
+      - "6e882bb1af6f9342"
+      - "7aa1c55102d85eb6"
+    expected_source_files: ["penal-special.pdf"]
+    tags: [penal-special, definition, elements-constitutifs, abus-de-confiance]
+
+  - id: gs1-08-escroquerie
+    question: "Quelles sont les manœuvres constitutives de l'escroquerie ?"
+    expected_answer: |
+      L'escroquerie (art. 313-1 CP) consiste à tromper une personne par l'usage
+      d'un faux nom ou d'une fausse qualité, par l'abus d'une qualité vraie, ou
+      par des manœuvres frauduleuses. Ces tromperies doivent avoir conduit la victime
+      à remettre des fonds, valeurs ou biens. La manœuvre frauduleuse se distingue
+      du simple mensonge par un acte extérieur venant corroborer la tromperie.
+    expected_chunk_ids:
+      - "81ab1b35a1e494ba"
+    expected_source_files: ["penal-special.pdf"]
+    tags: [penal-special, definition, elements-constitutifs, escroquerie]
+
+  - id: gs1-09-chantage
+    question: "En quoi consiste l'infraction de chantage ?"
+    expected_answer: |
+      Le chantage (art. 312-10 CP) est le fait d'obtenir, en menaçant de révéler
+      ou d'imputer des faits de nature à porter atteinte à l'honneur ou à la
+      considération, soit une signature, un engagement ou une renonciation, soit la
+      révélation d'un secret, soit la remise de fonds, valeurs ou biens. Il se
+      distingue de l'extorsion car la menace porte sur la divulgation d'informations
+      compromettantes et non sur la violence physique.
+    expected_chunk_ids:
+      - "1a05abc491e4710c"
+    expected_source_files: ["penal-special.pdf"]
+    tags: [penal-special, definition, chantage, distinction]
+
+  - id: gs1-10-faux-usage-faux
+    question: "Quelle est la différence entre le faux et l'usage de faux ?"
+    expected_answer: |
+      Le faux (art. 441-1 CP) est la falsification frauduleuse d'un document de
+      nature à causer un préjudice. L'usage de faux (art. 441-1 al. 2) consiste
+      à utiliser sciemment un document falsifié. Les deux infractions sont autonomes :
+      l'auteur du faux qui en fait ensuite usage commet deux infractions distinctes.
+      L'usage de faux peut être commis par une personne qui n'a pas réalisé la
+      falsification elle-même.
+    expected_chunk_ids:
+      - "7e407ae4d4b74b30"
+      - "a73e6f55e4b07c4f"
+    expected_source_files: ["penal-special.pdf"]
+    tags: [penal-special, definition, distinction, faux, usage-de-faux]
+
+  - id: gs1-11-homicide-involontaire
+    question: "Quelles conditions caractérisent l'homicide involontaire ?"
+    expected_answer: |
+      L'homicide involontaire (art. 221-6 CP) suppose la mort d'une personne causée
+      par maladresse, imprudence, inattention, négligence ou manquement à une
+      obligation de prudence ou de sécurité imposée par la loi ou le règlement.
+      L'absence d'intention homicide le distingue du meurtre. La faute caractérisée
+      ou délibérée aggrave la qualification et les peines.
+    expected_chunk_ids:
+      - "3c229aa84da705ea"
+      - "794f2b43847a9265"
+    expected_source_files: ["penal-special.pdf"]
+    tags: [penal-special, definition, elements-constitutifs, homicide-involontaire]
+
+  - id: gs1-12-infraction-materielle-formelle
+    question: "Quelle est la distinction entre infraction matérielle et infraction formelle ?"
+    expected_answer: |
+      L'infraction matérielle (ou de résultat) est consommée par la réalisation
+      du résultat dommageable : le résultat fait partie de l'élément matériel
+      (ex. : homicide volontaire). L'infraction formelle est consommée par
+      l'accomplissement du comportement lui-même, indépendamment de tout résultat
+      (ex. : empoisonnement, association de malfaiteurs). Cette distinction influe
+      sur le moment de consommation et les possibilités de tentative punissable.
+    expected_chunk_ids:
+      - "853c4a2c9de4bdc2"
+    expected_source_files: ["penal-special.pdf"]
+    tags: [penal-special, definition, distinction, classification]
+
+  - id: gs1-13-vol-recel-distinction
+    question: "Quelle frontière distingue le vol du recel ?"
+    expected_answer: |
+      Le vol implique une soustraction frauduleuse commise par l'auteur lui-même,
+      qui prend la chose sans consentement du propriétaire. Le recel suppose en
+      revanche une infraction préalable commise par un tiers, dont le receleur
+      bénéficie en détenant, dissimulant ou transmettant le produit. Le receleur
+      ne commet donc pas l'infraction d'origine mais en exploite le résultat.
+    expected_chunk_ids:
+      - "35c924fc1ae6c6c5"
+      - "fa29c9811a4429a9"
+    expected_source_files: ["penal-special.pdf"]
+    tags: [penal-special, distinction, vol, recel]
+
+# ─────────────────────────────────────────────────────────────
+#  PROCÉDURE CIVILE  (procedure-civile.pdf)  — questions 14-24
+# ─────────────────────────────────────────────────────────────
+
+  - id: gs1-14-procedure-civile-principes
+    question: "Quels sont les principes directeurs de la procédure civile ?"
+    expected_answer: |
+      Les principes directeurs du procès civil sont posés aux articles 1 à 24
+      du Code de procédure civile. Ils comprennent notamment le principe
+      dispositif (les parties maîtrisent l'objet du litige), le principe du
+      contradictoire (chaque partie doit pouvoir discuter les prétentions et
+      moyens adverses), l'obligation de loyauté procédurale, et le rôle du
+      juge qui doit trancher conformément aux règles de droit et veiller au
+      bon déroulement de l'instance.
+    expected_chunk_ids:
+      - "4837a55770e15059"
+      - "f0e0ddc0baf25cad"
+    expected_source_files: ["procedure-civile.pdf"]
+    tags: [procedure-civile, definition, principes-directeurs]
+
+  - id: gs1-15-competence-territoriale
+    question: "Comment se détermine la compétence territoriale en matière civile ?"
+    expected_answer: |
+      En matière civile, la règle générale est que le tribunal compétent est celui
+      du lieu du domicile du défendeur (art. 42 CPC). Des règles spéciales dérogent
+      à ce principe selon la nature du litige : en matière contractuelle, le tribunal
+      du lieu de livraison ou d'exécution ; en matière délictuelle, le tribunal du
+      lieu du dommage ou du fait générateur ; en matière immobilière, le tribunal
+      de la situation de l'immeuble.
+    expected_chunk_ids:
+      - "6d94867a42af7a62"
+      - "564bfa2d4df1bb31"
+    expected_source_files: ["procedure-civile.pdf"]
+    tags: [procedure-civile, competence, territoire]
+
+  - id: gs1-16-mise-en-etat
+    question: "Quel est le rôle du juge de la mise en état ?"
+    expected_answer: |
+      Le juge de la mise en état (art. 780 et s. CPC) est chargé de veiller au
+      déroulement loyal de la procédure et d'assurer la mise en état de l'affaire
+      pour être jugée. Il peut ordonner toutes mesures d'instruction utiles,
+      impartir des délais pour conclure, statuer sur les exceptions de procédure
+      et les incidents. Il est seul compétent, jusqu'à son dessaisissement, pour
+      statuer sur les exceptions de procédure.
+    expected_chunk_ids:
+      - "1038539f66d60a4a"
+      - "fcb99a1a871651d0"
+    expected_source_files: ["procedure-civile.pdf"]
+    tags: [procedure-civile, mise-en-etat, juge]
+
+  - id: gs1-17-exception-incompetence
+    question: "Comment et quand doit-on soulever une exception d'incompétence ?"
+    expected_answer: |
+      L'exception d'incompétence doit être soulevée in limine litis, c'est-à-dire
+      avant toute défense au fond ou fin de non-recevoir (art. 74 CPC). À défaut,
+      elle est irrecevable. Elle doit être motivée et préciser la juridiction que
+      la partie considère compétente. Le juge saisi peut aussi relever d'office
+      son incompétence en matière d'ordre public (notamment pour les matières
+      relevant de la compétence exclusive d'une autre juridiction).
+    expected_chunk_ids:
+      - "07d533e9697a813a"
+      - "564bfa2d4df1bb31"
+      - "10d2b088ac00e8b6"
+    expected_source_files: ["procedure-civile.pdf"]
+    tags: [procedure-civile, exception-incompetence, in-limine-litis]
+
+  - id: gs1-18-litispendance
+    question: "Qu'est-ce que la litispendance en procédure civile ?"
+    expected_answer: |
+      La litispendance (art. 100 CPC) existe lorsque deux juridictions de même
+      degré et de même nature sont simultanément saisies du même litige entre les
+      mêmes parties. La juridiction saisie en second doit se dessaisir au profit
+      de celle saisie en premier. Elle diffère de la connexité en ce qu'elle
+      suppose une identité de parties, d'objet et de cause, et non une simple
+      relation entre instances.
+    expected_chunk_ids:
+      - "67d79dd492416f01"
+      - "005fd81d0c50c93a"
+    expected_source_files: ["procedure-civile.pdf"]
+    tags: [procedure-civile, litispendance, dessaisissement]
+
+  - id: gs1-19-connexite
+    question: "Qu'est-ce que la connexité entre instances ?"
+    expected_answer: |
+      La connexité (art. 101 CPC) permet à une juridiction de se dessaisir en
+      faveur d'une autre déjà saisie d'une affaire distincte mais liée, lorsqu'il
+      est d'une bonne administration de la justice de faire instruire et juger
+      simultanément les affaires connexes. Elle diffère de la litispendance car
+      les litiges ne sont pas identiques : il y a un lien entre eux qui justifie
+      leur jonction pour éviter des décisions contradictoires.
+    expected_chunk_ids:
+      - "f8011d07ef25ef80"
+      - "183a08c7a36de599"
+    expected_source_files: ["procedure-civile.pdf"]
+    tags: [procedure-civile, connexite, bonne-administration-justice]
+
+  - id: gs1-20-peremption-instance
+    question: "Quand l'instance est-elle périmée et quels en sont les effets ?"
+    expected_answer: |
+      L'instance est périmée lorsque les parties s'abstiennent d'accomplir les
+      diligences qui leur incombent pendant un délai de deux ans (art. 386 CPC).
+      La péremption éteint l'instance mais n'emporte pas extinction de l'action :
+      la partie peut recommencer une nouvelle instance si l'action n'est pas
+      prescrite. Elle peut être soulevée par les parties ou relevée d'office par
+      le juge.
+    expected_chunk_ids:
+      - "6dbf32e4370909ed"
+      - "afc7f94b82a5bd52"
+    expected_source_files: ["procedure-civile.pdf"]
+    tags: [procedure-civile, peremption, extinction-instance]
+
+  - id: gs1-21-appel-delai
+    question: "Quel est le délai pour interjeter appel d'un jugement civil ?"
+    expected_answer: |
+      Le délai d'appel de droit commun est d'un mois à compter de la signification
+      du jugement (art. 538 CPC). Ce délai est réduit à 15 jours pour les ordonnances
+      de référé. Il est de 15 jours aussi pour les ordonnances du juge de la mise en
+      état. L'expiration du délai d'appel emporte force de chose jugée. L'appel est
+      une voie de recours ordinaire suspensive d'exécution, sauf exécution provisoire.
+    expected_chunk_ids:
+      - "c2a9b0692e5245ef"
+      - "fca87c070514ceb9"
+      - "29a0a5cc6db0b368"
+    expected_source_files: ["procedure-civile.pdf"]
+    tags: [procedure-civile, appel, delai, voies-de-recours]
+
+  - id: gs1-22-principe-contradictoire
+    question: "En quoi consiste le principe du contradictoire ?"
+    expected_answer: |
+      Le principe du contradictoire (art. 14 à 17 CPC) impose que chaque partie
+      soit en mesure de discuter les prétentions, moyens et pièces produits par
+      l'adversaire. Le juge ne peut fonder sa décision sur des moyens de droit
+      ou des éléments de fait qu'il a lui-même relevés d'office sans avoir
+      préalablement invité les parties à présenter leurs observations. Ce principe
+      garantit une égalité des armes dans le débat judiciaire.
+    expected_chunk_ids:
+      - "b424bc5c9b3472cd"
+      - "3b5f32394e029a1c"
+    expected_source_files: ["procedure-civile.pdf"]
+    tags: [procedure-civile, contradictoire, principes-directeurs]
+
+  - id: gs1-23-fins-de-non-recevoir
+    question: "Qu'est-ce qu'une fin de non-recevoir ?"
+    expected_answer: |
+      Les fins de non-recevoir (art. 122 CPC) sont des moyens tendant à faire
+      déclarer l'adversaire irrecevable en sa demande, sans examen au fond, pour
+      défaut de droit d'agir. Les principales fins de non-recevoir sont le défaut
+      de qualité pour agir, le défaut d'intérêt, la prescription, le délai préfix
+      et l'autorité de la chose jugée. Elles peuvent être soulevées en tout état
+      de cause, sauf la possibilité de régularisation.
+    expected_chunk_ids:
+      - "36d8f075536c672e"
+      - "0fe2c9caf9b281c7"
+    expected_source_files: ["procedure-civile.pdf"]
+    tags: [procedure-civile, fins-de-non-recevoir, irrecevabilite]
+
+# ─────────────────────────────────────────────────────────────
+#  DROIT PUBLIC DES AFFAIRES  (dpa.pdf)  — questions 24-27
+# ─────────────────────────────────────────────────────────────
+
+  - id: gs1-24-dpa-definition
+    question: "Qu'est-ce que le droit public des affaires ?"
+    expected_answer: |
+      Le droit public des affaires désigne l'ensemble des règles de droit public
+      régissant les activités économiques et commerciales, notamment les relations
+      entre personnes publiques et opérateurs privés. Il articule la liberté
+      d'entreprendre et les interventions de la puissance publique dans l'économie,
+      incluant les marchés publics, les aides d'État, les concessions et la
+      régulation des activités économiques d'intérêt général.
+    expected_chunk_ids:
+      - "50d480983c1f83ce"
+    expected_source_files: ["dpa.pdf"]
+    tags: [dpa, definition, champ-application]
+
+  - id: gs1-25-dpa-liberte-commerce
+    question: "Quel est le contenu du principe de liberté du commerce et de l'industrie ?"
+    expected_answer: |
+      La liberté du commerce et de l'industrie, reconnue depuis le décret d'Allarde
+      de 1791, protège la liberté d'entreprendre une activité économique. Elle
+      s'oppose à l'intervention des personnes publiques dans la sphère économique
+      sans justification d'intérêt général. Toute intervention publique dans
+      l'activité commerciale doit respecter ce principe : elle n'est licite qu'en
+      présence d'une carence de l'initiative privée ou d'une nécessité d'intérêt
+      public particulière.
+    expected_chunk_ids:
+      - "f3845f0e2e3b5217"
+      - "e8a8d36fa786d185"
+    expected_source_files: ["dpa.pdf"]
+    tags: [dpa, liberte-commerce, intervention-publique]
+
+  - id: gs1-26-dpa-epic-spic
+    question: "Quelle est la distinction entre EPIC et SPIC ?"
+    expected_answer: |
+      Le SPIC (Service Public Industriel et Commercial) est une activité de service
+      public exercée dans des conditions similaires à celles d'une entreprise privée ;
+      il est soumis en grande partie au droit privé. L'EPIC (Établissement Public
+      Industriel et Commercial) est la personne morale de droit public qui gère
+      généralement un SPIC. La distinction SPIC/SPA conditionne le droit applicable :
+      le juge judiciaire est compétent pour les litiges du SPIC avec ses usagers
+      et ses agents non statutaires, tandis que le juge administratif l'est pour
+      la SPA.
+    expected_chunk_ids:
+      - "f8677ecb8dca83bb"
+      - "cb8c91b7c4db807b"
+      - "2f46cba9b08c3924"
+    expected_source_files: ["dpa.pdf"]
+    tags: [dpa, epic, spic, distinction, service-public]
+
+  - id: gs1-27-dpa-marches-publics
+    question: "Quelles sont les règles fondamentales encadrant la passation des marchés publics ?"
+    expected_answer: |
+      Les marchés publics sont soumis aux principes de liberté d'accès à la
+      commande publique, d'égalité de traitement des candidats et de transparence
+      des procédures. Ces principes, désormais consacrés par le Code de la commande
+      publique, s'imposent quelle que soit la procédure choisie. Au-dessus de seuils
+      fixés par voie réglementaire, des procédures formalisées s'appliquent (appel
+      d'offres, procédure concurrentielle avec négociation, dialogue compétitif).
+    expected_chunk_ids:
+      - "90027935c4d10310"
+    expected_source_files: ["dpa.pdf"]
+    tags: [dpa, marches-publics, commande-publique, principes]
+
+# ─────────────────────────────────────────────────────────────
+#  HORS-CORPUS (fallback)  — questions 28-30
+# ─────────────────────────────────────────────────────────────
+
+  - id: gs1-28-out-of-domain-tva
+    question: "Quel est le taux de TVA applicable au commerce en ligne en France ?"
+    expected_answer: |
+      Les documents fournis ne permettent pas de répondre à cette question.
+    expected_chunk_ids: []
+    expected_source_files: []
+    tags: [out-of-domain, fallback, fiscalite]
+
+  - id: gs1-29-out-of-domain-visa
+    question: "Comment obtenir un visa Schengen pour un séjour en France ?"
+    expected_answer: |
+      Les documents fournis ne permettent pas de répondre à cette question.
+    expected_chunk_ids: []
+    expected_source_files: []
+    tags: [out-of-domain, fallback, droit-des-etrangers]
+
+  - id: gs1-30-out-of-domain-droit-travail
+    question: "Quel est le montant du SMIC horaire brut en France ?"
+    expected_answer: |
+      Les documents fournis ne permettent pas de répondre à cette question.
+    expected_chunk_ids: []
+    expected_source_files: []
+    tags: [out-of-domain, fallback, droit-du-travail]

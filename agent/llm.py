@@ -5,7 +5,6 @@ import re
 import ollama
 
 MODEL = "qwen2.5:7b"
-EMBED_MODEL = "nomic-embed-text"
 
 
 def chat(prompt: str, system: str | None = None, json_mode: bool = False) -> str:
@@ -40,9 +39,3 @@ def chat_json(prompt: str, system: str | None = None, retries: int = 2):
         except (json.JSONDecodeError, ValueError) as exc:
             last_error = exc
     raise last_error
-
-
-def embed(texts: list[str]) -> list[list[float]]:
-    """Retourne les embeddings d'une liste de textes."""
-    response = ollama.embed(model=EMBED_MODEL, input=texts)
-    return response["embeddings"]

@@ -1,0 +1,31 @@
+# Configuration d'éval pour le corpus financier (SCPI / FCPI / FCPE).
+# Usage : python -m rag.evaluation.run --config configs/eval_finance.yaml
+#         python -m rag.evaluation.compare --config configs/eval_finance.yaml \
+#                 --output eval_report_finance.md
+
+golden_set: tests/fixtures/golden/golden_finance_v1.yaml
+
+retrieval:
+  k: 5
+  thresholds:
+    # Corpus financier : DIC courts (3 pages) → densité de chunks plus faible.
+    # Thresholds intentionnellement moins stricts qu'en droit pour ne pas
+    # pénaliser des questions légitimement difficiles sur des documents courts.
+    hit_rate: 0.40
+    mean_recall: 0.30
+    mrr: 0.25
+
+citation:
+  thresholds:
+    precision: 0.50
+    recall: 0.40
+    f1: 0.45
+
+ragas:
+  enabled: false
+  thresholds:
+    faithfulness: 0.60
+    answer_relevancy: 0.60
+
+report:
+  output: eval_report_finance.md

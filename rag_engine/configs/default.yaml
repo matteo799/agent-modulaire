@@ -1,0 +1,62 @@
+# Base configuration. Per-env files override selected keys.
+# Env vars (RAG__SECTION__KEY) override everything.
+
+env: dev
+data_dir: ./data
+
+vector_store:
+  provider: qdrant
+  # Une collection PAR dataset/projet — jamais combinées. Le moteur Q/R est
+  # modulaire : on le pointe sur la collection du projet via la variable
+  # d'env RAG__VECTOR_STORE__COLLECTION.
+  #   dataset_finance → prospectus finance (Q/R + tableau de résumé)
+  #   dataset_droit   → cours de droit
+  collection: dataset_finance
+  qdrant:
+    url: ""   # vide = mode local embarqué (./data/qdrant) ; sinon URL serveur
+
+embedder:
+  provider: sentence_transformers
+  model: BAAI/bge-m3
+  device: auto
+  batch_size: 32
+
+llm:
+  provider: ollama
+  temperature: 0.0
+  max_tokens: 1024
+  ollama:
+    base_url: http://localhost:11434
+    model: mistral:7b-instruct
+  lmstudio:
+    base_url: http://100.113.133.37:1234
+    model: "mistralai/ministral-3-3b"
+    timeout_s: 120.0
+
+reranker:
+  enabled: true
+  model: BAAI/bge-reranker-v2-m3
+  top_k: 5
+
+retrieval:
+  dense_k: 20
+  bm25_k: 20
+  hybrid_enabled: false  # true = dense + BM25 via RRF (nécessite bm25_corpus au démarrage)
+  hybrid_rrf_constant: 60
+  parent_neighbors: 0
+
+crag:
+  enabled: true          # false = RAG simple sans boucle corrective (ex. journalisme, finance)
+  max_iterations: 2
+  relevance_threshold: 0.5
+  ambiguous_threshold: 0.75
+  enable_grounding_check: true
+
+api:
+  host: 127.0.0.1
+  port: 8000
+
+observability:
+  log_level: INFO
+  log_queries: false
+  langfuse_enabled: false
