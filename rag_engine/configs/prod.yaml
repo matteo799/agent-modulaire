@@ -1,0 +1,14 @@
+# Production overrides. Switching vector store is a one-liner — that's the point.
+
+env: prod
+
+vector_store:
+  provider: qdrant
+
+llm:
+  provider: vllm
+
+observability:
+  log_level: WARNING
+  log_queries: false
+  langfuse_enabled: true

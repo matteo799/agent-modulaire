@@ -62,22 +62,37 @@ tourner sur une machine de bureau, assez bon pour suivre des consignes de
 format. Le modèle est une simple constante (`MODEL` dans `agent/llm.py`),
 donc interchangeable en une ligne.
 
-### `nomic-embed-text` pour les embeddings
+### Embeddings et récupération : délégués au moteur `rag_engine`
 
-Modèle d'embedding léger, dédié (séparé du modèle de chat), standard dans
-l'écosystème Ollama. Là aussi une constante (`EMBED_MODEL`).
+La version initiale portait son propre RAG : embeddings `nomic-embed-text`
+(constante `EMBED_MODEL` dans `agent/llm.py`) et index NumPy en mémoire. C'était
+le bon choix pédagogique au départ — tout le mécanisme tenait en quelques dizaines
+de lignes lisibles. Mais sur des corpus réels (prospectus financiers, cours de
+droit en PDF de centaines de pages), la similarité cosinus brute sur un petit
+modèle d'embedding ne suffit plus : trop de faux positifs, pas de
+réordonnancement, pas de rejet fiable du hors-sujet.
 
-### Dépendances réduites à `ollama` + `numpy`
+Le RAG a donc été remplacé par un **moteur modulaire dédié, `rag_engine/`**,
+branché via l'adaptateur `agent/rag.py` (cf. §7). `agent/llm.py` conserve `embed()`
+/ `EMBED_MODEL`, mais ils ne sont plus appelés : l'embedding de la récupération est
+désormais `BAAI/bge-m3`, à l'intérieur du moteur.
 
-Choix délibéré de **ne pas utiliser LangChain / LlamaIndex** ni de base
-vectorielle (Chroma, FAISS) :
+### Deux couches de dépendances, pas une
 
-- le corpus visé est petit (quelques fichiers) — un index NumPy en mémoire
-  suffit largement ;
-- chaque mécanisme (chunking, similarité cosinus, boucle d'agent) est écrit
-  explicitement, donc compréhensible et débogable ligne par ligne ;
-- pas de magie cachée dans un framework : c'est le but du projet de montrer
-  *comment* un agent fonctionne.
+Le projet a maintenant deux niveaux, assumés :
+
+- **L'agent (`agent/`, `main.py`)** reste minimal : `ollama` pour le LLM
+  (`qwen2.5:7b`), aucun framework agentique. Tout le raisonnement (plan, choix
+  d'outil, réflexion) est écrit à la main — le but pédagogique, montrer *comment*
+  un agent fonctionne, reste intact.
+- **Le moteur RAG (`rag_engine/`)** assume des dépendances lourdes
+  (sentence-transformers pour bge-m3, le reranker bge, Qdrant) : c'est un composant
+  réutilisable, traité comme une brique fournie. L'agent ne le voit qu'à travers le
+  contrat mince de `agent/rag.py` (deux fonctions qui renvoient des chaînes).
+
+Ce qui reste écarté : LangChain / LlamaIndex **dans l'agent**. La machinerie
+agentique n'emprunte aucun framework ; seul le RAG, partie où la qualité de
+récupération prime sur la lisibilité, s'appuie sur une vraie stack.
 
 ---
 
@@ -285,42 +300,66 @@ Autres choix de paramétrage :
 
 ---
 
-## 7. RAG (`agent/rag.py`) : minimal mais avec un fallback
+## 7. RAG (`agent/rag.py` → moteur `rag_engine`)
 
-### Chunking par caractères, avec recouvrement
+Le RAG n'est plus un mini-index maison mais un **adaptateur mince**
+(`agent/rag.py`) sur un moteur de récupération modulaire et réutilisable,
+`rag_engine/` (cf. §2). L'adaptateur expose exactement le **même contrat
+qu'avant** — `rag_search` et `list_sources` renvoient des chaînes — si bien que
+`tools.py`, le planner et `main.py` n'ont pas changé. Le reste de l'agent ignore
+qu'il y a un vrai moteur derrière.
 
-Découpage en fenêtres de **800 caractères avec 150 de recouvrement**, sans
-respecter les phrases ni les paragraphes. Pourquoi si simple :
+### Pourquoi un moteur séparé plutôt que l'index NumPy d'origine
 
-- 800 caractères ≈ un paragraphe : assez grand pour porter une idée, assez
-  petit pour que le top-3 tienne dans le contexte du modèle ;
-- le recouvrement évite qu'une information à cheval sur deux chunks soit
-  coupée et devienne introuvable ;
-- un découpage sémantique (par titres, par phrases) serait meilleur mais
-  ajoute de la complexité non justifiée pour un corpus de démonstration.
+L'index NumPy en mémoire (cosinus brut sur `nomic-embed-text`) était parfait
+pour démontrer le principe, mais s'effondrait sur des PDF réels : pas de
+réordonnancement, pas de découpage parent/enfant, aucun moyen fiable de dire
+« ce passage n'a rien à voir avec la question ». Le moteur comble ces trois
+manques.
 
-### Index en mémoire, reconstruit à la volée
+### La stack de récupération (dans le moteur)
 
-L'index (`RagIndex`) est construit **paresseusement au premier `search`**, en
-RAM, sans persistance. Justification : avec quelques fichiers, l'indexation
-prend une seconde — sauvegarder/invalider un index sur disque serait de la
-complexité pure. Les vecteurs sont **normalisés à la construction**, ce qui
-réduit la similarité cosinus à un simple produit matriciel (`vectors @ q`).
+Pour chaque requête, `rag_search` enchaîne :
 
-### Fallback lexical si les embeddings sont indisponibles
+1. **Dense `bge-m3`** : embedding de qualité, multilingue, bien meilleur que
+   `nomic-embed-text` sur du français technique.
+2. **Parent-Child** : on indexe de petits *children* (précision de la recherche)
+   mais on renvoie le *parent* qui les contient (contexte suffisant pour le LLM).
+3. **Reranker `bge-reranker-v2-m3`** : réordonne les candidats par pertinence
+   réelle à la question — c'est le plus gros gain de qualité (mesures dans
+   `rag_engine/README.md`).
 
-Si `nomic-embed-text` n'est pas installé (ou qu'Ollama échoue), l'index
-retombe sur un **score de recouvrement de mots** (proportion des mots de la
-requête présents dans le chunk, mots de moins de 3 lettres ignorés). C'est
-une dégradation gracieuse délibérée : le projet reste démontrable avec le
-seul modèle de chat, avec une recherche moins fine mais fonctionnelle.
+On ne renvoie **que les passages**, pas de génération : c'est le LLM de l'agent
+qui synthétise, exactement comme avec l'ancien `rag_search`.
+
+### Rejet du hors-sujet : un juge LLM, pas un seuil
+
+Le besoin clé sur des corpus sensibles : ne **rien inventer** quand la question
+sort du corpus. Un seuil numérique sur le score du reranker ne marche pas ici —
+hors-sujet et in-corpus se chevauchent autour de ~0,50. On utilise donc le
+**juge de pertinence LLM** du moteur (prompt `grade_documents`, labels
+relevant / ambiguous / irrelevant) : chaque passage récupéré est jugé, on écarte
+les `irrelevant`, et si aucun ne subsiste `rag_search` renvoie un message
+explicite « aucun passage pertinent ». C'est ce filtre, et non un nombre, qui
+garantit le rejet d'une question étrangère au dataset. En échange : il faut un
+LLM disponible (Ollama par défaut).
+
+### Une collection par dataset, jamais combinées
+
+Règle d'architecture imposée : **un corpus = une collection Qdrant**, et le
+moteur n'en interroge qu'une à la fois — jamais droit et finance mélangés dans
+une même recherche. La collection active est choisie par configuration
+(`RAG__VECTOR_STORE__COLLECTION`, défaut `dataset_finance`) ; l'index est
+**persisté** sur disque dans `rag_engine/data/` (Qdrant local), construit une
+fois à l'ingestion et non reconstruit à chaque lancement. L'argument `source`
+(optionnel) de `rag_search` restreint en plus la recherche à un document précis
+(ex. un ISIN), utile pour comparer des fonds un par un.
 
 ### Sortie en texte formaté, pas en objets
 
-`rag_search` retourne une chaîne `[source — score]\ntexte` et non une
-structure : le consommateur est le LLM, qui lit du texte. Afficher la source
-et le score lui permet (et permet à l'utilisateur qui lit les notes) de juger
-la fiabilité des passages.
+`rag_search` retourne une chaîne `[source]\ntexte` et non une structure : le
+consommateur est le LLM, qui lit du texte. Afficher la source permet (à l'agent
+comme à l'utilisateur qui lit `notes.md`) de tracer d'où vient chaque passage.
 
 ---
 
@@ -402,8 +441,10 @@ Ces simplifications sont volontaires, à l'échelle d'un projet de démonstratio
 
 - **Plan figé** : pas de re-planification globale en cours d'exécution ; seule
   la correction locale par étape existe.
-- **Pas de persistance de l'index RAG** ni de gestion de gros corpus
-  (l'embedding de tous les chunks se refait à chaque lancement).
+- **Ingestion manuelle, hors de l'agent** : l'index RAG est persistant
+  (`rag_engine/data/`, Qdrant) mais l'agent ne sait pas (ré)indexer un corpus —
+  c'est une étape dev séparée (`python -m rag.ingestion.cli`). Ajouter un document
+  suppose de le déposer dans `documents/<dataset>/` puis de relancer l'ingestion.
 - **Troncature fixe** (1500 caractères par résultat dans la mémoire injectée)
   plutôt qu'un comptage de tokens : approximation suffisante, mais grossière.
 - **Calcul multi-étapes peu fiable** : enchaîner « récupérer des chiffres puis

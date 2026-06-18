@@ -1,10 +1,15 @@
 """Fait tourner l'agent sur un golden set et juxtapose attendu / obtenu.
 
 Usage :
-    python tests/run_golden.py [fichier.yaml] [limite]
+    python tests/run_golden.py [fichier.yaml] [limite | ids]
 
 - fichier.yaml : golden à utiliser (défaut : tests/golden_fonds_v1.yaml)
-- limite       : ne traiter que les N premières questions (défaut : toutes)
+- 2e argument :
+    * un nombre  → ne traiter que les N premières questions ;
+    * une liste d'ids séparés par des virgules (ex. "gfg1-02,gfg1-09") →
+      ne traiter que ces questions (filtrage par préfixe d'id). Le rapport va
+      alors dans tests/golden_report_rerun.md (le rapport complet est préservé).
+    * absent     → toutes les questions.
 
 Tout tourne dans UN seul processus : l'index RAG (et son embedding coûteux)
 n'est construit qu'une fois et réutilisé pour toutes les questions. Le rapport
@@ -31,10 +36,17 @@ REPORT_PATH = ROOT / "tests" / "golden_report.md"
 
 def main():
     golden_path = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_GOLDEN
-    limit = int(sys.argv[2]) if len(sys.argv) > 2 else None
+    arg2 = sys.argv[2] if len(sys.argv) > 2 else None
 
     data = yaml.safe_load(golden_path.read_text(encoding="utf-8"))
-    items = data["items"][:limit] if limit else data["items"]
+    items = data["items"]
+    report_path = REPORT_PATH
+    if arg2 and arg2.isdigit():
+        items = items[:int(arg2)]
+    elif arg2:
+        ids = [t.strip() for t in arg2.split(",") if t.strip()]
+        items = [it for it in items if any(it["id"].startswith(t) for t in ids)]
+        report_path = REPORT_PATH.with_name("golden_report_rerun.md")
 
     print(f"Golden : {golden_path.name} ({data.get('version', '?')}) — "
           f"{len(items)} question(s)\n")
@@ -66,8 +78,8 @@ def main():
         f"> Comparaison manuelle : la « réponse attendue » est un critère de "
         f"justesse, pas une chaîne exacte.\n\n---\n\n"
     )
-    REPORT_PATH.write_text(header + "\n".join(sections), encoding="utf-8")
-    print(f"\nRapport écrit dans {REPORT_PATH.relative_to(ROOT)} "
+    report_path.write_text(header + "\n".join(sections), encoding="utf-8")
+    print(f"\nRapport écrit dans {report_path.relative_to(ROOT)} "
           f"({len(items)} question(s), {dt:.0f}s).")
 
 

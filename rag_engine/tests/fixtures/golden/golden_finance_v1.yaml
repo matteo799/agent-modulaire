@@ -1,0 +1,432 @@
+version: "finance-v1.0"
+description: |
+  Golden set couvrant le corpus de documents financiers :
+  - 2 DIC SCPI (20231031... et 20240304... — 3 pages chacun)
+  - 1 FCPI long (FCPI Amundi Avenir Innovation 4 — 59 pages)
+  - 1 fonds de capitalisation long (20220125... — 59 pages)
+  - 3 prospectus FCPE Amundi (Propectus.PDF, Propectus-2.PDF, Propectus-3.PDF)
+
+  27 questions in-corpus + 3 hors-corpus.
+  Les chunk IDs sont les IDs PARENTS retournés par le ParentChildRetriever
+  (stack dense + reranker) sur le corpus réel de data/raw/finance/.
+
+  Convention : gsf1-<nn>-<slug>
+
+# ─────────────────────────────────────────────────────────────
+#  SCPI — DIC (questions 01-06)
+# ─────────────────────────────────────────────────────────────
+items:
+  - id: gsf1-01-scpi-distribution
+    question: "Quelle est la politique de distribution des revenus du produit SCPI ?"
+    expected_answer: |
+      La distribution des éventuels revenus du Produit est soumise à l'approbation
+      de l'assemblée générale des associés. Les revenus distribués proviennent des
+      loyers encaissés et des produits financiers du fonds, après déduction des
+      charges de gestion. La périodicité et le montant des distributions dépendent
+      des décisions de la société de gestion et de la performance du patrimoine.
+    expected_chunk_ids:
+      - "a2e8ecbcdc4ca5c5"
+      - "5f423d1d110f8318"
+    expected_source_files:
+      - "20231031T151651945Z_P-SCPI00004859-Z-20231001-FR.pdf"
+    tags: [scpi, distribution, revenus]
+
+  - id: gsf1-02-scpi-performance
+    question: "Quels indicateurs de performance passée sont présentés dans le DIC SCPI ?"
+    expected_answer: |
+      Le DIC SCPI présente les taux de distribution historiques par année,
+      la valeur de réalisation et la valeur de reconstitution de la part.
+      Ces indicateurs permettent d'apprécier la régularité des revenus distribués,
+      sans que les performances passées ne préjugent des performances futures.
+    expected_chunk_ids:
+      - "31cb6d0c4477c87a"
+      - "40f3ce513f06c381"
+    expected_source_files:
+      - "20231031T151651945Z_P-SCPI00004859-Z-20231001-FR.pdf"
+    tags: [scpi, performance, taux-distribution]
+
+  - id: gsf1-03-scpi-detention
+    question: "Combien de temps est-il recommandé de conserver une part de SCPI, et peut-on retirer ses fonds de façon anticipée ?"
+    expected_answer: |
+      La période de détention recommandée pour une SCPI est généralement de 6 à
+      8 ans minimum. Un retrait anticipé est possible via la cession des parts sur
+      le marché secondaire, mais la liquidité n'est pas garantie. L'investisseur
+      doit être prêt à immobiliser son capital sur la durée recommandée.
+    expected_chunk_ids:
+      - "345a5b55219f711c"
+      - "97bd8451dfd6a577"
+    expected_source_files:
+      - "20231031T151651945Z_P-SCPI00004859-Z-20231001-FR.pdf"
+    tags: [scpi, duree-detention, liquidite]
+
+  - id: gsf1-04-scpi-obligations-associes
+    question: "Quelles sont les obligations des associés d'une SCPI en matière de dettes ?"
+    expected_answer: |
+      Chaque associé est tenu des dettes et obligations du Produit en proportion
+      et dans la limite du capital qu'il a souscrit. Cette responsabilité limitée
+      est un trait fondamental de la SCPI : l'associé ne peut être appelé à
+      contribuer au-delà de sa mise initiale.
+    expected_chunk_ids:
+      - "a2e8ecbcdc4ca5c5"
+    expected_source_files:
+      - "20231031T151651945Z_P-SCPI00004859-Z-20231001-FR.pdf"
+    tags: [scpi, obligations, associes, responsabilite]
+
+  - id: gsf1-05-scpi-composition-patrimoine
+    question: "Comment est composé le patrimoine d'une SCPI et quels actifs détient-elle ?"
+    expected_answer: |
+      Le patrimoine d'une SCPI est principalement constitué d'actifs immobiliers
+      diversifiés : bureaux, commerces, entrepôts ou actifs en diversification.
+      La répartition géographique et sectorielle varie selon la stratégie de la SCPI.
+    expected_chunk_ids:
+      - "c5c7bff2d4ee7b1f"
+      - "8355f337de035548"
+    expected_source_files:
+      - "FCPI Amundi Avenir Innovation 4 FINAL 20SEP2024.pdf"
+    tags: [scpi, patrimoine, actifs, immobilier]
+
+  - id: gsf1-06-scpi-reclamation
+    question: "Comment formuler une réclamation auprès d'une SCPI ?"
+    expected_answer: |
+      En cas de réclamation, l'investisseur doit indiquer clairement ses
+      coordonnées (nom, adresse, numéro de contrat) et exposer l'objet de
+      sa demande par écrit à la société de gestion. L'AMF peut être saisie
+      en cas de litige non résolu.
+    expected_chunk_ids:
+      - "8411ec6c44e089cb"
+      - "8d734d187715f5e7"
+    expected_source_files:
+      - "20240304T144709802Z_P-SCPI00004009-Z-20240304-FR.pdf"
+      - "20231031T151651945Z_P-SCPI00004859-Z-20231001-FR.pdf"
+    tags: [scpi, reclamation, investisseur]
+
+# ─────────────────────────────────────────────────────────────
+#  FCPI Amundi Avenir Innovation (questions 07-14)
+# ─────────────────────────────────────────────────────────────
+
+  - id: gsf1-07-fcpi-agrement-amf
+    question: "Qui a agréé le FCPI Amundi Avenir Innovation et sous quel numéro ?"
+    expected_answer: |
+      Le FCPI Amundi Avenir Innovation est géré par Amundi Asset Management,
+      agréée par l'Autorité des marchés financiers (AMF) sous le numéro GP-99015.
+    expected_chunk_ids:
+      - "fa89c0b9fa039223"
+      - "64d7003ec1e234dd"
+    expected_source_files:
+      - "FCPI Amundi Avenir Innovation 4 FINAL 20SEP2024.pdf"
+    tags: [fcpi, agrement, amf, amundi]
+
+  - id: gsf1-08-fcpi-avantage-fiscal
+    question: "Quel avantage fiscal offre la souscription à un FCPI éligible ?"
+    expected_answer: |
+      Le FCPI étant éligible aux dispositifs fiscaux, les souscripteurs personnes
+      physiques peuvent bénéficier d'une réduction d'impôt sur le revenu
+      conditionnée à la conservation des parts pendant une durée minimale de
+      cinq ans.
+    expected_chunk_ids:
+      - "be012e480c97e385"
+      - "fa89c0b9fa039223"
+    expected_source_files:
+      - "FCPI Amundi Avenir Innovation 4 FINAL 20SEP2024.pdf"
+    tags: [fcpi, fiscalite, reduction-ir, avantage-fiscal]
+
+  - id: gsf1-09-fcpi-definition
+    question: "Qu'est-ce qu'un FCPI et quel est son quota d'investissement réglementaire ?"
+    expected_answer: |
+      Un FCPI (Fonds Commun de Placement dans l'Innovation) doit investir au
+      moins 70 % de son actif dans des titres de sociétés innovantes non cotées
+      ou récemment cotées. Ce quota fiscal doit être atteint dans le délai fixé
+      et maintenu jusqu'à la liquidation.
+    expected_chunk_ids:
+      - "fa89c0b9fa039223"
+      - "1889ffc3dc5a0ae7"
+    expected_source_files:
+      - "FCPI Amundi Avenir Innovation 4 FINAL 20SEP2024.pdf"
+    tags: [fcpi, definition, quota-fiscal, innovation]
+
+  - id: gsf1-10-fcpi-souscription
+    question: "Comment se déroule la souscription d'un FCPI et quelle est la nature de l'engagement du souscripteur ?"
+    expected_answer: |
+      Les souscripteurs s'engagent par écrit, de façon ferme et irrévocable, à
+      verser le montant souscrit. Les parts sont émises après libération intégrale
+      des fonds. Le souscripteur ne peut pas se rétracter une fois la souscription
+      acceptée.
+    expected_chunk_ids:
+      - "fa89c0b9fa039223"
+      - "ad07d3b9170c1f4c"
+    expected_source_files:
+      - "FCPI Amundi Avenir Innovation 4 FINAL 20SEP2024.pdf"
+    tags: [fcpi, souscription, bulletin, engagement]
+
+  - id: gsf1-11-fcpi-dissolution
+    question: "Dans quelles circonstances un FCPI peut-il être dissous par anticipation ?"
+    expected_answer: |
+      Un FCPI peut être dissous par anticipation lorsque la société de gestion
+      cesse d'être autorisée à gérer des FCPI en France, ou dans d'autres
+      situations prévues par le règlement. La dissolution donne lieu à la
+      liquidation et au remboursement des porteurs dans l'ordre de priorité défini.
+    expected_chunk_ids:
+      - "c5c7bff2d4ee7b1f"
+      - "55e8845eac7bcfa3"
+    expected_source_files:
+      - "FCPI Amundi Avenir Innovation 4 FINAL 20SEP2024.pdf"
+      - "20220125T131406485Z_P-FR0013308202-Z-20220120-FR.pdf"
+    tags: [fcpi, dissolution, liquidation, conditions-sortie]
+
+  - id: gsf1-12-fcpi-repartition-resultats
+    question: "Comment la société de gestion décide-t-elle de la répartition des résultats d'un FCPI ?"
+    expected_answer: |
+      La société de gestion décide de la répartition des résultats entre les
+      porteurs de parts. Elle peut distribuer tout ou partie des produits et
+      plus-values nets réalisés. Des acomptes peuvent être versés en cours de vie.
+    expected_chunk_ids:
+      - "5f423d1d110f8318"
+      - "c5c7bff2d4ee7b1f"
+    expected_source_files:
+      - "FCPI Amundi Avenir Innovation 4 FINAL 20SEP2024.pdf"
+    tags: [fcpi, resultats, distribution, societe-gestion]
+
+  - id: gsf1-13-fcpi-valeur-parts
+    question: "Comment est déterminée la valeur nominale des parts d'un FCPI ?"
+    expected_answer: |
+      La valeur d'origine, ou valeur nominale, des parts est fixée à la création.
+      La valeur liquidative est ensuite calculée périodiquement en divisant l'actif
+      net par le nombre de parts, tenant compte de la valeur des actifs cotés et
+      non cotés.
+    expected_chunk_ids:
+      - "5e8635b6a8f2a87e"
+      - "fa89c0b9fa039223"
+    expected_source_files:
+      - "FCPI Amundi Avenir Innovation 4 FINAL 20SEP2024.pdf"
+    tags: [fcpi, valeur-part, valeur-nominale, valeur-liquidative]
+
+  - id: gsf1-14-fcpi-duree-blocage
+    question: "Pendant combien d'années les parts d'un FCPI sont-elles bloquées ?"
+    expected_answer: |
+      Les parts d'un FCPI sont bloquées pendant cinq ans à compter de la
+      souscription pour bénéficier de l'avantage fiscal. Un rachat anticipé
+      entraîne la perte de cet avantage. La liquidation intervient généralement
+      entre 7 et 10 ans après la constitution.
+    expected_chunk_ids:
+      - "fa89c0b9fa039223"
+      - "7eb3713d95ed05da"
+    expected_source_files:
+      - "FCPI Amundi Avenir Innovation 4 FINAL 20SEP2024.pdf"
+    tags: [fcpi, blocage, duree, fiscalite]
+
+# ─────────────────────────────────────────────────────────────
+#  Fonds 20220125 (questions 15-18)
+# ─────────────────────────────────────────────────────────────
+
+  - id: gsf1-15-fonds-exoneration-ir
+    question: "Quelles sont les conditions pour bénéficier de l'exonération d'impôt sur le revenu sur les distributions du fonds ?"
+    expected_answer: |
+      Les investisseurs résidents en France peuvent bénéficier d'une exonération
+      d'impôt sur le revenu français à raison des sommes distribuées sous
+      certaines conditions fiscales liées à leur statut et au type de revenus.
+    expected_chunk_ids:
+      - "975ebbbb84dcfb49"
+      - "20b1da0d1c686493"
+    expected_source_files:
+      - "20220125T131406485Z_P-FR0013308202-Z-20220120-FR.pdf"
+    tags: [fonds, fiscalite, exoneration, impot-revenu]
+
+  - id: gsf1-16-fonds-frais-gestion
+    question: "Comment est calculée la commission de gestion annuelle du fonds ?"
+    expected_answer: |
+      La commission de gestion est calculée sur la base du Montant Net Investi
+      au dernier jour du semestre. Son taux, qui est un maximum, varie en fonction
+      des distributeurs.
+    expected_chunk_ids:
+      - "e524ad61887181d4"
+      - "c7962fb8e87d2983"
+    expected_source_files:
+      - "20220125T131406485Z_P-FR0013308202-Z-20220120-FR.pdf"
+      - "Propectus-2.PDF"
+    tags: [fonds, frais-gestion, commission, couts]
+
+  - id: gsf1-17-fonds-cession-parts
+    question: "Quelles sont les règles applicables à la cession, au nantissement et au transfert de parts ?"
+    expected_answer: |
+      Toute vente, cession, transfert, échange, apport, nantissement ou charge
+      sur les parts est encadrée par le règlement. Des restrictions peuvent
+      s'appliquer aux investisseurs non éligibles ou lors de périodes de blocage.
+    expected_chunk_ids:
+      - "6f6f9c6e1791c557"
+    expected_source_files:
+      - "20220125T131406485Z_P-FR0013308202-Z-20220120-FR.pdf"
+    tags: [fonds, cession, nantissement, transfert]
+
+  - id: gsf1-18-fonds-duree-vie
+    question: "Quelle est la durée de vie du fonds et comment peut-elle être prorogée ?"
+    expected_answer: |
+      La durée de vie du fonds est fixée dès sa constitution et éventuellement
+      prorogeable selon les conditions du règlement. La prorogation peut être
+      décidée pour permettre la réalisation des investissements non encore liquidés.
+    expected_chunk_ids:
+      - "9c12fa7628e7c6cf"
+      - "e524ad61887181d4"
+    expected_source_files:
+      - "20220125T131406485Z_P-FR0013308202-Z-20220120-FR.pdf"
+    tags: [fonds, duree-vie, prorogation]
+
+# ─────────────────────────────────────────────────────────────
+#  FCPE Propectus (questions 19-27)
+# ─────────────────────────────────────────────────────────────
+
+  - id: gsf1-19-fcpe-parts-droits
+    question: "Comment les droits des copropriétaires sont-ils exprimés dans un FCPE ?"
+    expected_answer: |
+      Les droits des copropriétaires sont exprimés en parts, chaque part
+      correspondant à une même fraction de l'actif net. Les parts peuvent être
+      fractionnées pour faciliter souscriptions et rachats.
+    expected_chunk_ids:
+      - "83bb8820a822410c"
+      - "a45cf74ed92513f6"
+    expected_source_files:
+      - "Propectus-2.PDF"
+      - "Propectus-3.PDF"
+    tags: [fcpe, parts, droits, copropriete]
+
+  - id: gsf1-20-fcpe-risques
+    question: "Quels risques spécifiques sont associés aux fonds investissant dans des petites et moyennes capitalisations ?"
+    expected_answer: |
+      Les fonds investissant dans des petites et moyennes capitalisations
+      présentent un risque de liquidité accru et des variations de cours plus
+      importantes. Le risque de crédit et le risque de marché sont également
+      des facteurs importants.
+    expected_chunk_ids:
+      - "677e16661ea2cb22"
+      - "3cbacc3aa30bc8e8"
+    expected_source_files:
+      - "Propectus-2.PDF"
+      - "Propectus.PDF"
+    tags: [fcpe, risques, small-cap, liquidite]
+
+  - id: gsf1-21-fcpe-risque-liquidite
+    question: "En quoi consiste le risque de liquidité pour un fonds commun de placement ?"
+    expected_answer: |
+      Le risque de liquidité est le risque que le fonds ne puisse pas honorer
+      ses obligations de rachat. Il peut être amplifié pour les fonds détenant
+      des actifs peu liquides. Un mécanisme de Gates peut être mis en place
+      pour plafonner les rachats.
+    expected_chunk_ids:
+      - "f6f9be19cb25af01"
+      - "372fdf84ae94e780"
+    expected_source_files:
+      - "Propectus.PDF"
+      - "Propectus-2.PDF"
+    tags: [fcpe, risque-liquidite, gates]
+
+  - id: gsf1-22-fcpe-rachat-gates
+    question: "Comment fonctionne le mécanisme de plafonnement des rachats (Gates) ?"
+    expected_answer: |
+      Le mécanisme de Gates permet de plafonner le volume des demandes de rachat
+      lors d'une même valeur liquidative, pour protéger les porteurs restants.
+      Lorsque le seuil est atteint, les demandes sont traitées au prorata.
+    expected_chunk_ids:
+      - "506311c7305a5c7a"
+      - "64596e1f0e2c96d4"
+    expected_source_files:
+      - "Propectus-2.PDF"
+      - "Propectus-3.PDF"
+    tags: [fcpe, gates, rachat, plafonnement]
+
+  - id: gsf1-23-fcpe-strategie-investissement
+    question: "Quels facteurs guident la stratégie d'investissement du fonds ?"
+    expected_answer: |
+      La stratégie d'investissement guide les décisions selon des facteurs tels
+      que les objectifs de rendement, le niveau de risque acceptable, l'horizon
+      de placement et des critères extra-financiers (ESG/exclusion normative).
+    expected_chunk_ids:
+      - "3330cc25e380f8ad"
+      - "d1a646a363cb0b73"
+    expected_source_files:
+      - "Propectus-2.PDF"
+      - "Propectus.PDF"
+    tags: [fcpe, strategie, investissement, gestion]
+
+  - id: gsf1-24-fcpe-frais-investisseur
+    question: "Quels frais sont prélevés à la charge de l'investisseur dans un FCPE ?"
+    expected_answer: |
+      Les frais à la charge de l'investisseur comprennent les commissions de
+      souscription, frais de rachat éventuels et commissions de mouvement.
+      Des frais courants annuels sont également prélevés sur l'actif du fonds.
+    expected_chunk_ids:
+      - "40f3ce513f06c381"
+      - "97bd8451dfd6a577"
+    expected_source_files:
+      - "Propectus.PDF"
+      - "Propectus-2.PDF"
+    tags: [fcpe, frais, couts, investisseur]
+
+  - id: gsf1-25-fcpe-fiscalite-plusvalues
+    question: "Quel est le régime fiscal applicable aux plus-values et revenus du FCPE pour un investisseur particulier ?"
+    expected_answer: |
+      Selon le régime fiscal de l'investisseur, les plus-values et revenus
+      d'un FCPE peuvent être soumis à l'impôt sur le revenu et aux prélèvements
+      sociaux. Les conditions varient selon la durée de détention et la situation
+      personnelle du porteur.
+    expected_chunk_ids:
+      - "40f3ce513f06c381"
+      - "97bd8451dfd6a577"
+    expected_source_files:
+      - "Propectus.PDF"
+      - "Propectus-2.PDF"
+    tags: [fcpe, fiscalite, plus-values, ir]
+
+  - id: gsf1-26-fcpe-traitement-equitable
+    question: "Qu'est-ce que la politique de traitement équitable des investisseurs dans un FCPE ?"
+    expected_answer: |
+      La politique de traitement équitable garantit que tous les porteurs sont
+      traités de manière identique lors des souscriptions, rachats et distributions.
+      Les demandes sont exécutées sur la base de la valeur liquidative du jour
+      sans traitement préférentiel.
+    expected_chunk_ids:
+      - "f6f9be19cb25af01"
+      - "40f3ce513f06c381"
+    expected_source_files:
+      - "Propectus.PDF"
+    tags: [fcpe, traitement-equitable, investisseurs, rachats]
+
+  - id: gsf1-27-fcpe-societe-gestion
+    question: "Quelle société de gestion administre les fonds Amundi et comment la contacter ?"
+    expected_answer: |
+      Les fonds Amundi sont administrés par Amundi Asset Management, société de
+      gestion agréée par l'AMF. Le site est www.amundi.fr et les investisseurs
+      peuvent contacter le service clients par téléphone ou par courrier.
+    expected_chunk_ids:
+      - "372fdf84ae94e780"
+      - "40f3ce513f06c381"
+    expected_source_files:
+      - "Propectus-2.PDF"
+      - "Propectus.PDF"
+    tags: [amundi, societe-gestion, contact]
+
+# ─────────────────────────────────────────────────────────────
+#  HORS-CORPUS (fallback)  — questions 28-30
+# ─────────────────────────────────────────────────────────────
+
+  - id: gsf1-28-out-of-domain-tva
+    question: "Quel est le taux de TVA applicable aux loyers d'habitation en France ?"
+    expected_answer: |
+      Les documents fournis ne permettent pas de répondre à cette question.
+    expected_chunk_ids: []
+    expected_source_files: []
+    tags: [out-of-domain, fallback, fiscalite, tva]
+
+  - id: gsf1-29-out-of-domain-pret
+    question: "Quelles sont les étapes pour obtenir un prêt immobilier auprès d'une banque française ?"
+    expected_answer: |
+      Les documents fournis ne permettent pas de répondre à cette question.
+    expected_chunk_ids: []
+    expected_source_files: []
+    tags: [out-of-domain, fallback, credit, immobilier]
+
+  - id: gsf1-30-out-of-domain-travail
+    question: "Quelles sont les règles légales applicables aux heures supplémentaires en droit du travail français ?"
+    expected_answer: |
+      Les documents fournis ne permettent pas de répondre à cette question.
+    expected_chunk_ids: []
+    expected_source_files: []
+    tags: [out-of-domain, fallback, droit-travail]

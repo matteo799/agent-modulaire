@@ -1,0 +1,46 @@
+Tu es un expert en analyse de documents financiers (DICI, prospectus AMF).
+Extrais les informations demandées à partir des passages d'un prospectus fournis ci-dessous.
+Si un champ est introuvable dans les passages, indique exactement "N/A".
+Réponds UNIQUEMENT avec un objet JSON valide. Aucun texte avant ni après le JSON.
+
+Passages du prospectus :
+{% for chunk in chunks %}
+=== Passage {{ loop.index }} ===
+{{ chunk }}
+{% endfor %}
+
+Retourne l'objet JSON suivant (conserve toutes les clés exactement telles quelles) :
+{
+  "fonds": "<nom complet du fonds>",
+  "code_fonds": "<code AMF ou identifiant interne du fonds>",
+  "isin": "<code ISIN, ex: FR0010xxxxxx>",
+  "societe_gestion": "<nom de la société de gestion>",
+  "structure": "<SICAV / FCP / FCPI / FCPR / OPCI / SCPI / autre>",
+  "categorie": "<catégorie AMF>",
+  "univers": "<univers d'investissement, ex: Actions France, Obligations Europe>",
+  "benchmark": "<indice de référence ou Sans benchmark>",
+  "gestion": "<Actif / Passif / Indiciel>",
+  "devise": "<EUR / USD / autre devise>",
+  "date_creation": "<date de création du fonds, ex: 15/03/2010>",
+  "actif_net": "<actif net avec unité, ex: 125 M EUR>",
+  "depositaire": "<nom du dépositaire / conservateur>",
+  "horizon_recommande": "<horizon de placement recommandé, ex: 5 ans>",
+  "sfdr_article": "<Article 6 / Article 8 / Article 9>",
+  "priips_sri": "<indicateur synthétique de risque 1 à 7>",
+  "esg_estime": "<score ou label ESG estimé si mentionné, sinon N/A>",
+  "classe_esg": "<classe ESG A/B/C/D/E si mentionnée, sinon N/A>",
+  "pea": "<Oui / Non>",
+  "per": "<Oui / Non / N/A>",
+  "perco": "<Oui / Non / N/A>",
+  "pee": "<Oui / Non / N/A>",
+  "exposition_usa": "<pourcentage d'exposition aux États-Unis, ex: 30%, sinon N/A>",
+  "style_dominant": "<Croissance / Valeur / Blend / N/A>",
+  "small_caps": "<Oui si présence significative de petites capitalisations, sinon Non ou N/A>",
+  "mega_caps_tech": "<Oui si exposition aux méga capitalisations technologiques, sinon Non ou N/A>",
+  "nombre_lignes": "<nombre de lignes en portefeuille si mentionné, sinon N/A>",
+  "risque_devise": "<Couvert / Non couvert / Partiel / N/A>",
+  "frais_entree_max": "<frais d'entrée maximum, ex: 3,00% ou Néant>",
+  "frais_gestion_annuels": "<frais de gestion annuels TTC, ex: 1,50%>",
+  "frais_sortie": "<frais de sortie maximum, ex: 1,00% ou Néant>",
+  "commission_surperformance": "<description de la commission de surperformance ou Néant>"
+}

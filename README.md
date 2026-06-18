@@ -26,14 +26,22 @@ Synthèse finale → workspace/rapport.md
 | `agent/rag.py` | Étape 7 — le RAG est un outil parmi d'autres |
 | `agent/executor.py` | Étapes 4-6 — boucle, mémoire de travail, réflexion |
 | `main.py` | Point d'entrée CLI + synthèse finale |
-| `documents/` | Corpus indexé par le RAG |
+| `rag_engine/` | Moteur RAG modulaire (Parent-Child + Corrective RAG) interrogé par `agent/rag.py` |
+| `documents/` | Corpus source, **une entrée unique organisée par dataset** : `documents/finance/`, `documents/droit/` |
 | `workspace/` | Mémoire de l'agent : `plan.md`, `notes.md`, `rapport.md` |
+
+> Le RAG n'est plus le mini-index NumPy d'origine : `agent/rag.py` est un adaptateur
+> mince sur le moteur `rag_engine/` (retriever bge-m3 → parent-child → reranker + juge
+> de pertinence LLM). Règle d'architecture : **une collection Qdrant par dataset, jamais
+> combinées** — on choisit le corpus via `RAG__VECTOR_STORE__COLLECTION` (`dataset_finance`
+> par défaut, `dataset_droit` pour les cours de droit).
 
 ## Prérequis
 
 - [Ollama](https://ollama.com) lancé localement
-- Modèles : `ollama pull qwen2.5:7b` et `ollama pull nomic-embed-text`
-- Python ≥ 3.10 avec `pip install ollama numpy`
+- Modèles : `ollama pull qwen2.5:7b` (agent) et le LLM juge du moteur (`mistral:7b-instruct`)
+- Python ≥ 3.11, le moteur RAG installé en éditable : `pip install -e ./rag_engine`
+  (tire les dépendances de récupération : bge-m3, reranker, Qdrant)
 
 ## Utilisation
 
@@ -41,5 +49,7 @@ Synthèse finale → workspace/rapport.md
 python main.py "Analyse les documents internes et fais un résumé des risques."
 ```
 
-Déposez vos propres fichiers `.md` / `.txt` dans `documents/` pour les rendre
-accessibles à l'outil `rag_search`.
+Les documents source vivent dans `documents/<dataset>/` (PDF). Pour ajouter un
+corpus, déposez les fichiers dans `documents/<dataset>/` puis (ré)indexez avec le
+moteur — voir `rag_engine/README.md`. L'outil `rag_search` de l'agent interroge la
+collection configurée (un dataset à la fois).

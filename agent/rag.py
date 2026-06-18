@@ -1,217 +1,199 @@
-"""Mini moteur RAG : indexe documents/ (.txt/.md/.pdf) et cherche par similarité.
+"""Adaptateur RAG : branche l'agent sur le package `rag` (moteur rag_engine).
 
-Récupération hybride (embeddings Ollama + score lexical de mots-clés) avec un
-seuil de pertinence pour ne rien renvoyer plutôt qu'halluciner hors-sujet.
-L'index est persisté sur disque pour éviter de ré-embedder à chaque lancement.
-Si le modèle d'embedding est absent, dégradation gracieuse en mode lexical seul.
+Remplace l'ancien mini-moteur maison. On expose le MÊME contrat qu'avant
+(`rag_search` et `list_sources` renvoient des chaînes), si bien que
+`agent/tools.py`, le planner et `main.py` n'ont pas à changer.
+
+Sous le capot : stack de récupération réelle du package (Dense bge-m3 →
+Parent-Child → reranking bge-reranker), montée paresseusement et mise en
+cache. On ne renvoie QUE les passages (pas de génération) : c'est le LLM de
+l'agent qui synthétise, exactement comme avec l'ancien `rag_search`.
+
+Rejet du hors-corpus : un score reranker ne sépare pas le hors-sujet de
+l'in-corpus sur ces corpus (les deux populations se chevauchent vers ~0,50).
+On utilise donc le JUGE DE PERTINENCE LLM du package (prompt `grade_documents`,
+labels relevant / ambiguous / irrelevant) : chaque passage récupéré est jugé,
+on écarte les `irrelevant`, et si aucun ne subsiste on renvoie « aucun passage ».
+C'est ce qui garantit le rejet total d'une question étrangère au dataset
+(nécessite donc un LLM dispo — Ollama par défaut).
+
+Corpus interrogé = la collection configurée dans rag_engine/configs
+(`vector_store.collection`, défaut `dataset_finance`). Une collection PAR
+dataset/projet, jamais combinées : le moteur ne cherche que dans le corpus
+du projet courant. Pour basculer (ex. cours de droit), lancer l'agent avec
+`RAG__VECTOR_STORE__COLLECTION=dataset_droit`.
 """
-import math
-import pickle
+from __future__ import annotations
+
+import os
 import re
-from collections import Counter
+import sqlite3
 from pathlib import Path
+from typing import Any
 
-import numpy as np
+# Racine du moteur rapatrié : ses configs et data sont en chemins relatifs
+# (./data, ./configs) pensés pour un cwd = racine du projet. L'agent, lui,
+# tourne depuis Harness/ : on force donc des chemins absolus.
+RAG_ENGINE_ROOT = Path(__file__).resolve().parent.parent / "rag_engine"
 
-from agent import llm
+NO_MATCH_MESSAGE = (
+    "Aucun passage pertinent trouvé dans les documents pour cette recherche : "
+    "le sujet ne semble pas couvert par les documents disponibles."
+)
 
-DOCUMENTS_DIR = Path(__file__).resolve().parent.parent / "documents"
-CACHE_PATH = Path(__file__).resolve().parent.parent / "workspace" / ".rag_cache.pkl"
-CHUNK_SIZE = 800  # caractères
-CHUNK_OVERLAP = 150
-MIN_CHUNK = 30  # ignore les fragments trop courts (artefacts de découpage)
-SUPPORTED = {".txt", ".md", ".pdf"}
+# Nombre de candidats récupérés puis soumis au juge LLM (borne le coût : 1 appel
+# LLM par candidat). On en garde au plus `top_k` après filtrage.
+GRADE_CANDIDATES = int(os.getenv("RAG__RAG_SEARCH_CANDIDATES", "8"))
 
-# Récupération hybride : score de classement = DENSE_WEIGHT * cosinus +
-# (1-DENSE_WEIGHT) * lexical. Le lexical est pondéré par IDF (rareté du mot) :
-# les mots absents du corpus (TVA, prêt…) pèsent lourd et les mots omniprésents
-# (taux, règles…) presque rien — c'est ce qui distingue le hors-sujet.
-DENSE_WEIGHT = 0.6
-# Garde-fou anti-hallucination : si AUCUN passage n'atteint ce score lexical IDF,
-# la requête est jugée hors-sujet et rag_search ne renvoie rien. Le cosinus de
-# nomic-embed est trop « plat » (~0,9 partout) pour servir de seuil ; le lexical
-# IDF, lui, sépare nettement l'in-domain du hors-sujet.
-LEXICAL_GATE = 0.46
+_LABEL_RE = re.compile(r'"label"\s*:\s*"(relevant|ambiguous|irrelevant)"', re.IGNORECASE)
 
-
-def _signature() -> list:
-    """Empreinte du corpus (nom, taille, mtime) pour invalider le cache."""
-    return sorted(
-        (p.name, p.stat().st_size, p.stat().st_mtime_ns)
-        for p in DOCUMENTS_DIR.glob("**/*")
-        if p.suffix.lower() in SUPPORTED
-    )
+_retriever: Any = None
+_settings: Any = None
+_llm: Any = None
 
 
-def _read_document(path: Path) -> str:
-    """Texte d'un document. .txt/.md lus directement ; .pdf extrait via pypdf.
+def _bootstrap() -> tuple[Any, Any]:
+    """Construit (paresseusement) settings + retriever, puis les met en cache.
 
-    Si pypdf est absent ou le PDF illisible, renvoie une chaîne vide : le
-    document est alors ignoré (dégradation gracieuse, comme pour les embeddings)."""
-    if path.suffix.lower() == ".pdf":
-        try:
-            import pypdf
-            reader = pypdf.PdfReader(str(path))
-            return "\n".join((page.extract_text() or "") for page in reader.pages)
-        except Exception:
-            return ""
-    return path.read_text(encoding="utf-8")
+    Le premier appel charge les modèles d'embedding/reranking (quelques
+    secondes) ; les suivants réutilisent l'instance.
+    """
+    global _retriever, _settings
+    if _retriever is None:
+        from rag.config.factory import build_retriever
+        from rag.config.settings import load_settings
 
+        settings = load_settings(configs_dir=RAG_ENGINE_ROOT / "configs")
+        # Réancre le chemin relatif (./data) sur l'emplacement réel du package.
+        settings.data_dir = RAG_ENGINE_ROOT / "data"
 
-def _split_sections(text: str) -> list[str]:
-    """Découpe le document sur les titres markdown ; chaque section conserve
-    son titre, ce qui garde des chunks sémantiquement cohérents."""
-    sections, current = [], []
-    for line in text.splitlines():
-        if line.startswith("#") and current:
-            sections.append("\n".join(current).strip())
-            current = [line]
-        else:
-            current.append(line)
-    if current:
-        sections.append("\n".join(current).strip())
-    return [s for s in sections if s]
+        _settings = settings
+        _retriever = build_retriever(settings)
+    return _retriever, _settings
 
 
-def _chunk(text: str, source: str) -> list[dict]:
-    """Un chunk par section ; les sections trop longues sont redécoupées en
-    fenêtres glissantes. Évite les fragments minuscules que produisait
-    l'ancien découpage aveugle par tranches de caractères."""
-    chunks = []
-    step = CHUNK_SIZE - CHUNK_OVERLAP
-    for section in _split_sections(text):
-        if len(section) <= CHUNK_SIZE:
-            pieces = [section]
-        else:
-            pieces = [section[i:i + CHUNK_SIZE].strip()
-                      for i in range(0, len(section), step)]
-        for piece in pieces:
-            if len(piece) >= MIN_CHUNK:
-                chunks.append({"source": source, "text": piece})
-    return chunks
+def _get_llm() -> Any:
+    """Construit (paresseusement) le client LLM du juge de pertinence."""
+    global _llm
+    if _llm is None:
+        from rag.config.factory import build_llm
+
+        _, settings = _bootstrap()
+        _llm = build_llm(settings)
+    return _llm
 
 
-def _words(text: str) -> set[str]:
-    return {w for w in re.findall(r"\w+", text.lower()) if len(w) > 2}
+def _is_relevant(llm: Any, query: str, hit: Any) -> bool:
+    """Le passage est-il pertinent pour la question ? (juge LLM `grade_documents`)
 
+    On rejette uniquement le label `irrelevant`. En cas d'échec du LLM, on
+    laisse passer (dégradation gracieuse plutôt que de masquer un vrai passage).
+    """
+    from rag.prompts import render
 
-class RagIndex:
-    """Index : chunks + embeddings + ensembles de mots, persisté sur disque."""
-
-    def __init__(self):
-        self.chunks: list[dict] = []
-        self.vectors: np.ndarray | None = None
-        self.word_sets: list[set] = []  # mots de chaque chunk (score lexical)
-        self.df: Counter = Counter()    # nb de chunks contenant chaque mot
-        self.built = False
-
-    def build(self):
-        self.built = True
-        sig = _signature()
-        if self._load_cache(sig):
-            return
-        self.chunks = []
-        for path in sorted(DOCUMENTS_DIR.glob("**/*")):
-            if path.suffix.lower() in SUPPORTED:
-                text = _read_document(path)
-                if text.strip():
-                    self.chunks.extend(_chunk(text, path.name))
-        self.word_sets = [_words(c["text"]) for c in self.chunks]
-        self.df = Counter(w for ws in self.word_sets for w in ws)
-        if not self.chunks:
-            return
-        try:
-            vectors = np.array(llm.embed([c["text"] for c in self.chunks]))
-            self.vectors = vectors / np.linalg.norm(vectors, axis=1, keepdims=True)
-        except Exception:
-            self.vectors = None  # modèle d'embedding absent → mode lexical
-        self._save_cache(sig)
-
-    def _load_cache(self, sig) -> bool:
-        try:
-            with open(CACHE_PATH, "rb") as f:
-                data = pickle.load(f)
-            if data.get("signature") != sig:
-                return False
-            self.chunks = data["chunks"]
-            self.vectors = data["vectors"]
-            self.word_sets = data["word_sets"]
-            self.df = data["df"]
-            return True
-        except Exception:
-            return False
-
-    def _save_cache(self, sig):
-        try:
-            CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
-            with open(CACHE_PATH, "wb") as f:
-                pickle.dump({"signature": sig, "chunks": self.chunks,
-                             "vectors": self.vectors, "word_sets": self.word_sets,
-                             "df": self.df}, f)
-        except Exception:
-            pass  # cache best-effort : un échec d'écriture ne casse rien
-
-    def _lexical(self, qw: set, idx: list) -> np.ndarray:
-        """Recouvrement de mots pondéré par IDF, dans [0, 1]. Un mot rare (ou
-        absent du corpus) pèse beaucoup ; un mot omniprésent presque rien."""
-        n = len(self.chunks)
-        weights = {w: math.log((n + 1) / (self.df.get(w, 0) + 1)) + 1.0 for w in qw}
-        total = sum(weights.values()) or 1.0
-        return np.array([
-            sum(weights[w] for w in qw if w in self.word_sets[i]) / total
-            for i in idx
-        ])
-
-    def search(self, query: str, top_k: int = 3, source: str = "") -> list[dict]:
-        if not self.built:
-            self.build()
-        if not self.chunks:
-            return []
-        # Filtre éventuel par document source (sous-chaîne, ex. un ISIN).
-        idx = [i for i, c in enumerate(self.chunks)
-               if not source or source.lower() in c["source"].lower()]
-        if not idx:
-            return []
-        lexical = self._lexical(_words(query), idx)
-        # Garde-fou hors-sujet : si rien n'atteint le seuil lexical IDF, on ne
-        # renvoie rien (le cosinus seul ne sait pas dire « hors-sujet »).
-        if lexical.max(initial=0.0) < LEXICAL_GATE:
-            return []
-        if self.vectors is not None:
-            q = np.array(llm.embed([query])[0])
-            q = q / np.linalg.norm(q)
-            dense = np.clip(self.vectors[idx] @ q, 0, 1)
-            scores = DENSE_WEIGHT * dense + (1 - DENSE_WEIGHT) * lexical
-        else:
-            scores = lexical
-        order = np.argsort(scores)[::-1][:top_k]
-        return [{**self.chunks[idx[o]], "score": float(scores[o])} for o in order]
-
-    def sources(self) -> list[str]:
-        if not self.built:
-            self.build()
-        return sorted({c["source"] for c in self.chunks})
-
-
-_index = RagIndex()
+    try:
+        raw = llm.generate(render("grade_documents", query=query, doc=hit.text), max_tokens=128)
+    except Exception:
+        return True
+    match = _LABEL_RE.search(raw or "")
+    label = match.group(1).lower() if match else "ambiguous"
+    return label != "irrelevant"
 
 
 def rag_search(query: str, top_k: int = 3, source: str = "") -> str:
     """Recherche les passages pertinents. `source` (optionnel) restreint à un
     document (ex. un ISIN). Renvoie un message clair si rien n'est pertinent."""
-    results = _index.search(query, top_k=max(int(top_k), 3), source=source)
-    if not results:
-        return ("Aucun passage pertinent trouvé dans les documents pour cette "
-                "recherche : le sujet ne semble pas couvert par les documents "
-                "disponibles.")
+    retriever, _ = _bootstrap()
+    k = max(int(top_k), 3)
+
+    # On sur-récupère (filtrage par source + marge pour le juge LLM).
+    fetch = k * 4 if source else GRADE_CANDIDATES
+    hits = retriever.retrieve(query, fetch)
+
+    if source:
+        needle = source.lower()
+        hits = [h for h in hits if needle in str(h.metadata.get("source_file", "")).lower()]
+
+    # Juge de pertinence LLM : on écarte les passages hors-sujet. C'est CE filtre
+    # (et non un seuil numérique) qui garantit le rejet d'une question étrangère
+    # au dataset.
+    llm = _get_llm()
+    relevant = [h for h in hits[:GRADE_CANDIDATES] if _is_relevant(llm, query, h)]
+
+    relevant = relevant[:k]
+    if not relevant:
+        return NO_MATCH_MESSAGE
+
     return "\n\n".join(
-        f"[{r['source']} — score {r['score']:.2f}]\n{r['text']}" for r in results
+        f"[{h.metadata.get('source_file', '?')}]\n{h.text}" for h in relevant
     )
 
 
 def list_sources() -> str:
-    """Liste les documents (fonds) indexés dans documents/."""
-    srcs = _index.sources()
-    if not srcs:
-        return "Aucun document dans le dossier documents/."
-    return "Documents disponibles :\n" + "\n".join(f"- {s}" for s in srcs)
+    """Liste les documents indexés dans le corpus actif (collection configurée)."""
+    retriever, settings = _bootstrap()
+    sources = _distinct_sources(retriever, settings)
+    if not sources:
+        return "Aucun document indexé dans le corpus."
+    return "Documents disponibles :\n" + "\n".join(f"- {s}" for s in sources)
+
+
+def _find_vector_store(retriever: Any) -> Any:
+    """Descend la chaîne `_inner` du retriever jusqu'au VectorStore sous-jacent."""
+    node = retriever
+    for _ in range(10):  # garde-fou anti-boucle
+        if hasattr(node, "_vector_store"):
+            return node._vector_store
+        if hasattr(node, "_inner"):
+            node = node._inner
+            continue
+        break
+    return None
+
+
+def _distinct_sources(retriever: Any, settings: Any) -> list[str]:
+    """source_file distincts de la collection active.
+
+    On réutilise le client Qdrant DÉJÀ ouvert par le retriever (le store local
+    n'autorise qu'un seul accès : ouvrir un 2e client le verrouillerait) et on
+    scrolle le payload aplati (clé `source_file`). En cas d'échec, repli sur
+    l'inventaire des parents SQLite (qui, lui, couvre tous les corpus).
+    """
+    try:
+        store = _find_vector_store(retriever)
+        if store is not None and hasattr(store, "_ensure_client"):
+            client = store._ensure_client()
+            collection = store._collection_name
+            found: set[str] = set()
+            offset = None
+            while True:
+                points, offset = client.scroll(
+                    collection,
+                    limit=256,
+                    with_payload=["source_file"],
+                    with_vectors=False,
+                    offset=offset,
+                )
+                for p in points:
+                    src = (p.payload or {}).get("source_file")
+                    if src:
+                        found.add(str(src))
+                if offset is None:
+                    break
+            if found:
+                return sorted(found)
+    except Exception:
+        pass
+
+    # Repli : parents SQLite (peut couvrir plusieurs corpus).
+    db = settings.data_dir / "parents.sqlite"
+    if not db.exists():
+        return []
+    con = sqlite3.connect(db)
+    try:
+        rows = con.execute(
+            "SELECT DISTINCT json_extract(metadata, '$.source_file') FROM parents"
+        ).fetchall()
+    finally:
+        con.close()
+    return sorted(r[0] for r in rows if r[0])
