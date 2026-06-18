@@ -21,7 +21,7 @@
 | **Choisir les modèles** (LLM, embeddings, reranker) | [`configs/default.yaml`](configs/default.yaml) (sections `llm`, `embedder`, `reranker`) |
 | **Paramètres RAG** (retrieval, reranker, CRAG) | [`configs/default.yaml`](configs/default.yaml) (sections `retrieval`, `crag`) |
 | **Schéma typé + valeurs par défaut commentées** | [`src/rag/config/settings.py`](src/rag/config/settings.py) — la référence des paramètres |
-| **Questions d'évaluation** (golden sets) | [`tests/fixtures/golden/`](tests/fixtures/golden/) — `golden_v1.yaml` (droit), `golden_finance_v1.yaml` (finance) |
+| **Évaluation du moteur** (golden sets, runner) | **côté Harness** : `tests/golden/`, `tests/rag_eval/`, `tests/eval*.yaml` — voir le `README.md` racine |
 | **Vue d'ensemble du code** | section [Structure du repo](#structure-du-repo) plus bas |
 | **Intégration dans l'agent Harness** | le `README.md` à la racine du dépôt + `agent/rag.py` |
 
@@ -203,12 +203,13 @@ src/rag/
   retrieval/           # Dense / BM25 / Hybrid / ParentChild / Reranking
   graph/               # Nœuds LangGraph du CRAG
   generation/          # Prompts + post-processing (citations, grounding)
-  evaluation/          # Golden set + RAGAS + métriques custom
   api/                 # FastAPI (routers query / search / ingest / health)
   prompts/             # Templates Jinja2 versionnés
-configs/               # YAML par environnement (default / prod / eval / eval_finance)
-tests/                 # fixtures/golden + tests
+configs/               # YAML par environnement (default / prod)
 ```
+
+> L'**évaluation** (golden sets + runner) ne vit pas dans le moteur : elle est
+> côté Harness (`tests/`), qui consomme le moteur comme un outil.
 
 ## Statut
 
@@ -218,27 +219,8 @@ Voir la roadmap ci-dessus pour le détail.
 
 ### Évaluation
 
-```bash
-# (depuis rag_engine/)
-
-# Métriques retrieval — corpus juridique (rapide, pas de LLM)
-python -m rag.evaluation.run --config configs/eval.yaml
-
-# Métriques retrieval — corpus financier (SCPI / FCPI / FCPE)
-python -m rag.evaluation.run --config configs/eval_finance.yaml
-
-# Comparatif toutes stacks (dense / hybrid / +reranker) — corpus juridique
-python -m rag.evaluation.compare --config configs/eval.yaml --output compare_report.md
-
-# Comparatif toutes stacks — corpus financier
-python -m rag.evaluation.compare --config configs/eval_finance.yaml --output eval_report_finance.md
-
-# Tracer un run dans Langfuse (local)
-export RAG__OBSERVABILITY__LANGFUSE_ENABLED=true
-export LANGFUSE_PUBLIC_KEY=…     # depuis http://localhost:3000
-export LANGFUSE_SECRET_KEY=…
-uvicorn rag.api.app:app --host 127.0.0.1 --port 8000
-```
+Les commandes d'évaluation vivent **côté Harness** (`tests/rag_eval/`) — voir
+la section « Tests & éval » du `README.md` racine. Résultats actuels du moteur :
 
 Résultats actuels (corpus financier, 30 questions, k=5) :
 

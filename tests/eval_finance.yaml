@@ -1,9 +1,9 @@
 # Configuration d'éval pour le corpus financier (SCPI / FCPI / FCPE).
-# Usage : python -m rag.evaluation.run --config configs/eval_finance.yaml
-#         python -m rag.evaluation.compare --config configs/eval_finance.yaml \
+# Usage : python -m tests.rag_eval.run --config tests/eval_finance.yaml
+#         python -m tests.rag_eval.compare --config tests/eval_finance.yaml \
 #                 --output eval_report_finance.md
 
-golden_set: tests/fixtures/golden/golden_finance_v1.yaml
+golden_set: tests/golden/golden_finance_v1.yaml
 
 retrieval:
   k: 5

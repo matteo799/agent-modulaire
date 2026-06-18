@@ -41,6 +41,35 @@ def _tokenize(text: str) -> list[str]:
     return [m.group(0).lower() for m in _TOKEN_RE.finditer(text)]
 
 
+def load_bm25_corpus(store: Any) -> list[ChildChunk]:
+    """Charge tous les chunks d'un `QdrantVectorStore` pour bâtir l'index BM25.
+
+    Vit ici (et non dans l'éval) parce que c'est de la construction de corpus de
+    récupération : utilisé par le retrieval hybride et par les scripts de démo.
+    """
+    from rag.adapters.vector_stores.qdrant_store import QdrantVectorStore
+    from rag.interfaces.types import ChunkMetadata
+
+    if not isinstance(store, QdrantVectorStore):
+        raise TypeError("Le mode hybride nécessite un QdrantVectorStore.")
+
+    corpus: list[ChildChunk] = []
+    for h in store.scroll_all():
+        source_file = str(h.metadata.get("source_file", "unknown"))
+        page_raw = h.metadata.get("page")
+        page = int(page_raw) if isinstance(page_raw, int | float) else None
+        parent_id = str(h.metadata.get("parent_id", h.id))
+        corpus.append(
+            ChildChunk(
+                id=h.id,
+                parent_id=parent_id,
+                text=h.text,
+                metadata=ChunkMetadata(source_file=source_file, page=page),
+            )
+        )
+    return corpus
+
+
 class BM25Retriever:
     """Index BM25 (Okapi) en mémoire sur un corpus de `ChildChunk`.
 

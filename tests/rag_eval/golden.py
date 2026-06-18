@@ -1,6 +1,6 @@
 """Schéma et chargeur du golden set d'évaluation (M6.1).
 
-Le golden set est un YAML versionné dans `tests/fixtures/golden/` qui
+Le golden set est un YAML versionné dans `tests/golden/` qui
 recense des questions, des réponses idéales, et les chunks sources qui
 devaient être retrouvés. C'est notre référence pour :
 - les métriques retrieval (recall@k, MRR sur `expected_chunk_ids`),

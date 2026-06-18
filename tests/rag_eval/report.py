@@ -7,10 +7,10 @@ lecture. Pas besoin de jinja ici, on construit le texte à la main.
 
 from __future__ import annotations
 
-from rag.evaluation.citation_metrics import CitationReport
-from rag.evaluation.golden import GoldenSet
-from rag.evaluation.ragas_metrics import RagasReport
-from rag.evaluation.retrieval_metrics import RetrievalReport
+from .citation_metrics import CitationReport
+from .golden import GoldenSet
+from .ragas_metrics import RagasReport
+from .retrieval_metrics import RetrievalReport
 
 
 def _fmt_pct(value: float) -> str:

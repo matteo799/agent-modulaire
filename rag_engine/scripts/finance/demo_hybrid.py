@@ -21,7 +21,7 @@ from typing import Any
 
 from rag.config.factory import build_crag_graph_from_settings
 from rag.config.settings import load_settings
-from rag.evaluation.compare import _load_bm25_corpus
+from rag.retrieval.bm25 import load_bm25_corpus
 from rag.config.factory import build_vector_store
 from rag.interfaces.types import CRAGState
 
@@ -87,7 +87,7 @@ def main() -> int:
     # (requis par le mode hybride).
     vector_store = build_vector_store(settings)
     print("Chargement du corpus BM25 depuis Qdrant...", flush=True)
-    bm25_corpus = _load_bm25_corpus(vector_store)
+    bm25_corpus = load_bm25_corpus(vector_store)
     print(f"  → {len(bm25_corpus)} children chargés.", flush=True)
 
     # Qdrant local pose un lock exclusif sur le dossier. On relâche ce client

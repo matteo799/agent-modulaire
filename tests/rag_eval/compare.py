@@ -13,7 +13,7 @@ pas le retrieval. Ces métriques seraient donc identiques dans les deux cas.
 Pour évaluer CRAG (faithfulness, answer relevancy), il faut Ollama up + eval-full.
 
 Usage :
-    python -m rag.evaluation.compare --config configs/eval.yaml [--output compare_report.md]
+    python -m tests.rag_eval.compare --config tests/eval.yaml [--output compare_report.md]
 """
 
 from __future__ import annotations
@@ -22,45 +22,17 @@ import argparse
 from pathlib import Path
 from typing import Any
 
-from rag.adapters.vector_stores.qdrant_store import QdrantVectorStore
 from rag.config.factory import build_doc_store, build_embedder, build_vector_store
 from rag.config.settings import load_settings
-from rag.evaluation.golden import GoldenSet, load_golden_set
-from rag.evaluation.retrieval_metrics import RetrievalReport, evaluate_retrieval
-from rag.evaluation.run import load_eval_config
-from rag.interfaces import ChildChunk, Retriever
-from rag.interfaces.types import ChunkMetadata
+from rag.interfaces import Retriever
+from rag.retrieval.bm25 import load_bm25_corpus
 from rag.utils.logging import get_logger
 
+from .golden import GoldenSet, load_golden_set
+from .retrieval_metrics import RetrievalReport, evaluate_retrieval
+from .run import load_eval_config
+
 _log = get_logger(__name__)
-
-# ---------------------------------------------------------------------------
-# Corpus BM25 — chargé depuis Qdrant via scroll
-# ---------------------------------------------------------------------------
-
-
-def _load_bm25_corpus(store: Any) -> list[ChildChunk]:
-    """Charge tous les chunks stockés dans Qdrant pour l'index BM25."""
-    if not isinstance(store, QdrantVectorStore):
-        raise TypeError("Le mode hybride nécessite un QdrantVectorStore.")
-
-    hits = store.scroll_all()
-    corpus: list[ChildChunk] = []
-    for h in hits:
-        source_file = str(h.metadata.get("source_file", "unknown"))
-        page_raw = h.metadata.get("page")
-        page = int(page_raw) if isinstance(page_raw, int | float) else None
-        parent_id = str(h.metadata.get("parent_id", h.id))
-        corpus.append(
-            ChildChunk(
-                id=h.id,
-                parent_id=parent_id,
-                text=h.text,
-                metadata=ChunkMetadata(source_file=source_file, page=page),
-            )
-        )
-    _log.info("bm25.corpus_loaded", n=len(corpus))
-    return corpus
 
 
 # ---------------------------------------------------------------------------
@@ -85,7 +57,7 @@ def _build_stacks(settings: Any) -> list[tuple[str, Retriever]]:
     dense = DenseRetriever(embedder=embedder, vector_store=vector_store)
     pc_dense = cast(Retriever, ParentChildRetriever(inner=dense, doc_store=doc_store))
 
-    bm25_corpus = _load_bm25_corpus(vector_store)
+    bm25_corpus = load_bm25_corpus(vector_store)
 
     bm25_k = settings.retrieval.bm25_k
     dense_k = settings.retrieval.dense_k
@@ -166,7 +138,7 @@ _RERANKER_SKIPPED_NOTE = """\
 > ou des temps de chargement de plusieurs minutes en mode CPU.
 > Pour exécuter les stacks `+reranker`, utiliser une machine avec au
 > moins 16 Go de RAM ou un GPU dédié (CUDA), et passer :
->     `RAG__RERANKER__ENABLED=true python -m rag.evaluation.compare --config configs/eval.yaml`
+>     `RAG__RERANKER__ENABLED=true python -m tests.rag_eval.compare --config tests/eval.yaml`
 """
 
 
@@ -183,7 +155,7 @@ def _build_compare_report(
         "> **Note CRAG** : CRAG vs RAG simple partagent le même retriever et",
         "> donneraient des métriques retrieval **identiques**. Pour évaluer la",
         "> qualité de génération (faithfulness, answer relevancy), activer `ragas.enabled`",
-        "> dans la config d'éval et relancer `python -m rag.evaluation.run` avec Ollama up.",
+        "> dans la config d'éval et relancer `python -m tests.rag_eval.run` avec Ollama up.",
         "",
     ]
 
@@ -253,8 +225,8 @@ def run_compare(config_path: str | Path) -> str:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="rag.evaluation.compare")
-    parser.add_argument("--config", default="configs/eval.yaml")
+    parser = argparse.ArgumentParser(prog="tests.rag_eval.compare")
+    parser.add_argument("--config", default="tests/eval.yaml")
     parser.add_argument("--output", default="compare_report.md")
     args = parser.parse_args(argv)
 
