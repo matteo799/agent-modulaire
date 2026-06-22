@@ -95,9 +95,10 @@ class LLMSettings(BaseModel):
 
 class RerankerSettings(BaseModel):
     enabled: bool = True
-    # bge = cross-encoder local ; api = service /rerank HTTP (Cohere/Jina-compatible).
+    # bge = cross-encoder local ; api = service /rerank HTTP (Cohere/Jina) ;
+    # llm = le LLM configuré classe les passages en un appel (100 % API possible).
     # Modularité local ↔ API, symétrique à embedder/llm.
-    provider: Literal["bge", "api"] = "bge"
+    provider: Literal["bge", "api", "llm"] = "bge"
     model: str = "BAAI/bge-reranker-v2-m3"
     top_k: int = 5
     # Pour provider="api" : endpoint /rerank + clé (via env, jamais en clair).

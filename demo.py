@@ -16,13 +16,20 @@ from __future__ import annotations
 
 import os
 
+# DEMO_ALL_API=1 → pipeline 100 % API Claude, AUCUN modèle local d'IA :
+#   candidats par BM25 lexical (mots-clés, pas de modèle) → Claude reranke
+#   → Claude génère. Sinon : retrieval dense bge-m3 + reranker bge en local.
+ALL_API = os.environ.get("DEMO_ALL_API") == "1"
+
 # --- Config de la démo (AVANT tout import du moteur, pour que les settings la voient) ---
 os.environ.setdefault("RAG__VECTOR_STORE__COLLECTION", "dataset_finance")
 os.environ.setdefault("RAG__RERANKER__ENABLED", "true")
-os.environ.setdefault("RAG__RERANKER__DEVICE", "mps")        # GPU Apple (rapide ; CPU sinon)
-# CRAG désactivé pour la latence : la boucle corrective enchaîne 6 jugements LLM
-# par passage + des re-rerankings. On garde le RAG + reranker (le différenciateur
-# qualité) et la vérification d'ancrage (ground_check).
+if ALL_API:
+    os.environ.setdefault("RAG__RERANKER__PROVIDER", "llm")  # Claude reranke (pas de modèle local)
+else:
+    os.environ.setdefault("RAG__RERANKER__DEVICE", "mps")    # GPU Apple (rapide ; CPU sinon)
+# CRAG désactivé pour la latence (la boucle corrective enchaîne 6 jugements LLM
+# par passage). On garde RAG + reranker + vérification d'ancrage (ground_check).
 
 import sys
 import time
@@ -86,8 +93,10 @@ def _lat(dt: float) -> str:
 def narrate_node(node: str, update, dt: float) -> None:
     if node == "retrieve":
         hits = get(update, "hits", []) or []
-        print(f"   {C['cy']}● retrieve{C['x']} — dense BGE-M3 → parent-child → "
-              f"{C['b']}reranker (top {len(hits)}){C['x']}{_lat(dt)}")
+        chain = ("BM25 lexical → parent-child → Claude rerank" if ALL_API
+                 else "dense BGE-M3 → parent-child → reranker")
+        print(f"   {C['cy']}● retrieve{C['x']} — {chain} "
+              f"{C['b']}(top {len(hits)}){C['x']}{_lat(dt)}")
         for i, h in enumerate(hits, 1):
             src = get(get(h, "metadata", {}) or {}, "source_file", "?")
             page = get(get(h, "metadata", {}) or {}, "page", None)
@@ -128,7 +137,8 @@ def narrate_node(node: str, update, dt: float) -> None:
 
 def main() -> int:
     print(rule("═"))
-    print(f"{C['b']}  HARNESS — démo produit : agent + RAG modulaire (dense + reranker){C['x']}")
+    mode = "100 % API Claude (BM25 + Claude rerank)" if ALL_API else "dense bge-m3 + reranker bge (local)"
+    print(f"{C['b']}  HARNESS — démo produit : agent + RAG modulaire — {mode}{C['x']}")
     print(rule("═"))
 
     from rag.config.factory import build_llm, build_retriever
@@ -143,16 +153,31 @@ def main() -> int:
     settings.data_dir = RAG_ENGINE / "data"  # chemins absolus (cwd = racine Harness)
 
     print(f"  collection : {C['b']}{settings.vector_store.collection}{C['x']}    "
-          f"reranker : {C['b']}{'ON' if settings.reranker.enabled else 'OFF'} "
-          f"(k={K}, {settings.reranker.device}){C['x']}")
-    print(f"  pipeline   : {C['b']}retrieve → reranker → génération ancrée + citée{C['x']} "
-          f"{C['d']}(CRAG off pour la latence){C['x']}")
+          f"reranker : {C['b']}{settings.reranker.provider}{C['x']} (k={K})")
     print(f"  LLM        : {C['b']}{settings.llm.openai.model}{C['x']} "
           f"(via {settings.llm.openai.base_url})")
-    print(f"  {C['d']}chargement des modèles d'embedding + reranker…{C['x']}")
     t0 = time.time()
-    # Pool de candidats = retrieval.dense_k (20), rerankés → K=6 passages finaux.
-    retriever = build_retriever(settings)
+    if ALL_API:
+        # Aucun modèle local : candidats BM25 lexical (lit les textes depuis Qdrant,
+        # pas d'embedding) → parent-child → Claude reranke (LLMReranker).
+        print(f"  pipeline   : {C['b']}BM25 lexical → Claude rerank → Claude génère{C['x']} "
+              f"{C['d']}(zéro modèle local){C['x']}")
+        from rag.config.factory import build_doc_store, build_reranker, build_vector_store
+        from rag.retrieval.bm25 import BM25Retriever, load_bm25_corpus
+        from rag.retrieval.parent_child import ParentChildRetriever
+        from rag.retrieval.reranking import RerankingRetriever
+
+        store = build_vector_store(settings)
+        bm25 = BM25Retriever(load_bm25_corpus(store))
+        pc = ParentChildRetriever(inner=bm25, doc_store=build_doc_store(settings))
+        retriever = RerankingRetriever(
+            inner=pc, reranker=build_reranker(settings), candidate_k=settings.retrieval.dense_k
+        )
+    else:
+        print(f"  pipeline   : {C['b']}dense BGE-M3 → parent-child → reranker → génération{C['x']} "
+              f"{C['d']}(CRAG off pour la latence){C['x']}")
+        print(f"  {C['d']}chargement des modèles d'embedding + reranker…{C['x']}")
+        retriever = build_retriever(settings)
     graph = build_simple_rag_graph(retriever=retriever, llm=build_llm(settings), retrieve_k=K)
     print(f"  {C['d']}prêt en {time.time() - t0:.1f}s{C['x']}")
 
