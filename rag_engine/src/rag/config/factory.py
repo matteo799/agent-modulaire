@@ -140,6 +140,7 @@ def build_reranker(settings: Settings) -> Reranker | None:
             model=settings.reranker.model,
             device=settings.reranker.device,
             batch_size=settings.reranker.batch_size,
+            max_length=settings.reranker.max_length,
         ),
     )
 
