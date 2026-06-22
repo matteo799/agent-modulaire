@@ -3,13 +3,13 @@
 
 Montre, étape par étape, ce que fait le produit quand on lui pose une question :
 
-  1. PLANIFICATION   — l'agent décompose la tâche (LLM Claude).
-  2. RÉCUPÉRATION + CRAG — le moteur RAG modulaire :
-        dense (BGE-M3) → parent-child → RERANKER (top k=6)
-        → CRAG : grade des passages → décision → génération ancrée → ground-check
-  3. SYNTHÈSE        — l'agent rédige une réponse client, citée et vérifiée.
+  1. PLANIFICATION — l'agent décompose la tâche (LLM Claude).
+  2. RÉCUPÉRATION  — le moteur RAG modulaire :
+        dense (BGE-M3) → parent-child → RERANKER (top k=6) → génération ancrée
+        → ground_check (anti-hallucination) → citations [source:page]
+  3. SYNTHÈSE      — l'agent rédige une réponse client, citée et vérifiée.
 
-Config imposée : collection `dataset_finance`, reranker ON (k=6), CRAG ON.
+Config : collection `dataset_finance`, reranker ON (k=6, MPS), CRAG off (latence).
 Lancement :  python demo.py
 """
 from __future__ import annotations
@@ -19,7 +19,10 @@ import os
 # --- Config de la démo (AVANT tout import du moteur, pour que les settings la voient) ---
 os.environ.setdefault("RAG__VECTOR_STORE__COLLECTION", "dataset_finance")
 os.environ.setdefault("RAG__RERANKER__ENABLED", "true")
-os.environ.setdefault("RAG__CRAG__ENABLED", "true")          # boucle corrective
+os.environ.setdefault("RAG__RERANKER__DEVICE", "mps")        # GPU Apple (rapide ; CPU sinon)
+# CRAG désactivé pour la latence : la boucle corrective enchaîne 6 jugements LLM
+# par passage + des re-rerankings. On garde le RAG + reranker (le différenciateur
+# qualité) et la vérification d'ancrage (ground_check).
 
 import sys
 import time
@@ -32,10 +35,11 @@ RAG_ENGINE = ROOT / "rag_engine"
 # k = nombre de passages FINAUX après reranking (rerankés depuis le pool dense).
 K = 6
 
+# Questions choisies (sondées : passages réellement récupérés, sur le corpus finance).
 QUESTIONS = [
-    "Quelle est la politique de distribution des revenus du produit SCPI ?",
-    "Quel avantage fiscal offre la souscription à un FCPI éligible ?",
-    "Pendant combien d'années les parts d'un FCPI sont-elles bloquées ?",
+    "Quel est l'objectif de gestion et la stratégie d'investissement du fonds ?",
+    "Quels frais de gestion et commissions s'appliquent au fonds ?",
+    "Qui gère le fonds (société de gestion) et par quelle autorité est-il agréé ?",
 ]
 
 # ── petit habillage terminal (sans dépendance) ───────────────────────────────
@@ -102,6 +106,9 @@ def narrate_node(node: str, update, dt: float) -> None:
                 parts.append(f"{C[col]}{counts[lab]} {txt}{C['x']}")
         print(f"   {C['cy']}● grade{C['x']} — le LLM juge chaque passage : "
               + "  ".join(parts or [f"{C['d']}(aucun){C['x']}"]) + _lat(dt))
+    elif node == "prepare_context":
+        n = len(get(update, "refined_chunks", []) or [])
+        print(f"   {C['cy']}● contexte{C['x']} — {n} passages transmis au générateur{_lat(dt)}")
     elif node == "decide":
         dec = str(get(get(update, "decision", ""), "value", get(update, "decision", "")))
         print(f"   {C['cy']}● decide{C['x']} — décision corrective : {C['b']}{dec}{C['x']}{_lat(dt)}")
@@ -126,7 +133,7 @@ def main() -> int:
 
     from rag.config.factory import build_llm, build_retriever
     from rag.config.settings import load_settings
-    from rag.graph.builder import build_crag_graph
+    from rag.graph.builder import build_simple_rag_graph
     from rag.interfaces.types import CRAGState
 
     from agent import llm
@@ -137,15 +144,16 @@ def main() -> int:
 
     print(f"  collection : {C['b']}{settings.vector_store.collection}{C['x']}    "
           f"reranker : {C['b']}{'ON' if settings.reranker.enabled else 'OFF'} "
-          f"(k={K}){C['x']}    "
-          f"CRAG : {C['b']}{'ON' if settings.crag.enabled else 'OFF'}{C['x']}")
+          f"(k={K}, {settings.reranker.device}){C['x']}")
+    print(f"  pipeline   : {C['b']}retrieve → reranker → génération ancrée + citée{C['x']} "
+          f"{C['d']}(CRAG off pour la latence){C['x']}")
     print(f"  LLM        : {C['b']}{settings.llm.openai.model}{C['x']} "
           f"(via {settings.llm.openai.base_url})")
     print(f"  {C['d']}chargement des modèles d'embedding + reranker…{C['x']}")
     t0 = time.time()
     # Pool de candidats = retrieval.dense_k (20), rerankés → K=6 passages finaux.
     retriever = build_retriever(settings)
-    graph = build_crag_graph(retriever=retriever, llm=build_llm(settings), retrieve_k=K)
+    graph = build_simple_rag_graph(retriever=retriever, llm=build_llm(settings), retrieve_k=K)
     print(f"  {C['d']}prêt en {time.time() - t0:.1f}s{C['x']}")
 
     for i, q in enumerate(QUESTIONS, 1):
@@ -162,8 +170,8 @@ def main() -> int:
             print(f"   {C['g']}{j}.{C['x']} {step}")
         print(f"   {C['b']}⏱ étape : {time.time() - t:.1f}s{C['x']}")
 
-        # 2) RÉCUPÉRATION + CRAG  (latence affichée nœud par nœud)
-        stage("2", "RÉCUPÉRATION + CRAG — dense → parent-child → reranker → boucle corrective")
+        # 2) RÉCUPÉRATION  (latence affichée nœud par nœud)
+        stage("2", "RÉCUPÉRATION — dense BGE-M3 → parent-child → reranker → génération ancrée")
         t = time.time()
         state = CRAGState(original_query=q, query=q, max_iterations=settings.crag.max_iterations)
         final_answer = None
@@ -175,7 +183,7 @@ def main() -> int:
                 ans = get(update, "answer", None)
                 if ans is not None:
                     final_answer = ans
-        print(f"   {C['b']}⏱ total CRAG : {time.time() - t:.1f}s{C['x']}")
+        print(f"   {C['b']}⏱ total récupération+génération : {time.time() - t:.1f}s{C['x']}")
 
         # réponse ancrée + citations produites par le RAG
         if final_answer is not None:
@@ -208,7 +216,7 @@ def main() -> int:
 
     print("\n" + rule("═"))
     print(f"{C['b']}  Fin de la démo — 3 questions traitées de bout en bout.{C['x']}")
-    print(f"  {C['d']}plan → retrieval+reranker → CRAG (grade/décide/ancre/vérifie) → synthèse{C['x']}")
+    print(f"  {C['d']}plan → retrieval + reranker → génération ancrée & citée → synthèse client{C['x']}")
     print(rule("═"))
     return 0
 

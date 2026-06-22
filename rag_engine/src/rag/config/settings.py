@@ -98,6 +98,11 @@ class RerankerSettings(BaseModel):
     # Réduire si OOM sur GPU/MPS avec de longs passages (juridique, médical…).
     # 8 est sûr sur un M1 Air 8 GB avec BGE-M3 + reranker chargés ensemble.
     batch_size: int = 8
+    # Longueur max (tokens) traitée par le cross-encoder. Sans plafond, scorer
+    # de longs chunks parents est lent (attention quadratique) et peut OOM sur
+    # MPS. 512 suffit pour ordonner (le signal de pertinence est en tête de
+    # passage) et accélère le rerank d'un ordre de grandeur.
+    max_length: int = 512
 
 
 class RetrievalSettings(BaseModel):

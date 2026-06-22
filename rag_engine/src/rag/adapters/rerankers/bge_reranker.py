@@ -40,10 +40,12 @@ class BGEReranker:
         *,
         device: str = "auto",
         batch_size: int = 32,
+        max_length: int = 512,
     ) -> None:
         self._model_name = model
         self._device_pref = device
         self._batch_size = batch_size
+        self._max_length = max_length
         self._model: Any | None = None
 
     # --- Protocol -----------------------------------------------------------
@@ -89,7 +91,7 @@ class BGEReranker:
             model=self._model_name,
             device=device or "auto",
         )
-        self._model = CrossEncoder(self._model_name, device=device)
+        self._model = CrossEncoder(self._model_name, device=device, max_length=self._max_length)
         return self._model
 
 
