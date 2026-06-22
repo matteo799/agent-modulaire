@@ -55,7 +55,8 @@ def build_vector_store(settings: Settings) -> VectorStore:
 
 
 def build_embedder(settings: Settings) -> Embedder:
-    if settings.embedder.provider == "sentence_transformers":
+    provider = settings.embedder.provider
+    if provider == "sentence_transformers":
         from rag.adapters.embedders.sentence_transformers_embedder import (
             SentenceTransformersEmbedder,
         )
@@ -68,7 +69,19 @@ def build_embedder(settings: Settings) -> Embedder:
                 batch_size=settings.embedder.batch_size,
             ),
         )
-    raise ValueError(f"Unknown embedder provider: {settings.embedder.provider}")
+    if provider == "openai":
+        from rag.adapters.embedders.openai_embedder import OpenAIEmbedder
+
+        return cast(
+            Embedder,
+            OpenAIEmbedder(
+                model=settings.embedder.model,
+                base_url=settings.embedder.base_url,
+                api_key=settings.embedder.api_key,
+                batch_size=settings.embedder.batch_size,
+            ),
+        )
+    raise ValueError(f"Unknown embedder provider: {provider}")
 
 
 def build_llm(settings: Settings) -> LLMClient:
@@ -132,17 +145,31 @@ def build_llm(settings: Settings) -> LLMClient:
 def build_reranker(settings: Settings) -> Reranker | None:
     if not settings.reranker.enabled:
         return None
-    from rag.adapters.rerankers.bge_reranker import BGEReranker
+    provider = settings.reranker.provider
+    if provider == "bge":
+        from rag.adapters.rerankers.bge_reranker import BGEReranker
 
-    return cast(
-        Reranker,
-        BGEReranker(
-            model=settings.reranker.model,
-            device=settings.reranker.device,
-            batch_size=settings.reranker.batch_size,
-            max_length=settings.reranker.max_length,
-        ),
-    )
+        return cast(
+            Reranker,
+            BGEReranker(
+                model=settings.reranker.model,
+                device=settings.reranker.device,
+                batch_size=settings.reranker.batch_size,
+                max_length=settings.reranker.max_length,
+            ),
+        )
+    if provider == "api":
+        from rag.adapters.rerankers.api_reranker import APIReranker
+
+        return cast(
+            Reranker,
+            APIReranker(
+                model=settings.reranker.model,
+                base_url=settings.reranker.base_url,
+                api_key=settings.reranker.api_key,
+            ),
+        )
+    raise ValueError(f"Unknown reranker provider: {provider}")
 
 
 def build_doc_store(settings: Settings) -> DocumentStore:

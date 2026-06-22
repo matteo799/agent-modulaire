@@ -14,6 +14,29 @@
 - **On-prem ready** : embeddings et LLM open-weights, pas d'appel cloud obligatoire.
 - **Petites PRs** : workflow pensé pour un dev assisté par Claude — quand un test casse, on sait quelle PR blâmer.
 
+## Modularité : local ↔ API par composant
+
+Chaque brique se choisit **local ou API** par configuration (provider), sans
+toucher au code métier. Mêmes secrets via `.env` / variables d'env, jamais en clair.
+
+| Composant | Local | API / serveur | Clé de config |
+|---|---|---|---|
+| **LLM** | `ollama`, `lmstudio` | `openai` (OpenAI-compat : Claude via meai.cloud, vLLM…) | `RAG__LLM__PROVIDER` (+ `…__OPENAI__BASE_URL/MODEL/API_KEY`) |
+| **Embeddings** | `sentence_transformers` (bge-m3, in-process) | `openai` (`/v1/embeddings` : OpenAI, LM Studio, vLLM, Ollama via `/v1`) | `RAG__EMBEDDER__PROVIDER` (+ `…__BASE_URL/MODEL/API_KEY`) |
+| **Reranker** | `bge` (cross-encoder) | `api` (`/rerank` Cohere/Jina-compatible) | `RAG__RERANKER__PROVIDER` (+ `…__BASE_URL/MODEL/API_KEY`) |
+| **Vector store** | `qdrant` (local embarqué) | `qdrant` (serveur, `…__QDRANT__URL`) | `RAG__VECTOR_STORE__PROVIDER` |
+
+Exemple — embeddings servis par Ollama au lieu de l'in-process :
+```bash
+RAG__EMBEDDER__PROVIDER=openai \
+RAG__EMBEDDER__BASE_URL=http://localhost:11434/v1 \
+RAG__EMBEDDER__MODEL=bge-m3  RAG__EMBEDDER__API_KEY=ollama  python …
+```
+
+> ⚠️ **Embeddings** : l'index Qdrant est lié au *modèle* d'embedding. Changer de
+> fournisseur servant le **même** modèle (bge-m3) est gratuit ; changer de **modèle**
+> impose de **ré-ingérer** le corpus (sinon l'espace vectoriel ne correspond plus).
+
 ## Où trouver quoi
 
 | Besoin | Fichier |
