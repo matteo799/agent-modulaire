@@ -39,10 +39,16 @@ class VectorStoreSettings(BaseModel):
 
 
 class EmbedderSettings(BaseModel):
-    provider: Literal["sentence_transformers"] = "sentence_transformers"
+    # sentence_transformers = local in-process ; openai = API/serveur OpenAI-compatible
+    # (OpenAI, LM Studio, vLLM, Ollama via /v1). Modularité local ↔ API.
+    provider: Literal["sentence_transformers", "openai"] = "sentence_transformers"
     model: str = "BAAI/bge-m3"
     device: Literal["cpu", "cuda", "mps", "auto"] = "auto"
     batch_size: int = 32
+    # Pour provider="openai" uniquement. base_url accepte avec ou sans /v1.
+    base_url: str = "https://api.openai.com/v1"
+    # JAMAIS en clair dans la config : via `RAG__EMBEDDER__API_KEY` ou un `.env`.
+    api_key: str = ""
 
 
 class OllamaSettings(BaseModel):
@@ -89,8 +95,14 @@ class LLMSettings(BaseModel):
 
 class RerankerSettings(BaseModel):
     enabled: bool = True
+    # bge = cross-encoder local ; api = service /rerank HTTP (Cohere/Jina-compatible).
+    # Modularité local ↔ API, symétrique à embedder/llm.
+    provider: Literal["bge", "api"] = "bge"
     model: str = "BAAI/bge-reranker-v2-m3"
     top_k: int = 5
+    # Pour provider="api" : endpoint /rerank + clé (via env, jamais en clair).
+    base_url: str = ""
+    api_key: str = ""
     # `cpu` par défaut : le reranker tourne en CPU pour laisser MPS libre à
     # l'embedder (BGE-M3) et à Ollama. Sur une machine avec GPU dédié, passer
     # RAG__RERANKER__DEVICE=cuda.
