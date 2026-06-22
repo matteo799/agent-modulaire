@@ -42,6 +42,9 @@ RAG_ENGINE = ROOT / "rag_engine"
 # k = nombre de passages FINAUX après reranking (rerankés depuis le pool dense).
 K = 6
 
+# Étiquette de la chaîne de récupération, calculée dans main() selon les providers.
+_RETRIEVE_CHAIN = "retrieval"
+
 # Questions choisies (sondées : passages réellement récupérés, sur le corpus finance).
 QUESTIONS = [
     "Quels objectifs de gestion et stratégies d'investissement les fonds mettent-ils en œuvre ?",
@@ -93,9 +96,7 @@ def _lat(dt: float) -> str:
 def narrate_node(node: str, update, dt: float) -> None:
     if node == "retrieve":
         hits = get(update, "hits", []) or []
-        chain = ("BM25 lexical → parent-child → Claude rerank" if ALL_API
-                 else "dense BGE-M3 → parent-child → reranker")
-        print(f"   {C['cy']}● retrieve{C['x']} — {chain} "
+        print(f"   {C['cy']}● retrieve{C['x']} — {_RETRIEVE_CHAIN} "
               f"{C['b']}(top {len(hits)}){C['x']}{_lat(dt)}")
         for i, h in enumerate(hits, 1):
             src = get(get(h, "metadata", {}) or {}, "source_file", "?")
@@ -136,10 +137,7 @@ def narrate_node(node: str, update, dt: float) -> None:
 
 
 def main() -> int:
-    print(rule("═"))
-    mode = "100 % API Claude (BM25 + Claude rerank)" if ALL_API else "dense bge-m3 + reranker bge (local)"
-    print(f"{C['b']}  HARNESS — démo produit : agent + RAG modulaire — {mode}{C['x']}")
-    print(rule("═"))
+    global _RETRIEVE_CHAIN
 
     from rag.config.factory import build_llm, build_retriever
     from rag.config.settings import load_settings
@@ -152,16 +150,33 @@ def main() -> int:
     settings = load_settings(configs_dir=RAG_ENGINE / "configs")
     settings.data_dir = RAG_ENGINE / "data"  # chemins absolus (cwd = racine Harness)
 
-    print(f"  collection : {C['b']}{settings.vector_store.collection}{C['x']}    "
-          f"reranker : {C['b']}{settings.reranker.provider}{C['x']} (k={K})")
+    # Étiquettes dérivées des providers réels (la narration dit la vérité du mode).
+    if ALL_API:
+        embed_label = "BM25 lexical (aucun embedding)"
+    else:
+        embed_label = "dense bge-m3 (API)" if settings.embedder.provider == "openai" else "dense bge-m3 (local)"
+    rerank_label = {"bge": "reranker bge (local)", "api": "rerank API",
+                    "llm": "Claude rerank"}.get(settings.reranker.provider, settings.reranker.provider)
+    _RETRIEVE_CHAIN = f"{embed_label} → parent-child → {rerank_label}"
+    # « 100 % API » si rien ne tourne en local (ni embedding ni reranker locaux).
+    local_models = (not ALL_API and settings.embedder.provider == "sentence_transformers") \
+        or settings.reranker.provider == "bge"
+    badge = "modèles en local (in-process)" if local_models else "100 % via API (aucun modèle in-process)"
+
+    print(rule("═"))
+    print(f"{C['b']}  HARNESS — démo produit : agent + RAG modulaire — {badge}{C['x']}")
+    print(rule("═"))
+    print(f"  collection : {C['b']}{settings.vector_store.collection}{C['x']}    (k={K})")
+    print(f"  pipeline   : {C['b']}{embed_label} → {rerank_label} → Claude génère{C['x']}")
     print(f"  LLM        : {C['b']}{settings.llm.openai.model}{C['x']} "
           f"(via {settings.llm.openai.base_url})")
+    if local_models:
+        print(f"  {C['d']}chargement des modèles locaux…{C['x']}")
+
     t0 = time.time()
     if ALL_API:
-        # Aucun modèle local : candidats BM25 lexical (lit les textes depuis Qdrant,
-        # pas d'embedding) → parent-child → Claude reranke (LLMReranker).
-        print(f"  pipeline   : {C['b']}BM25 lexical → Claude rerank → Claude génère{C['x']} "
-              f"{C['d']}(zéro modèle local){C['x']}")
+        # Candidats BM25 lexical (lit les textes depuis Qdrant, pas d'embedding)
+        # → parent-child → reranker configuré.
         from rag.config.factory import build_doc_store, build_reranker, build_vector_store
         from rag.retrieval.bm25 import BM25Retriever, load_bm25_corpus
         from rag.retrieval.parent_child import ParentChildRetriever
@@ -174,9 +189,8 @@ def main() -> int:
             inner=pc, reranker=build_reranker(settings), candidate_k=settings.retrieval.dense_k
         )
     else:
-        print(f"  pipeline   : {C['b']}dense BGE-M3 → parent-child → reranker → génération{C['x']} "
-              f"{C['d']}(CRAG off pour la latence){C['x']}")
-        print(f"  {C['d']}chargement des modèles d'embedding + reranker…{C['x']}")
+        # build_retriever assemble dense(embedder configuré) → parent-child → reranker
+        # configuré : selon les providers, c'est local OU API, sans changer de code.
         retriever = build_retriever(settings)
     graph = build_simple_rag_graph(retriever=retriever, llm=build_llm(settings), retrieve_k=K)
     print(f"  {C['d']}prêt en {time.time() - t0:.1f}s{C['x']}")
