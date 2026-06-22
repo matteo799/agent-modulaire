@@ -169,6 +169,10 @@ def build_reranker(settings: Settings) -> Reranker | None:
                 api_key=settings.reranker.api_key,
             ),
         )
+    if provider == "llm":
+        from rag.adapters.rerankers.llm_reranker import LLMReranker
+
+        return cast(Reranker, LLMReranker(build_llm(settings)))
     raise ValueError(f"Unknown reranker provider: {provider}")
 
 
