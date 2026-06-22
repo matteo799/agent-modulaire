@@ -16,15 +16,26 @@ from __future__ import annotations
 
 import os
 
-# DEMO_ALL_API=1 → pipeline 100 % API Claude, AUCUN modèle local d'IA :
-#   candidats par BM25 lexical (mots-clés, pas de modèle) → Claude reranke
-#   → Claude génère. Sinon : retrieval dense bge-m3 + reranker bge en local.
+# Trois modes (raccourcis) :
+#   (défaut)        → tout en local : dense bge-m3 + reranker bge (in-process).
+#   DEMO_API=1      → tout via API : embeddings bge-m3 servis par API (Ollama par
+#                     défaut) + Claude reranke + Claude génère. Sémantique, 3/3.
+#   DEMO_ALL_API=1  → 100 % sans aucun modèle : BM25 lexical (mots-clés) + Claude.
 ALL_API = os.environ.get("DEMO_ALL_API") == "1"
+API = os.environ.get("DEMO_API") == "1"
 
 # --- Config de la démo (AVANT tout import du moteur, pour que les settings la voient) ---
 os.environ.setdefault("RAG__VECTOR_STORE__COLLECTION", "dataset_finance")
 os.environ.setdefault("RAG__RERANKER__ENABLED", "true")
-if ALL_API:
+if API:
+    # Embeddings via API (Ollama local par défaut ; pour du cloud, surcharger
+    # RAG__EMBEDDER__BASE_URL/MODEL/API_KEY) + reranking par Claude.
+    os.environ.setdefault("RAG__EMBEDDER__PROVIDER", "openai")
+    os.environ.setdefault("RAG__EMBEDDER__BASE_URL", "http://localhost:11434/v1")
+    os.environ.setdefault("RAG__EMBEDDER__MODEL", "bge-m3")
+    os.environ.setdefault("RAG__EMBEDDER__API_KEY", "ollama")
+    os.environ.setdefault("RAG__RERANKER__PROVIDER", "llm")
+elif ALL_API:
     os.environ.setdefault("RAG__RERANKER__PROVIDER", "llm")  # Claude reranke (pas de modèle local)
 else:
     os.environ.setdefault("RAG__RERANKER__DEVICE", "mps")    # GPU Apple (rapide ; CPU sinon)
