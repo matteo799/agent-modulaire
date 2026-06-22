@@ -37,9 +37,9 @@ K = 6
 
 # Questions choisies (sondées : passages réellement récupérés, sur le corpus finance).
 QUESTIONS = [
-    "Quel est l'objectif de gestion et la stratégie d'investissement du fonds ?",
-    "Quels frais de gestion et commissions s'appliquent au fonds ?",
-    "Qui gère le fonds (société de gestion) et par quelle autorité est-il agréé ?",
+    "Quels objectifs de gestion et stratégies d'investissement les fonds mettent-ils en œuvre ?",
+    "Quels frais de gestion et commissions s'appliquent aux fonds ?",
+    "Qui gère les fonds (société de gestion) et par quelle autorité sont-ils agréés ?",
 ]
 
 # ── petit habillage terminal (sans dépendance) ───────────────────────────────
@@ -128,7 +128,7 @@ def narrate_node(node: str, update, dt: float) -> None:
 
 def main() -> int:
     print(rule("═"))
-    print(f"{C['b']}  HARNESS — démo produit : agent + RAG modulaire (Corrective RAG){C['x']}")
+    print(f"{C['b']}  HARNESS — démo produit : agent + RAG modulaire (dense + reranker){C['x']}")
     print(rule("═"))
 
     from rag.config.factory import build_llm, build_retriever
