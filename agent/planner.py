@@ -13,11 +13,20 @@ Outils disponibles :
 {catalog}
 
 Règles :
-- 3 à 6 étapes maximum.
+- 3 à 7 étapes maximum.
 - Chaque étape doit être une action simple, faisable avec UN seul outil.
 - Pour consulter les documents internes, utilise rag_search avec une requête.
   N'invente jamais de nom de fichier pour read_file : tu ne connais pas les noms
   des fichiers, seul rag_search sait y accéder.
+- Tâche portant sur PLUSIEURS fonds/documents (comparer, « pour chaque fonds »,
+  « les fonds ») : NE FAIS PAS une seule recherche globale (elle ne ramène qu'un
+  fonds). À la place :
+    1) une étape `list_documents` pour identifier les fonds,
+    2) puis UNE étape rag_search PAR fonds, formulée génériquement car tu ne
+       connais pas encore les noms — ex. « Rechercher les infos du 1er fonds
+       (rag_search, en ciblant ce fonds via source) », « … du 2e fonds », etc.
+       (limite-toi à 2 ou 3 fonds pour tenir dans le nombre d'étapes),
+    3) puis seulement comparer/calculer, une fois chaque valeur collectée.
 - Ne calcule chaque grandeur qu'UNE seule fois : ne crée pas deux étapes de
   calcul pour le même résultat (cela produit des valeurs contradictoires).
 - La dernière étape doit produire le livrable final (souvent : écrire un rapport avec write_file).
