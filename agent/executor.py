@@ -25,6 +25,10 @@ Règles importantes :
   correspondre à ce que demande l'étape (ne pas confondre chercher une
   information et faire un calcul).
 - Les arguments doivent être des valeurs concrètes, jamais des noms de variables.
+- Si l'étape cible un fonds précis (« le 1er fonds », « le 2e fonds »…), renseigne
+  l'argument `source` de rag_search avec le nom/ISIN exact de ce fonds, tiré du
+  résultat de list_documents présent dans la mémoire (1er fonds = 1er de la liste,
+  etc.). Ainsi chaque recherche ne ramène QUE le fonds visé.
 - RÈGLE ABSOLUE sur les calculs : dès que l'étape implique une opération
   arithmétique (somme, écart, différence, produit, division, pourcentage,
   "calcule", "combien", "multiplie"…), tu DOIS choisir `calculator`. Ne fais
