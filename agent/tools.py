@@ -62,15 +62,20 @@ TOOLS = {
     "write_file": {
         "function": write_file,
         "description": "Écrit un fichier dans le workspace : à réserver à la production du "
-                       "livrable final. Ne reprendre que des valeurs présentes dans la "
-                       "mémoire de travail. Arguments : path (str), content (str).",
+                       "livrable final. Ne reprendre que des valeurs DÉJÀ présentes dans la "
+                       "mémoire de travail. INTERDICTION de calculer une valeur ici (somme, "
+                       "écart, produit, pourcentage) : tout calcul doit avoir été fait AVANT "
+                       "par calculator, et tu ne fais que recopier son résultat. "
+                       "Arguments : path (str), content (str).",
     },
     "calculator": {
         "function": calculator,
-        "description": "Évalue une expression arithmétique sur des nombres DÉJÀ connus "
-                       "(présents dans la mémoire de travail). NE PAS l'utiliser pour "
-                       "chercher une information : pour ça, utiliser rag_search. "
-                       "Arguments : expression (str).",
+        "description": "OBLIGATOIRE pour TOUT calcul arithmétique, même trivial (somme, "
+                       "écart/soustraction, produit, division, pourcentage). Tu ne dois "
+                       "JAMAIS calculer toi-même un nombre dans une réponse ou un fichier : "
+                       "passe toujours par cet outil. Opère sur des nombres DÉJÀ connus "
+                       "(présents dans la mémoire). NE PAS l'utiliser pour chercher une "
+                       "information (pour ça : rag_search). Arguments : expression (str).",
     },
 }
 
