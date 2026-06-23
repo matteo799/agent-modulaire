@@ -25,11 +25,19 @@ Règles importantes :
   correspondre à ce que demande l'étape (ne pas confondre chercher une
   information et faire un calcul).
 - Les arguments doivent être des valeurs concrètes, jamais des noms de variables.
+- RÈGLE ABSOLUE sur les calculs : dès que l'étape implique une opération
+  arithmétique (somme, écart, différence, produit, division, pourcentage,
+  "calcule", "combien", "multiplie"…), tu DOIS choisir `calculator`. Ne fais
+  JAMAIS le calcul toi-même, ni ici, ni plus tard dans write_file.
 - Pour calculator : remplace chaque grandeur par sa valeur numérique exacte tirée
-  de la mémoire de travail (ex. "92000 - 80000"), et vérifie que l'expression
-  calcule bien ce que demande l'étape — ne recopie pas une expression précédente.
+  de la mémoire de travail (ex. "92000 - 80000"). Choisis les BONS opérandes :
+  pour un écart entre plusieurs entités (fonds, produits…), prends une valeur de
+  chaque entité concernée — jamais deux valeurs d'une même entité. Vérifie que
+  l'expression calcule bien ce que demande l'étape ; ne recopie pas une
+  expression précédente.
 - Pour write_file : ne réutilise que des chiffres réellement présents dans la
-  mémoire de travail ; n'invente aucune valeur.
+  mémoire de travail (y compris les résultats déjà produits par calculator) ;
+  n'invente et ne calcule aucune valeur.
 
 Retourne uniquement un objet JSON, en commençant par la justification :
 {{"raison": "<pourquoi cet outil convient à l'étape>", "tool": "<nom>", "args": {{...}}}}
