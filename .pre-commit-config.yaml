@@ -1,0 +1,9 @@
+# Hooks pré-commit : lint + format automatiques (mêmes conventions que la CI).
+# Installation : `pip install pre-commit && pre-commit install`
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.12.0
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format

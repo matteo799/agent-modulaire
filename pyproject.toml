@@ -1,0 +1,27 @@
+# Outillage du niveau « agent » du mono-dépôt (le moteur a son propre
+# rag_engine/pyproject.toml). Pas de [project]/[build-system] ici : ce fichier
+# ne sert qu'à configurer ruff / pytest / mypy à la racine, avec les mêmes
+# conventions que le moteur pour que `ruff check .` et `pytest` soient cohérents.
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "RUF", "SIM"]
+# E501 : la longueur de ligne est gérée par le formateur (comme dans rag_engine).
+# RUF001/002/003 : « caractères Unicode ambigus » — faux positifs ici, le projet
+# est en français (accents) et manipule des symboles mathématiques (σ, ≤, …) à dessein.
+ignore = ["E501", "RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.per-file-ignores]
+# B011 : `assert` nu légitime dans les tests.
+"tests/*" = ["B011"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra -q --strict-markers"
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true  # beaucoup de libs ML ne sont pas typées

@@ -23,6 +23,7 @@ dataset/projet, jamais combinées : le moteur ne cherche que dans le corpus
 du projet courant. Pour basculer (ex. cours de droit), lancer l'agent avec
 `RAG__VECTOR_STORE__COLLECTION=dataset_droit`.
 """
+
 from __future__ import annotations
 
 import os
@@ -124,9 +125,7 @@ def rag_search(query: str, top_k: int = 3, source: str = "") -> str:
     if not relevant:
         return NO_MATCH_MESSAGE
 
-    return "\n\n".join(
-        f"[{h.metadata.get('source_file', '?')}]\n{h.text}" for h in relevant
-    )
+    return "\n\n".join(f"[{h.metadata.get('source_file', '?')}]\n{h.text}" for h in relevant)
 
 
 def list_sources() -> str:
