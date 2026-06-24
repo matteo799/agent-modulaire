@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Outillage léger : on ne teste ici que les parties DÉTERMINISTES de l'agent
+      # (calcul des métriques, outils, sélection, résilience). Les évals LLM/RAG
+      # (run_golden, rag_eval) nécessitent une clé API et des modèles lourds —
+      # elles ne tournent pas en CI.
+      - name: Installer l'outillage
+        run: pip install ruff pytest httpx
+
+      - name: Lint (ruff, conventions du dépôt)
+        run: ruff check agent main.py tests/agent tests/agent_finance
+
+      - name: Tests déterministes (sans réseau)
+        run: pytest tests/agent tests/agent_finance
