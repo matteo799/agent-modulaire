@@ -1,81 +1,135 @@
 # Mini Deep Agent
 
-Un agent minimal qui transforme un RAG classique en système agentique :
-le LLM planifie, choisit ses outils, exécute en boucle, garde une mémoire
-de travail sur disque et s'auto-corrige.
+Un agent minimal qui transforme un RAG classique en système **agentique** : le LLM
+planifie, choisit ses outils, exécute en boucle, garde une mémoire de travail sur disque
+et synthétise une réponse finale. Le RAG n'est plus le cœur du système — c'est **un outil
+parmi d'autres**.
+
+> **Cas d'usage principal — *rating fond*** : répondre à des questions sur des prospectus
+> de fonds (KID/DICI) et sur les **métriques d'optimisation** (Sharpe, Sortino, STARR,
+> Martin, budget CVaR/drawdown), avec un garde-fou strict : ne jamais inventer un chiffre
+> absent du corpus.
 
 ```
-Question complexe
-      ↓
-Planner        → liste d'étapes (agent/planner.py)
-      ↓
-Boucle agentique (agent/executor.py)
-  pour chaque étape :
-    choix d'outil → exécution → réflexion → mémoire
-      ↓
-Synthèse finale → workspace/rapport.md
+Question
+   │
+   ├─ 0. Sélection de métrique (si pertinent) ─ clarification éventuelle   agent/finance/
+   ├─ 1. Planification → liste d'étapes                                    agent/planner.py
+   ├─ 2. Boucle agentique : choix d'outil → exécution → réflexion → mémoire  agent/executor.py
+   │        outils : rag_search · list_documents · read_file · write_file ·
+   │                calculator · metric_*                                   agent/tools.py
+   └─ 3. Synthèse finale → workspace/rapport.md                            main.py
 ```
 
-## Architecture
+---
 
-| Fichier | Rôle |
+## Organisation du dépôt
+
+Mono-dépôt à **deux niveaux** : un agent minimal écrit à la main, et un moteur RAG
+réutilisable traité comme une brique.
+
+| Chemin | Rôle |
 |---|---|
-| `agent/llm.py` | Accès au LLM configuré (chat, chat JSON) — même provider que le moteur (Claude par défaut) |
-| `agent/planner.py` | Étape 1 — décompose la tâche en plan |
-| `agent/tools.py` | Étapes 2-3 — registre d'outils (`TOOLS`) |
-| `agent/rag.py` | Étape 7 — le RAG est un outil parmi d'autres |
-| `agent/executor.py` | Étapes 4-6 — boucle, mémoire de travail, réflexion |
-| `main.py` | Point d'entrée CLI + synthèse finale |
-| `rag_engine/` | Moteur RAG modulaire (Parent-Child + Corrective RAG) interrogé par `agent/rag.py` |
-| `documents/` | Corpus source, **une entrée unique organisée par dataset** : `documents/finance/`, `documents/droit/` |
-| `workspace/` | Mémoire de l'agent : `plan.md`, `notes.md`, `rapport.md` |
+| `agent/` | L'agent : `llm.py` (accès LLM + résilience), `planner.py`, `tools.py`, `executor.py`, `rag.py` (adaptateur sur le moteur). |
+| `agent/finance/` | Couche métriques *rating fond* : `metrics.py` (calcul pur), `metric_catalog.py`, `select.py` (sélection + clarification). |
+| `main.py` | Point d'entrée CLI + synthèse finale. |
+| `rag_engine/` | Moteur RAG modulaire (bge-m3 → parent-child → reranker + juge de pertinence LLM). Package installable, packagé/typé à part. |
+| `documents/<dataset>/` | Corpus source (PDF), **un dossier par dataset** : `finance/`, `droit/`. |
+| `workspace/` | Mémoire de l'agent (régénérée à chaque run) : `plan.md`, `notes.md`, `rapport.md`. |
+| `tests/` | Tests unitaires (`agent/`, `agent_finance/`) + éval bout-en-bout (`run_golden.py`) + éval récupération (`rag_eval/`). |
+| `docs/architecture.md` · `docs/CHOIX_DE_CONCEPTION.md` · `docs/GUARDRAILS.md` | Documentation (voir plus bas). |
 
-> Le RAG n'est plus le mini-index NumPy d'origine : `agent/rag.py` est un adaptateur
-> mince sur le moteur `rag_engine/` (retriever bge-m3 → parent-child → reranker + juge
-> de pertinence LLM). Règle d'architecture : **une collection Qdrant par dataset, jamais
-> combinées** — on choisit le corpus via `RAG__VECTOR_STORE__COLLECTION` (`dataset_finance`
-> par défaut, `dataset_droit` pour les cours de droit).
+---
 
-## Prérequis
-
-- **LLM (agent ET moteur)** : par défaut Claude via la passerelle OpenAI-compatible
-  meai.cloud (`provider: openai` dans `rag_engine/configs/default.yaml`, modèle
-  `claude-sonnet-4-6`). L'agent et le moteur partagent ce réglage. La clé se met dans
-  un `.env` gitignoré (`RAG__LLM__OPENAI__API_KEY=…`), jamais dans la config.
-  Les passes d'éval forcent `claude-haiku-4-5` (économe).
-- **Mode 100 % local** (optionnel) : basculer `provider: ollama` + lancer
-  [Ollama](https://ollama.com) (`ollama pull qwen2.5:7b` / `mistral:7b-instruct`).
-- Python ≥ 3.11, le moteur RAG installé en éditable : `pip install -e ./rag_engine`
-  (tire les dépendances de récupération : bge-m3, reranker, Qdrant)
-
-## Utilisation
+## Démarrage rapide
 
 ```bash
+# 1. Installer le moteur RAG (tire les dépendances de récupération : bge-m3, reranker, Qdrant)
+pip install -e ./rag_engine
+
+# 2. Clé API (jamais dans la config versionnée) — dans un .env gitignoré à la racine
+echo 'RAG__LLM__OPENAI__API_KEY=sk-...' > .env
+
+# 3. Lancer l'agent
 python main.py "Analyse les documents internes et fais un résumé des risques."
 ```
 
-Les documents source vivent dans `documents/<dataset>/` (PDF). Pour ajouter un
-corpus, déposez les fichiers dans `documents/<dataset>/` puis (ré)indexez avec le
-moteur — voir `rag_engine/README.md`. L'outil `rag_search` de l'agent interroge la
-collection configurée (un dataset à la fois).
+Les documents source vivent dans `documents/<dataset>/`. Pour ajouter un corpus :
+déposer les PDF puis (ré)indexer avec le moteur (`python -m rag.ingestion.cli` — voir
+`rag_engine/README.md`). L'outil `rag_search` interroge la collection configurée
+(**un dataset à la fois**).
+
+---
+
+## Configuration
+
+Tout se règle dans `rag_engine/configs/default.yaml` (l'agent **et** le moteur partagent
+le LLM). Les variables d'env `RAG__SECTION__KEY` priment sur la config.
+
+| Clé | Défaut | Effet |
+|---|---|---|
+| `llm.provider` | `openai` | Passerelle OpenAI-compatible (Claude). `ollama` pour du 100 % local. |
+| `llm.openai.model` | `claude-opus-4-8` | Modèle de l'agent **et** du moteur. |
+| `llm.max_tokens` | `4096` | Plafond de génération. |
+| `vector_store.collection` | `dataset_finance` | Corpus interrogé. `dataset_droit` pour les cours de droit. |
+
+- **Clé API** : uniquement via `.env` (`RAG__LLM__OPENAI__API_KEY`), jamais dans le YAML.
+- **Mode 100 % local** : `provider: ollama` + [Ollama](https://ollama.com)
+  (`ollama pull qwen2.5:7b`).
+- **Éval économe** : forcer un modèle léger via `RAG__LLM__OPENAI__MODEL=claude-haiku-4-5`.
+
+---
+
+## Métriques *rating fond*
+
+Chaque métrique de `docs/metriques_optimisation_gold.md` est exposée comme **un outil**
+(`metric_sharpe`, `metric_sortino`, …). Comportement :
+
+- **Calcul best-effort** : calcule si on fournit les entrées (R/σ, ou une série de
+  rendements), ou les lit dans le document via `source` (ISIN).
+- **Garde-fou honnête** : un KID/DICI ne contient pas de série de rendements → si le calcul
+  est impossible, l'outil **explique la métrique sans inventer de chiffre**.
+- **Sélection par caractéristiques** : le planner choisit le bon ratio selon l'intention
+  (Sharpe vs Sortino…) et **demande une clarification** quand deux se valent.
+
+Détails et règles : `docs/GUARDRAILS.md` et `docs/architecture.md` §7.
+
+---
 
 ## Tests & éval
 
-Deux niveaux, testés séparément (le moteur RAG est un outil ; Harness le consomme) :
-
-| Quoi | Où | Lancer |
-|---|---|---|
-| **Agent de bout en bout** — l'agent produit-il un bon rapport ? | `tests/run_golden.py` + `tests/golden_fonds_v1.yaml` | `python tests/run_golden.py` |
-| **Récupération du moteur** — le RAG ramène-t-il les bons passages ? | `tests/rag_eval/` + `tests/golden/` + `tests/eval*.yaml` | voir ci-dessous |
+Système non déterministe → tests unitaires sur les parties déterministes + golden sets +
+démos rejouables.
 
 ```bash
-# Métriques retrieval — corpus droit (rapide, sans LLM)
-python -m tests.rag_eval.run --config tests/eval.yaml
-# Métriques retrieval — corpus finance
+# Tests unitaires (calcul des métriques, outils, sélection, résilience) — rapides, sans réseau
+pytest tests/agent tests/agent_finance
+
+# Agent de bout en bout (golden set)
+python tests/run_golden.py
+
+# Récupération du moteur (par dataset, jamais combinés)
 python -m tests.rag_eval.run --config tests/eval_finance.yaml
-# Comparatif des stacks (dense / hybrid / +reranker)
-python -m tests.rag_eval.compare --config tests/eval.yaml --output compare_report.md
 ```
 
-> Une config d'éval par dataset (`eval.yaml` = droit, `eval_finance.yaml` = finance) :
-> on évalue chaque collection séparément — jamais combinées.
+---
+
+## Documentation
+
+| Fichier | Contenu |
+|---|---|
+| **`docs/architecture.md`** | Ce qu'est le système et comment il marche, composant par composant. |
+| **`docs/CHOIX_DE_CONCEPTION.md`** | Le *pourquoi* : justification de chaque choix depuis la naissance du projet. |
+| **`docs/GUARDRAILS.md`** | Récapitulatif des garde-fous (rejet hors-corpus, calcul honnête, robustesse…). |
+| `docs/metriques_optimisation_gold.md` | Définitions de référence des 6 métriques d'optimisation. |
+| `docs/demos/` | Sorties de démonstration rejouables (30 questions, comparaison, multi-tâches). |
+| `rag_engine/README.md` | Le moteur RAG : ingestion, stack de récupération, éval. |
+
+---
+
+## Statut & limites
+
+Projet de démonstration, limites assumées (détaillées dans `docs/CHOIX_DE_CONCEPTION.md` §10) :
+plan figé (pas de re-planification globale), ingestion manuelle hors agent, calcul
+multi-étapes fiabilisé mais non verrouillé, **pas plus d'information que le corpus**
+(les ratios exigeant une série de rendements ne se calculent que si on la fournit).
