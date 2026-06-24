@@ -1,4 +1,5 @@
 """Étape 1 : le LLM devient un planificateur."""
+
 from agent import llm
 from agent.tools import tools_catalog
 
@@ -33,9 +34,14 @@ Règles :
 
 Chaque étape est une PHRASE (chaîne de caractères), pas un objet. Adapte-les à
 la tâche réelle ci-dessus — ne recopie pas l'exemple.
-
+{metric_hint}
 Retourne uniquement un objet JSON. Exemple de FORMAT (à ne pas recopier tel quel) :
 {{"steps": ["Chercher les informations sur X", "Synthétiser les résultats", "Écrire le rapport final"]}}
+"""
+
+METRIC_HINT = """
+- Métrique retenue pour cette tâche : `{metric}` ({rationale}). L'étape de calcul
+  doit cibler explicitement l'outil `metric_{metric}` (et non un autre ratio).
 """
 
 
@@ -51,10 +57,15 @@ def _step_text(step) -> str:
     return str(step)
 
 
-def make_plan(user_query: str) -> list[str]:
-    """Demande au LLM de décomposer la tâche en liste d'étapes."""
-    prompt = PLAN_PROMPT.format(user_query=user_query, catalog=tools_catalog())
+def make_plan(user_query: str, metric: str = "", rationale: str = "") -> list[str]:
+    """Demande au LLM de décomposer la tâche en liste d'étapes.
+
+    `metric` (optionnel) : clé de la métrique retenue en amont par
+    `agent.finance.select` — injectée pour que le plan cible le bon outil.
+    """
+    hint = METRIC_HINT.format(metric=metric, rationale=rationale) if metric else ""
+    prompt = PLAN_PROMPT.format(user_query=user_query, catalog=tools_catalog(), metric_hint=hint)
     plan = llm.chat_json(prompt, system=PLAN_SYSTEM)
     if isinstance(plan, dict):
-        plan = plan.get("steps", list(plan.values())[0] if plan else [])
+        plan = plan.get("steps", next(iter(plan.values())) if plan else [])
     return [_step_text(step) for step in plan]

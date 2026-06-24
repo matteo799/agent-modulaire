@@ -1,7 +1,11 @@
 """Registre d'outils : l'agent connaît ses capacités via TOOLS."""
+
+import re
 from pathlib import Path
 
-from agent.rag import rag_search, list_sources
+from agent.finance import metric_catalog
+from agent.finance.metric_catalog import CATALOG, MetricSpec
+from agent.rag import list_sources, rag_search
 
 WORKSPACE_DIR = Path(__file__).resolve().parent.parent / "workspace"
 DOCUMENTS_DIR = Path(__file__).resolve().parent.parent / "documents"
@@ -36,48 +40,178 @@ def calculator(expression: str) -> str:
         return f"Erreur de calcul : {exc}"
 
 
+# ── Outils « métriques d'optimisation » (projet rating fond) ──────────────
+#
+# Un outil PAR métrique, généré depuis le catalogue. Chaque outil :
+#   1. calcule si les entrées sont fournies (R/σ, ou une série de rendements) ;
+#   2. sinon tente de lire R et σ dans le document via `source` (ISIN) ;
+#   3. sinon explique la métrique et ses caractéristiques SANS inventer de
+#      chiffre (garde-fou honnête : un KID ne contient pas de série de
+#      rendements). La famille « budget » (CVaR/drawdown) est explicative
+#      seulement (le calcul réel exige un univers multi-fonds + rendements).
+
+_PCT_RE = re.compile(r"(-?\d+(?:[.,]\d+)?)\s*%")
+
+
+def _to_decimal(value):
+    """Coerce une entrée numérique tolérante en décimal (None reste None).
+
+    "8 %" → 0.08 ; "0,08" → 0.08 ; "0.08" → 0.08 ; 0.08 → 0.08.
+    Un nombre nu (sans %) est pris tel quel : on attend des décimaux (cf. doc).
+    """
+    if value is None or isinstance(value, bool):
+        return None
+    if isinstance(value, int | float):
+        return float(value)
+    text = str(value).strip().replace(",", ".")
+    if not text:
+        return None
+    if text.endswith("%"):
+        return float(text[:-1].strip()) / 100.0
+    return float(text)
+
+
+def _source_r_sigma(source: str) -> tuple[float | None, float | None]:
+    """Tente de lire R (perf annualisée) et σ (volatilité) dans le document.
+
+    Best-effort : la plupart des KID ne les impriment pas. On interroge le RAG
+    en ciblant le fonds (`source`) et on parse un pourcentage à proximité des
+    mots-clés. En cas d'absence, renvoie (None, None) → garde-fou côté outil.
+    """
+    if not source:
+        return None, None
+
+    def _first_pct(query: str):
+        text = rag_search(query, source=source)
+        if "Aucun passage pertinent" in text:
+            return None
+        m = _PCT_RE.search(text)
+        return float(m.group(1).replace(",", ".")) / 100.0 if m else None
+
+    R = _first_pct("performance annualisée rendement annuel moyen du fonds")
+    sigma = _first_pct("volatilité annualisée écart-type du fonds")
+    return R, sigma
+
+
+def build_metric_tool(s: MetricSpec):
+    """Construit la fonction-outil d'une métrique à partir de sa spec."""
+
+    def _tool(source: str = "", returns=None, rf=None, periods_per_year: int = 252, **kwargs):
+        carac = metric_catalog.render_characteristics(s)
+
+        # Famille « budget » : explicatif seulement.
+        if s.scalar_fn is None and s.returns_fn is None:
+            return (
+                f"Le calcul réel de « {s.nom} » n'est pas disponible : il nécessite "
+                f"{s.donnees_requises} (non présents dans le repo). "
+                f"Caractéristiques :\n{carac}"
+            )
+
+        rf_dec = _to_decimal(rf) or 0.0
+
+        # 1) Série de rendements fournie → calcul direct.
+        if returns and s.returns_fn is not None:
+            try:
+                series = [_to_decimal(r) for r in returns]
+                value = s.returns_fn(series, rf_dec, periods_per_year)
+                return f"{s.nom} = {value:.4f} (depuis {len(series)} rendements, rf={rf_dec:.2%})"
+            except Exception as exc:
+                return f"Erreur de calcul ({s.nom}) : {exc}"
+
+        # 2) Entrées scalaires fournies (ou récupérables depuis le document).
+        # On ne lit QUE les paramètres numériques reconnus : un argument parasite
+        # passé par le planner est ignoré, pas coercé.
+        provided: dict[str, float] = {"rf": rf_dec}
+        for name in ("R", "sigma", "downside_dev", "cvar", "ulcer"):
+            if kwargs.get(name) is None:
+                continue
+            try:
+                provided[name] = _to_decimal(kwargs[name])
+            except (TypeError, ValueError):
+                return f"Erreur d'argument ({s.nom}) : `{name}` n'est pas un nombre ({kwargs[name]!r})."
+
+        missing = [n for n in s.scalar_required if provided.get(n) is None]
+        # Sourcing best-effort : seuls R et σ peuvent venir d'un document.
+        if missing and source and set(missing) <= {"R", "sigma"}:
+            R, sigma = _source_r_sigma(source)
+            if R is not None and "R" in missing:
+                provided["R"] = R
+            if sigma is not None and "sigma" in missing:
+                provided["sigma"] = sigma
+            missing = [n for n in s.scalar_required if provided.get(n) is None]
+
+        if not missing:
+            try:
+                value = s.scalar_fn(provided)
+                return f"{s.nom} = {value:.4f} (rf={rf_dec:.2%})"
+            except Exception as exc:
+                return f"Erreur de calcul ({s.nom}) : {exc}"
+
+        # 3) Garde-fou honnête : pas de quoi calculer.
+        src = f" pour {source}" if source else ""
+        return (
+            f"Calcul du {s.nom} impossible{src} : il manque {', '.join(missing)}. "
+            f"Cette métrique requiert {s.donnees_requises}, absent(e) d'un KID/DICI. "
+            f"Aucune valeur inventée. Caractéristiques :\n{carac}"
+        )
+
+    _tool.__name__ = f"metric_{s.key}"
+    _tool.__doc__ = metric_catalog.tool_description(s)
+    return _tool
+
+
 TOOLS = {
     "rag_search": {
         "function": rag_search,
         "description": "Recherche sémantique dans les documents internes (dossier documents/). "
-                       "À utiliser pour TOUTE information à retrouver dans les documents "
-                       "(faits, chiffres, dates). NE PAS deviner de nom de fichier. "
-                       "Si la réponse indique qu'aucun passage pertinent n'existe, c'est que "
-                       "les documents ne couvrent pas le sujet : ne pas inventer. "
-                       "Arguments : query (str), top_k (int, optionnel), "
-                       "source (str, optionnel : restreint la recherche à un document, ex. un ISIN).",
+        "À utiliser pour TOUTE information à retrouver dans les documents "
+        "(faits, chiffres, dates). NE PAS deviner de nom de fichier. "
+        "Si la réponse indique qu'aucun passage pertinent n'existe, c'est que "
+        "les documents ne couvrent pas le sujet : ne pas inventer. "
+        "Arguments : query (str), top_k (int, optionnel), "
+        "source (str, optionnel : restreint la recherche à un document, ex. un ISIN).",
     },
     "list_documents": {
         "function": list_sources,
         "description": "Liste les documents/fonds disponibles dans documents/. Sans argument. "
-                       "Utile en première étape pour comparer plusieurs fonds un par un "
-                       "(via le paramètre source de rag_search).",
+        "Utile en première étape pour comparer plusieurs fonds un par un "
+        "(via le paramètre source de rag_search).",
     },
     "read_file": {
         "function": read_file,
         "description": "Lit un fichier texte dont le nom est DÉJÀ connu (ex. une note écrite "
-                       "à une étape précédente). Pour explorer les documents internes, "
-                       "utiliser plutôt rag_search. Arguments : path (str).",
+        "à une étape précédente). Pour explorer les documents internes, "
+        "utiliser plutôt rag_search. Arguments : path (str).",
     },
     "write_file": {
         "function": write_file,
         "description": "Écrit un fichier dans le workspace : à réserver à la production du "
-                       "livrable final. Ne reprendre que des valeurs DÉJÀ présentes dans la "
-                       "mémoire de travail. INTERDICTION de calculer une valeur ici (somme, "
-                       "écart, produit, pourcentage) : tout calcul doit avoir été fait AVANT "
-                       "par calculator, et tu ne fais que recopier son résultat. "
-                       "Arguments : path (str), content (str).",
+        "livrable final. Ne reprendre que des valeurs DÉJÀ présentes dans la "
+        "mémoire de travail. INTERDICTION de calculer une valeur ici (somme, "
+        "écart, produit, pourcentage) : tout calcul doit avoir été fait AVANT "
+        "par calculator, et tu ne fais que recopier son résultat. "
+        "Arguments : path (str), content (str).",
     },
     "calculator": {
         "function": calculator,
         "description": "OBLIGATOIRE pour TOUT calcul arithmétique, même trivial (somme, "
-                       "écart/soustraction, produit, division, pourcentage). Tu ne dois "
-                       "JAMAIS calculer toi-même un nombre dans une réponse ou un fichier : "
-                       "passe toujours par cet outil. Opère sur des nombres DÉJÀ connus "
-                       "(présents dans la mémoire). NE PAS l'utiliser pour chercher une "
-                       "information (pour ça : rag_search). Arguments : expression (str).",
+        "écart/soustraction, produit, division, pourcentage). Tu ne dois "
+        "JAMAIS calculer toi-même un nombre dans une réponse ou un fichier : "
+        "passe toujours par cet outil. Opère sur des nombres DÉJÀ connus "
+        "(présents dans la mémoire). NE PAS l'utiliser pour chercher une "
+        "information (pour ça : rag_search). Arguments : expression (str).",
     },
 }
+
+
+# Injection des 6 outils-métriques, générés depuis le catalogue (un par ratio /
+# objectif). Leur description porte les caractéristiques décisives pour que le
+# planner choisisse le bon outil selon l'intention.
+for _spec in CATALOG.values():
+    TOOLS[f"metric_{_spec.key}"] = {
+        "function": build_metric_tool(_spec),
+        "description": metric_catalog.tool_description(_spec),
+    }
 
 
 def tools_catalog() -> str:

@@ -6,14 +6,35 @@ meai.cloud par défaut, ou `ollama` pour du 100 % local). Un seul endroit pour
 choisir le modèle ; on peut surcharger ponctuellement via les variables d'env
 `RAG__LLM__...` (ex. l'éval force `RAG__LLM__OPENAI__MODEL=claude-haiku-4-5`).
 """
+
 from __future__ import annotations
 
 import json
 import re
+import time
 from functools import lru_cache
 from pathlib import Path
 
+import httpx
+
 _RAG_ENGINE_ROOT = Path(__file__).resolve().parent.parent / "rag_engine"
+
+# Robustesse réseau : le client du moteur réessaie déjà 3× sur ConnectError /
+# ReadTimeout (tenacity), mais d'AUTRES erreurs transport (RemoteProtocolError,
+# coupure serveur…) remontent telles quelles et tuent tout le run. On ajoute ici
+# un filet au niveau agent : quelques tentatives supplémentaires, puis une
+# exception TYPÉE que les étages (planner, executor, synthèse) savent dégrader
+# proprement au lieu de planter.
+_AGENT_RETRIES = 2
+_BACKOFF_S = 1.5
+
+
+class LLMUnavailable(RuntimeError):
+    """Le service LLM est injoignable après retries (réseau / timeout / 5xx).
+
+    Distincte d'une erreur de contenu : signale une indisponibilité transitoire
+    du service, à traiter par un repli gracieux, pas par une stack trace.
+    """
 
 
 @lru_cache(maxsize=1)
@@ -38,7 +59,19 @@ def chat(prompt: str, system: str | None = None, json_mode: bool = False) -> str
     parts.append(prompt)
     if json_mode:
         parts.append("Réponds UNIQUEMENT avec un objet JSON valide, sans aucun texte autour.")
-    return _client().generate("\n\n".join(parts))
+    text = "\n\n".join(parts)
+
+    last_exc: Exception | None = None
+    for attempt in range(_AGENT_RETRIES + 1):
+        try:
+            return _client().generate(text)
+        except httpx.HTTPError as exc:  # transport + statut HTTP (5xx via raise_for_status)
+            last_exc = exc
+            if attempt < _AGENT_RETRIES:
+                time.sleep(_BACKOFF_S * (attempt + 1))
+    raise LLMUnavailable(
+        f"LLM injoignable après {_AGENT_RETRIES + 1} tentatives : {last_exc}"
+    ) from last_exc
 
 
 def _parse_json(raw: str):
