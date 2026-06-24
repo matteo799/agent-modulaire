@@ -127,19 +127,38 @@ sur un cas aussi simple.
   Sans cela, le LLM invente des étapes irréalisables ("envoyer un email").
   En lui montrant ses capacités réelles, chaque étape correspond à un outil
   existant.
-- **3 à 6 étapes maximum, une étape = un outil.** Contrainte volontaire :
+- **3 à 7 étapes maximum, une étape = un outil.** Contrainte volontaire :
   chaque étape doit être atomique pour que la sélection d'outil (§5) soit un
-  problème trivial. Et borner le plan borne le temps d'exécution total.
+  problème trivial. Et borner le plan borne le temps d'exécution total. (Plafond
+  porté de 6 à 7 pour laisser la place à la décomposition multi-entités
+  ci-dessous.)
 - **La dernière étape doit produire le livrable** (généralement `write_file`) :
   cela force le plan à converger vers un résultat concret plutôt qu'une suite
   de recherches sans conclusion.
-- **Sortie défensive** : le prompt demande `{"steps": [...]}`, mais le code
-  accepte aussi une liste nue ou un dict avec une autre clé
-  (`list(plan.values())[0]`), car les petits modèles ne respectent pas
-  toujours le schéma exact. Mieux vaut récupérer un plan imparfait que
-  planter.
-- **Un exemple de sortie dans le prompt** (few-shot minimal) : montrer le
-  format attendu est plus efficace que le décrire.
+- **Décomposition des tâches multi-entités (multi-fonds).** Une tâche du type
+  « compare 3 fonds » produisait, en une seule étape de recherche globale, des
+  passages d'UN seul fonds — la comparaison et le calcul qui suivaient étaient
+  alors faux *par construction* (observé sur la 1ʳᵉ version de
+  `demo_multi_tache.md` : `2.3 - 0.5373`, deux frais du même fonds). Le planner
+  est donc nudgé : sur une tâche portant sur plusieurs documents, il insère une
+  étape `list_documents` puis **une étape `rag_search` par fonds**, formulée
+  *génériquement* (« le 1ᵉʳ fonds », « le 2ᵉ fonds »…) car les noms ne sont pas
+  connus au moment de la planification (le plan est figé, cf. §1 et §10). C'est
+  l'**exécuteur** qui, au moment de l'exécution, remplit le paramètre `source`
+  de `rag_search` avec le bon fonds tiré du résultat de `list_documents`. Le
+  calcul et le livrable n'interviennent qu'*après* avoir collecté la valeur de
+  chaque fonds. C'est le correctif le plus rentable mesuré sur les tâches de
+  comparaison.
+- **Sortie défensive.** Le prompt demande `{"steps": [...]}`, mais le code
+  accepte aussi une liste nue, un dict avec une autre clé
+  (`list(plan.values())[0]`), et des étapes renvoyées en **objet**
+  (`{"step": 1, "action": "…"}`) qu'il renormalise en phrase (`_step_text`) : un
+  LLM dérive parfois vers un schéma plus riche. Mieux vaut récupérer un plan
+  imparfait que planter.
+- **Un exemple de sortie dans le prompt** (few-shot minimal), assorti d'une
+  consigne explicite de **ne pas le recopier** : sans elle, le modèle renvoyait
+  parfois l'exemple tel quel (« Chercher les informations sur X »), produisant
+  un plan dégénéré.
 
 ---
 
@@ -447,18 +466,24 @@ Ces simplifications sont volontaires, à l'échelle d'un projet de démonstratio
   suppose de le déposer dans `documents/<dataset>/` puis de relancer l'ingestion.
 - **Troncature fixe** (1500 caractères par résultat dans la mémoire injectée)
   plutôt qu'un comptage de tokens : approximation suffisante, mais grossière.
-- **Calcul multi-étapes peu fiable** : enchaîner « récupérer des chiffres puis
-  les combiner » reste à la limite de ce qu'un modèle 7B fait correctement.
-  Même avec une récupération RAG fiable, l'agent peut mal interpréter une
-  grandeur (confondre une hausse et un total) ou produire deux calculs
-  contradictoires que la synthèse arbitre mal. Le planner est nudgé pour ne
-  calculer chaque grandeur qu'une fois (§4), ce qui réduit le risque sans le
-  supprimer ; une vérification systématique des calculs a été écartée car elle
-  ajoutait trop de complexité pour un gain incertain sur un 7B.
-- **Pas de tests automatisés** : le système étant non déterministe de bout en
-  bout, la validation s'est faite par exécutions répétées sur le scénario
-  `documents/projet_alpha.md` (analyse de risques), dont le résultat est
-  visible dans `workspace/rapport.md`.
+- **Calcul et comparaison multi-étapes : fiabilisés, pas garantis.** Enchaîner
+  « récupérer des chiffres puis les combiner » reste le point dur. Deux
+  correctifs (mesurés sur `demo_multi_tache.md`) l'ont nettement amélioré :
+  (1) la **décomposition multi-fonds** du planner (§4), qui donne au calcul les
+  bonnes valeurs de *chaque* fonds au lieu d'un seul ; (2) une **consigne dure**
+  poussant l'agent à toujours passer par l'outil `calculator` plutôt que de
+  calculer « de tête » dans le texte (descriptions d'outils renforcées + règle de
+  sélection). Mais ce sont des **leviers de prompt, pas des verrous** (§9) : d'un
+  run à l'autre, l'agent appelle le `calculator` plus souvent qu'avant sans
+  garantie, et peut encore extraire le mauvais opérande d'un passage. Le verrou
+  structurel envisagé — interdire dans `write_file` tout nombre non issu d'un
+  résultat `calculator` — a été écarté comme trop intrusif pour le gain.
+- **Validation par exécutions, pas par tests unitaires de bout en bout.** Le
+  système étant non déterministe, on valide par des **golden sets** côté
+  récupération (`tests/`, lancés via `python -m tests.rag_eval.run`) et par des
+  **démos rejouables** (`demo_30_questions*.md`, `demo_comparaison.md`,
+  `demo_multi_tache.md`) — comparées à l'œil — plutôt que par des assertions sur
+  une chaîne exacte, impossibles sur des sorties LLM.
 - **Sécurité minimale** : sandbox d'écriture limitée au workspace et
   calculatrice filtrée, mais pas de limite de temps ni de quota d'appels LLM.
 
