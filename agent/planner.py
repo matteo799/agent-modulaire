@@ -31,9 +31,24 @@ Règles :
   calcul pour le même résultat (cela produit des valeurs contradictoires).
 - La dernière étape doit produire le livrable final (souvent : écrire un rapport avec write_file).
 
-Retourne uniquement un objet JSON. Exemple :
+Chaque étape est une PHRASE (chaîne de caractères), pas un objet. Adapte-les à
+la tâche réelle ci-dessus — ne recopie pas l'exemple.
+
+Retourne uniquement un objet JSON. Exemple de FORMAT (à ne pas recopier tel quel) :
 {{"steps": ["Chercher les informations sur X", "Synthétiser les résultats", "Écrire le rapport final"]}}
 """
+
+
+def _step_text(step) -> str:
+    """Normalise une étape en phrase, même si le LLM la renvoie en objet
+    structuré (ex. {{"step": 1, "action": "...", "tool": "..."}})."""
+    if isinstance(step, dict):
+        for key in ("action", "step", "description", "text", "tache", "etape"):
+            val = step.get(key)
+            if isinstance(val, str) and val.strip():
+                return val.strip()
+        return "; ".join(f"{k}: {v}" for k, v in step.items())
+    return str(step)
 
 
 def make_plan(user_query: str) -> list[str]:
@@ -42,4 +57,4 @@ def make_plan(user_query: str) -> list[str]:
     plan = llm.chat_json(prompt, system=PLAN_SYSTEM)
     if isinstance(plan, dict):
         plan = plan.get("steps", list(plan.values())[0] if plan else [])
-    return [str(step) for step in plan]
+    return [_step_text(step) for step in plan]
