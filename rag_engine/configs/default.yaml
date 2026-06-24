@@ -26,12 +26,12 @@ llm:
   # qui sert des modèles Claude). Bascule sur `ollama` pour du 100 % local.
   provider: openai
   temperature: 0.0
-  max_tokens: 1024
+  max_tokens: 4096
   openai:
     base_url: https://api.meai.cloud/v1
-    # Modèle Claude (cf. liste GET /v1/models). claude-sonnet-4-6 = bon équilibre ;
-    # claude-haiku-4-5 = rapide/économe (utile pour l'éval) ; claude-opus-4-8 = max qualité.
-    model: claude-sonnet-4-6
+    # Modèle Claude (cf. liste GET /v1/models). claude-opus-4-8 = max qualité (défaut) ;
+    # claude-sonnet-4-6 = bon équilibre ; claude-haiku-4-5 = rapide/économe (utile pour l'éval).
+    model: claude-opus-4-8
     # api_key : JAMAIS ici. Définie via `.env` (gitignoré) ou la variable d'env
     # RAG__LLM__OPENAI__API_KEY.
     timeout_s: 120.0
