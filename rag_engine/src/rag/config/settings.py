@@ -75,8 +75,8 @@ class LMStudioSettings(BaseModel):
 class OpenAISettings(BaseModel):
     """API OpenAI ou toute passerelle compatible (ex. meai.cloud servant Claude)."""
 
-    base_url: str = "https://api.openai.com/v1"
-    model: str = "gpt-4o-mini"
+    base_url: str = "https://api.meai.cloud/v1"
+    model: str = "claude-opus-4-8"
     # JAMAIS en clair dans la config versionnée. Renseignée par la variable
     # d'env `RAG__LLM__OPENAI__API_KEY` (ou un `.env` gitignoré).
     api_key: str = ""
@@ -86,7 +86,7 @@ class OpenAISettings(BaseModel):
 class LLMSettings(BaseModel):
     provider: Literal["ollama", "vllm", "openai", "lmstudio"] = "ollama"
     temperature: float = 0.0  # we want determinism on a RAG, not creativity
-    max_tokens: int = 1024
+    max_tokens: int = 4096
     ollama: OllamaSettings = OllamaSettings()
     vllm: VLLMSettings = VLLMSettings()
     lmstudio: LMStudioSettings = LMStudioSettings()
