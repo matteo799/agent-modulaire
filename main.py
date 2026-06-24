@@ -3,12 +3,20 @@
 Usage :
     python main.py "Analyse les documents et fais un résumé des risques."
 """
+
 import sys
 
 from agent import llm
-from agent.executor import run, last_deliverable, _format_memory
+from agent.executor import _format_memory, last_deliverable, run
+from agent.finance import select as metric_select
+from agent.llm import LLMUnavailable
 from agent.planner import make_plan
 from agent.tools import write_file
+
+LLM_DOWN_MESSAGE = (
+    "Le service LLM est momentanément indisponible (erreur réseau). "
+    "Aucune réponse n'a pu être produite — réessayez dans un instant."
+)
 
 SYNTHESIS_FROM_DELIVERABLE = """Tâche initiale de l'utilisateur :
 {user_query}
@@ -43,23 +51,55 @@ def synthesize(user_query: str, memory: list) -> str:
     # générales (hallucination hors corpus), comme observé sur le golden.
     rag_results = [m["result"] for m in memory if m.get("tool") == "rag_search"]
     if rag_results and all("Aucun passage pertinent" in r for r in rag_results):
-        return ("Les documents fournis ne permettent pas de répondre à cette "
-                "question.")
+        return "Les documents fournis ne permettent pas de répondre à cette question."
 
     deliverable = last_deliverable(memory)
-    if deliverable:
-        return llm.chat(SYNTHESIS_FROM_DELIVERABLE.format(
-            user_query=user_query, deliverable=deliverable))
-    return llm.chat(SYNTHESIS_FROM_MEMORY.format(
-        user_query=user_query, memory=_format_memory(memory)))
+    try:
+        if deliverable:
+            return llm.chat(
+                SYNTHESIS_FROM_DELIVERABLE.format(user_query=user_query, deliverable=deliverable)
+            )
+        return llm.chat(
+            SYNTHESIS_FROM_MEMORY.format(user_query=user_query, memory=_format_memory(memory))
+        )
+    except LLMUnavailable:
+        # Repli : la synthèse a échoué (réseau), mais on a déjà du travail utile.
+        if deliverable:
+            return deliverable  # livrable brut, sans reformulation
+        return (
+            "Réponse partielle — le service LLM a échoué pendant la synthèse "
+            "finale. Résultats bruts collectés :\n\n" + _format_memory(memory)
+        )
 
 
-def answer_query(user_query: str, verbose: bool = True) -> str:
-    """Pipeline complet : planification → boucle agentique → synthèse."""
+def answer_query(user_query: str, verbose: bool = True, ask_fn=metric_select.stdin_ask) -> str:
+    """Pipeline complet : (sélection métrique) → planification → boucle → synthèse.
+
+    Si la question concerne une métrique de risque/rendement, on résout d'abord
+    LAQUELLE (en demandant une clarification quand deux se valent), puis on
+    injecte ce choix dans la planification. `ask_fn` est injectable : interactif
+    par défaut (stdin), non bloquant pour les démos/éval (`select.auto_ask`).
+    """
+    metric, rationale = "", ""
+    if metric_select.looks_like_metric_query(user_query):
+        if verbose:
+            print("\n=== 0. Sélection de la métrique ===")
+        try:
+            choice = metric_select.select_metric(user_query, ask_fn=ask_fn)
+            metric, rationale = choice["metric"], choice["rationale"]
+            if verbose:
+                print(f"  Métrique retenue : {metric} — {rationale}")
+        except LLMUnavailable as exc:
+            # Non bloquant : on planifie sans indice de métrique.
+            if verbose:
+                print(f"  (sélection de métrique ignorée — LLM indisponible : {exc})")
     if verbose:
         print(f"Tâche : {user_query}")
         print("\n=== 1. Planification ===")
-    plan = make_plan(user_query)
+    try:
+        plan = make_plan(user_query, metric=metric, rationale=rationale)
+    except LLMUnavailable:
+        return LLM_DOWN_MESSAGE
     if verbose:
         for i, step in enumerate(plan, 1):
             print(f"  {i}. {step}")

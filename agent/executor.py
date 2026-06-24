@@ -1,5 +1,7 @@
 """Étapes 3 à 6 : sélection d'outil, boucle agentique, mémoire de travail, réflexion."""
+
 from agent import llm
+from agent.llm import LLMUnavailable
 from agent.tools import TOOLS, WORKSPACE_DIR, tools_catalog, write_file
 
 MAX_RETRIES = 1  # une réflexion + nouvelle tentative par étape
@@ -42,6 +44,12 @@ Règles importantes :
 - Pour write_file : ne réutilise que des chiffres réellement présents dans la
   mémoire de travail (y compris les résultats déjà produits par calculator) ;
   n'invente et ne calcule aucune valeur.
+- Pour une étape portant sur une MÉTRIQUE de risque/rendement (Sharpe, Sortino,
+  STARR, Martin, budget CVaR/drawdown), choisis l'outil `metric_<nom>` dont les
+  caractéristiques (pénalise-hausse, tendance, quand l'utiliser) correspondent à
+  l'intention. Passe l'ISIN du fonds dans `source`, et toute valeur connue
+  (R, sigma, rf, returns…) en arguments. Si le plan a déjà retenu une métrique,
+  utilise EXACTEMENT cet outil.
 
 Retourne uniquement un objet JSON, en commençant par la justification :
 {{"raison": "<pourquoi cet outil convient à l'étape>", "tool": "<nom>", "args": {{...}}}}
@@ -60,7 +68,9 @@ def _format_memory(memory: list[dict]) -> str:
 def choose_tool(user_query: str, step: str, memory: list[dict], feedback: str = "") -> dict:
     """Le LLM décide quel outil utiliser pour une étape donnée."""
     prompt = SELECT_PROMPT.format(
-        user_query=user_query, step=step, catalog=tools_catalog(),
+        user_query=user_query,
+        step=step,
+        catalog=tools_catalog(),
         memory=_format_memory(memory),
     )
     if feedback:
@@ -95,15 +105,27 @@ def execute_step(choice: dict) -> str:
 def run(user_query: str, plan: list[str]) -> list[dict]:
     """Boucle agentique : pour chaque étape — choix d'outil, exécution, réflexion."""
     WORKSPACE_DIR.mkdir(exist_ok=True)
-    write_file("plan.md", f"# Plan\n\nTâche : {user_query}\n\n"
-               + "\n".join(f"{i}. {s}" for i, s in enumerate(plan, 1)))
+    write_file(
+        "plan.md",
+        f"# Plan\n\nTâche : {user_query}\n\n"
+        + "\n".join(f"{i}. {s}" for i, s in enumerate(plan, 1)),
+    )
 
     memory: list[dict] = []
     for i, step in enumerate(plan, 1):
         print(f"\n--- Étape {i}/{len(plan)} : {step}")
         feedback = ""
-        for attempt in range(MAX_RETRIES + 1):
-            choice = choose_tool(user_query, step, memory, feedback)
+        choice, result = {}, ""
+        for _attempt in range(MAX_RETRIES + 1):
+            # Robustesse : un appel LLM qui échoue (réseau) ne tue pas le run —
+            # l'étape est marquée en erreur et la boucle passe à la suivante.
+            try:
+                choice = choose_tool(user_query, step, memory, feedback)
+            except LLMUnavailable as exc:
+                choice = {"tool": "?", "args": {}}
+                result = f"Erreur : service LLM indisponible pour cette étape ({exc})."
+                print(f"    {result}")
+                break
             if choice.get("raison"):
                 print(f"    Raison : {choice['raison']}")
             print(f"    Outil : {choice.get('tool')} | args : {choice.get('args')}")

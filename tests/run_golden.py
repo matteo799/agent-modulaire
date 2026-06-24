@@ -34,6 +34,7 @@ os.environ.setdefault("RAG__LLM__OPENAI__MODEL", "claude-haiku-4-5")
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from agent.finance.select import auto_ask  # noqa: E402
 from main import answer_query  # noqa: E402
 
 DEFAULT_GOLDEN = ROOT / "tests" / "golden_fonds_v1.yaml"
@@ -64,7 +65,8 @@ def main():
         expected = (item.get("expected_answer") or "").strip()
         print(f"\n########## {n}/{len(items)} — {qid} ##########")
         try:
-            obtained = answer_query(question, verbose=False).strip()
+            # auto_ask : l'éval ne doit jamais bloquer sur une clarification stdin.
+            obtained = answer_query(question, verbose=False, ask_fn=auto_ask).strip()
         except Exception as exc:  # une question ne doit pas tuer le batch
             obtained = f"[ERREUR pendant l'exécution : {exc}]"
         print(f"→ {obtained[:200].replace(chr(10), ' ')}...")
