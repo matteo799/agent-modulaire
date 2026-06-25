@@ -13,7 +13,7 @@ pas le retrieval. Ces métriques seraient donc identiques dans les deux cas.
 Pour évaluer CRAG (faithfulness, answer relevancy), il faut Ollama up + eval-full.
 
 Usage :
-    python -m tests.rag_eval.compare --config tests/rag_eval/configs/eval.yaml [--output compare_report.md]
+    python -m tests.rag_eval.compare --config tests/rag_eval/configs/eval_droit.yaml [--output compare_report.md]
 """
 
 from __future__ import annotations
@@ -138,7 +138,7 @@ _RERANKER_SKIPPED_NOTE = """\
 > ou des temps de chargement de plusieurs minutes en mode CPU.
 > Pour exécuter les stacks `+reranker`, utiliser une machine avec au
 > moins 16 Go de RAM ou un GPU dédié (CUDA), et passer :
->     `RAG__RERANKER__ENABLED=true python -m tests.rag_eval.compare --config tests/rag_eval/configs/eval.yaml`
+>     `RAG__RERANKER__ENABLED=true python -m tests.rag_eval.compare --config tests/rag_eval/configs/eval_droit.yaml`
 """
 
 
@@ -226,7 +226,7 @@ def run_compare(config_path: str | Path) -> str:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="tests.rag_eval.compare")
-    parser.add_argument("--config", default="tests/rag_eval/configs/eval.yaml")
+    parser.add_argument("--config", default="tests/rag_eval/configs/eval_droit.yaml")
     parser.add_argument("--output", default="compare_report.md")
     args = parser.parse_args(argv)
 

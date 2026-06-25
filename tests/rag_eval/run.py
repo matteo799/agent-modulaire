@@ -1,6 +1,6 @@
 """Entrypoint `python -m tests.rag_eval.run` (M6.5).
 
-Charge `tests/rag_eval/configs/eval.yaml` (override-able par `--config`), exécute les
+Charge `tests/rag_eval/configs/eval_droit.yaml` (override-able par `--config`), exécute les
 métriques activées, écrit un rapport markdown, et exit avec code != 0
 si un threshold est manqué (utilisé par la CI pour bloquer un PR).
 
@@ -48,7 +48,7 @@ class _ReportCfg(BaseModel):
 
 
 class EvalConfig(BaseModel):
-    """Schéma de `tests/rag_eval/configs/eval.yaml`."""
+    """Schéma de `tests/rag_eval/configs/eval_droit.yaml`."""
 
     golden_set: Path
     retrieval: _RetrievalCfg = _RetrievalCfg()
@@ -141,8 +141,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="tests.rag_eval.run")
     parser.add_argument(
         "--config",
-        default="tests/rag_eval/configs/eval.yaml",
-        help="chemin vers le fichier de config eval (défaut: tests/rag_eval/configs/eval.yaml)",
+        default="tests/rag_eval/configs/eval_droit.yaml",
+        help="chemin vers le fichier de config eval (défaut: tests/rag_eval/configs/eval_droit.yaml)",
     )
     args = parser.parse_args(argv)
 

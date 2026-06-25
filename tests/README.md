@@ -41,7 +41,7 @@ Package autonome (imports relatifs). Configs dans `rag_eval/configs/`, golden se
 `rag_eval/golden/` (un par dataset, jamais combinés).
 
 ```bash
-python -m tests.rag_eval.run     --config tests/rag_eval/configs/eval.yaml          # corpus droit
+python -m tests.rag_eval.run     --config tests/rag_eval/configs/eval_droit.yaml          # corpus droit
 python -m tests.rag_eval.run     --config tests/rag_eval/configs/eval_finance.yaml  # corpus finance
 python -m tests.rag_eval.compare --config tests/rag_eval/configs/eval_finance.yaml  # dense / hybrid / +reranker
 ```
