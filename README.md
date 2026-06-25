@@ -133,7 +133,7 @@ catégorie + une matrice des outils exercés. Dernière passe (19 questions, set
   (Sharpe/Sortino sur un KID = pas de chiffre inventé), refus hors-corpus.
 - **Latence/tokens** — la passe Haiku a subi des coupures passerelle (une question ~60 min) :
   le temps mural n'est **pas** une comparaison de vitesse fiable ici, et le harness résilient a
-  tout de même terminé. Détail complet : `tests/agent_eval/reports/golden_report_<modèle>.md`.
+  tout de même terminé. Détail complet : `tests/agent_eval/reports/golden_report_<set>_<modèle>.md`.
 
 ```bash
 python tests/agent_eval/run_golden.py                                          # modèle par défaut (Opus)
