@@ -48,7 +48,7 @@ RAG__EMBEDDER__MODEL=bge-m3  RAG__EMBEDDER__API_KEY=ollama  python …
 | **Schéma typé + valeurs par défaut commentées** | [`src/rag/config/settings.py`](src/rag/config/settings.py) — la référence des paramètres |
 | **Évaluation du moteur** (golden sets, runner) | **côté Harness** : `tests/rag_eval/golden/`, `tests/rag_eval/`, `tests/rag_eval/configs/eval*.yaml` — voir le `README.md` racine |
 | **Vue d'ensemble du code** | section [Structure du repo](#structure-du-repo) plus bas |
-| **Intégration dans l'agent Harness** | le `README.md` à la racine du dépôt + `agent/rag.py` |
+| **Intégration dans l'agent Harness** | le `README.md` à la racine du dépôt + `agent/rag_adapter.py` |
 
 > Ce moteur est **rapatrié comme module** dans le dépôt Harness : pas de `docs/`,
 > de `Makefile` ni de `.env.example` ici — la configuration passe par les fichiers

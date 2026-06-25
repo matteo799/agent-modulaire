@@ -26,7 +26,7 @@ Question
    │       choix d'outil → exécution → réflexion → mémoire
    │       outils : rag_search · list_documents · read_file ·
    │               write_file · calculator · metric_*                            agent/tools.py
-   │       le RAG est un outil → moteur rag_engine                               agent/rag.py
+   │       le RAG est un outil → moteur rag_engine                               agent/rag_adapter.py
    │
    └─ 3. Synthèse finale → workspace/rapport.md                                  main.py
 ```
@@ -36,7 +36,7 @@ Deux niveaux de code, assumés :
 | Niveau | Contenu | Dépendances |
 |---|---|---|
 | **Agent** (`agent/`, `main.py`) | Raisonnement écrit à la main : plan, choix d'outil, réflexion, mémoire. Aucun framework agentique. | Minimal — un client LLM. |
-| **Moteur RAG** (`rag_engine/`) | Brique de récupération réutilisable (bge-m3 → parent-child → reranker + juge LLM). | Lourdes (sentence-transformers, Qdrant) — vues seulement à travers `agent/rag.py`. |
+| **Moteur RAG** (`rag_engine/`) | Brique de récupération réutilisable (bge-m3 → parent-child → reranker + juge LLM). | Lourdes (sentence-transformers, Qdrant) — vues seulement à travers `agent/rag_adapter.py`. |
 
 Le LLM de l'agent **et** du moteur est le même, configuré à un seul endroit
 (`rag_engine/configs/default.yaml`). Par défaut : **Claude Opus 4.8** via la passerelle
@@ -138,9 +138,9 @@ erreur et la boucle **continue** au lieu de planter (cf. §11).
 
 ---
 
-## 6. RAG — récupération (`agent/rag.py` → `rag_engine/`)
+## 6. RAG — récupération (`agent/rag_adapter.py` → `rag_engine/`)
 
-`agent/rag.py` est un **adaptateur mince** : `rag_search` et `list_sources` renvoient des
+`agent/rag_adapter.py` est un **adaptateur mince** : `rag_search` et `list_sources` renvoient des
 **chaînes**, contrat inchangé pour le reste de l'agent. Sous le capot, le moteur enchaîne :
 
 1. **Dense `bge-m3`** — embedding multilingue de qualité.

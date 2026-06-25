@@ -11,13 +11,13 @@ filet : on privilégie une **garantie structurelle** (déterministe) à une simp
 
 ---
 
-## 1. Couche RAG — récupération (`agent/rag.py` → moteur `rag_engine`)
+## 1. Couche RAG — récupération (`agent/rag_adapter.py` → moteur `rag_engine`)
 
 | # | Règle | Où | Pourquoi |
 |---|---|---|---|
 | 1.1 | **Rejet du hors-corpus par juge LLM.** Chaque passage récupéré est jugé `relevant/ambiguous/irrelevant` ; les `irrelevant` sont écartés. Si rien ne subsiste → `NO_MATCH_MESSAGE`. | `rag.py:_is_relevant`, `rag_search` | Un score de reranking ne sépare pas le hors-sujet de l'in-corpus ; le juge LLM, lui, garantit le rejet d'une question étrangère au dataset. |
 | 1.2 | **Pas de devinette de nom de fichier.** L'accès aux documents passe uniquement par `rag_search` (recherche sémantique), jamais par un nom inventé. | `tools.py` (descriptions `rag_search`/`read_file`), `planner.py` | Les noms de fichiers (ISIN) ne sont pas connus a priori ; deviner = hallucination. |
-| 1.3 | **Une collection par dataset, jamais combinées.** Le moteur n'interroge que la collection du projet courant (`vector_store.collection`). | `rag.py` (docstring), `rag_engine/configs` | Étanchéité des corpus (finance ≠ droit) ; pas de fuite inter-projets. |
+| 1.3 | **Une collection par dataset, jamais combinées.** Le moteur n'interroge que la collection du projet courant (`vector_store.collection`). | `rag_adapter.py` (docstring), `rag_engine/configs` | Étanchéité des corpus (finance ≠ droit) ; pas de fuite inter-projets. |
 | 1.4 | **Sortie = passages bruts, pas de génération.** `rag_search` ne renvoie que les passages ; c'est le LLM de l'agent qui synthétise. | `rag.py:rag_search` | La synthèse reste contrôlée par les garde-fous de la couche 4, pas noyée dans la récupération. |
 
 ## 2. Couche agent — planification & exécution (`agent/planner.py`, `agent/executor.py`)

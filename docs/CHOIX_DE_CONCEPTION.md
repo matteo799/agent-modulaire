@@ -40,7 +40,7 @@ et écrit à la main — le but pédagogique (montrer *comment* un agent fonctio
 qu'aucun framework agentique ne cache la mécanique. Le moteur RAG (`rag_engine/`), lui,
 assume des dépendances lourdes (bge-m3, reranker, Qdrant) : c'est une brique réutilisable
 où la **qualité de récupération prime sur la lisibilité**. L'agent ne le voit qu'à
-travers le contrat mince de `agent/rag.py`. **Écarté : LangChain/LlamaIndex *dans*
+travers le contrat mince de `agent/rag_adapter.py`. **Écarté : LangChain/LlamaIndex *dans*
 l'agent** — la machinerie agentique n'emprunte aucun framework.
 
 **Pourquoi le LLM a migré du local vers la passerelle.** Né sous Ollama/`qwen2.5:7b`

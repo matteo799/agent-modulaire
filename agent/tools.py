@@ -5,7 +5,7 @@ from pathlib import Path
 
 from agent.finance import metric_catalog
 from agent.finance.metric_catalog import CATALOG, MetricSpec
-from agent.rag import list_sources, rag_search
+from agent.rag_adapter import list_sources, rag_search
 
 WORKSPACE_DIR = Path(__file__).resolve().parent.parent / "workspace"
 DOCUMENTS_DIR = Path(__file__).resolve().parent.parent / "documents"

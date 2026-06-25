@@ -30,7 +30,7 @@ réutilisable traité comme une brique.
 
 | Chemin | Rôle |
 |---|---|
-| `agent/` | L'agent : `llm.py` (accès LLM + résilience), `planner.py`, `tools.py`, `executor.py`, `rag.py` (adaptateur sur le moteur). |
+| `agent/` | L'agent : `llm.py` (accès LLM + résilience), `planner.py`, `tools.py`, `executor.py`, `rag_adapter.py` (adaptateur sur le moteur). |
 | `agent/finance/` | Couche métriques *rating fond* : `metrics.py` (calcul pur), `metric_catalog.py`, `select.py` (sélection + clarification). |
 | `main.py` | Point d'entrée CLI + synthèse finale. |
 | `rag_engine/` | Moteur RAG modulaire (bge-m3 → parent-child → reranker + juge de pertinence LLM). **Sous-package autonome, avec son propre `README.md`** (ce README-ci reste le point d'entrée du projet). |
