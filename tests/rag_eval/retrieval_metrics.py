@@ -21,9 +21,9 @@ from __future__ import annotations
 import time
 
 from pydantic import BaseModel, Field
+from rag.interfaces import Retriever, SearchHit
 
 from .golden import GoldenItem, GoldenSet
-from rag.interfaces import Retriever, SearchHit
 
 
 class ItemRetrievalResult(BaseModel):

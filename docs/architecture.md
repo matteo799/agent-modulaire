@@ -215,9 +215,11 @@ unitaires** sur les parties déterministes.
 
 | Quoi | Où | Lancer |
 |---|---|---|
-| Métriques + outils + sélection + résilience | `tests/agent_finance/`, `tests/agent/` | `pytest tests/agent tests/agent_finance` |
-| Agent de bout en bout | `tests/run_golden.py` + `tests/golden_fonds_v1.yaml` | `python tests/run_golden.py` |
-| Récupération du moteur | `tests/rag_eval/` | `python -m tests.rag_eval.run --config tests/eval_finance.yaml` |
+| Métriques + outils + sélection + résilience | `tests/unit/` | `pytest tests/unit` |
+| Agent de bout en bout | `tests/agent_eval/` | `python tests/agent_eval/run_golden.py` |
+| Récupération du moteur | `tests/rag_eval/` | `python -m tests.rag_eval.run --config tests/rag_eval/configs/eval_finance.yaml` |
+
+Carte détaillée des tests : `tests/README.md`.
 
 ---
 

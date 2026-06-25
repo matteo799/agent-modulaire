@@ -1,6 +1,6 @@
 """Entrypoint `python -m tests.rag_eval.run` (M6.5).
 
-Charge `tests/eval.yaml` (override-able par `--config`), exécute les
+Charge `tests/rag_eval/configs/eval.yaml` (override-able par `--config`), exécute les
 métriques activées, écrit un rapport markdown, et exit avec code != 0
 si un threshold est manqué (utilisé par la CI pour bloquer un PR).
 
@@ -16,9 +16,9 @@ from pathlib import Path
 
 import yaml
 from pydantic import BaseModel, Field
-
 from rag.config.factory import build_retriever
 from rag.config.settings import load_settings
+
 from .golden import GoldenSet, load_golden_set
 from .report import build_markdown_report
 from .retrieval_metrics import (
@@ -48,7 +48,7 @@ class _ReportCfg(BaseModel):
 
 
 class EvalConfig(BaseModel):
-    """Schéma de `tests/eval.yaml`."""
+    """Schéma de `tests/rag_eval/configs/eval.yaml`."""
 
     golden_set: Path
     retrieval: _RetrievalCfg = _RetrievalCfg()
@@ -141,8 +141,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="tests.rag_eval.run")
     parser.add_argument(
         "--config",
-        default="tests/eval.yaml",
-        help="chemin vers le fichier de config eval (défaut: tests/eval.yaml)",
+        default="tests/rag_eval/configs/eval.yaml",
+        help="chemin vers le fichier de config eval (défaut: tests/rag_eval/configs/eval.yaml)",
     )
     args = parser.parse_args(argv)
 
