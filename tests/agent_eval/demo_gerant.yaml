@@ -5,9 +5,13 @@ description: |
   workflow réel d'un gérant et montre l'agent en autonomie —
     • due diligence factuelle (fund_summary : SFDR, SRI, benchmark, frais, gérant…)
     • profil risque/rendement complet calculé sur l'historique NAV (fund_stats)
+    • performance par période — YTD / 1 an / 3 ans / 5 ans (fund_performance)
+    • screening / palmarès multi-fonds (screen_funds)
     • ratio précis (metric_*) et sélection par intention client (clarification)
     • comparaison de fonds, recommandation d'adéquation
-    • garde-fous honnêtes (fonds sans historique, ISIN inexistant)
+    • garde-fous & anti-hallucination (fonds sans historique, ISIN inexistant,
+      champ absent type note Morningstar, surperformance non calculable)
+    24 questions au total.
 
   Casting (réel, varié) :
     FR0011223569  actions micro-caps eurozone  (Art 6, SRI 3 — offensif, vol élevée)
@@ -184,3 +188,53 @@ items:
     expected_answer: |
       Refus honnête : cet ISIN n'existe pas dans le dataset → aucune donnée, rien d'inventé.
     tags: [gardefou, refus]
+
+# ── H. Performance par période (fund_performance) ─────────────────────────
+  - id: g20-perf-periodes
+    category: performance
+    question: "Quelle est la performance du fonds FR0011223569 sur l'année en cours (YTD), 1 an et 3 ans ?"
+    expected_tools: [fund_performance]
+    expected_answer: |
+      Performance cumulée ET annualisée par fenêtre (YTD, 1 an, 3 ans), calculée
+      sur l'historique NAV.
+    tags: [performance, periodes, nav]
+
+  - id: g21-perf-5ans
+    category: performance
+    question: "Donne le rendement annualisé du fonds LU1882473009 sur 5 ans et depuis sa création."
+    expected_tools: [fund_performance]
+    expected_answer: |
+      Rendement annualisé sur 5 ans et sur tout l'historique (depuis création).
+    tags: [performance, long-terme, nav]
+
+# ── I. Screening / palmarès multi-fonds (screen_funds) ────────────────────
+  - id: g22-screening
+    category: screening
+    question: "Quels sont les 5 fonds actions classés Article 8 ayant le meilleur ratio de Sortino (taux sans risque 2 %) ?"
+    expected_tools: [screen_funds]
+    expected_answer: |
+      Un classement (top 5) des fonds actions SFDR Art. 8 par Sortino, avec ISIN,
+      valeur et nom — issu d'un screening sur le dataset.
+    tags: [screening, palmares, multi-fonds]
+
+# ── J. Anti-hallucination (champ absent / non calculable) ─────────────────
+  - id: g23-champ-absent
+    category: anti-hallucination
+    question: "Quelle est la note Morningstar et le nombre d'étoiles du fonds FR0011223569 ?"
+    expected_tools: [fund_summary]
+    expected_answer: |
+      La note Morningstar / les étoiles NE figurent PAS dans la fiche → l'agent doit
+      dire que l'information n'est pas disponible, SANS inventer d'étoiles. Il peut
+      proposer les champs réellement présents (SFDR, SRI…).
+    tags: [anti-hallucination, champ-absent]
+
+  - id: g24-surperformance-non-calculable
+    category: anti-hallucination
+    question: "De combien le fonds LU1882473009 a-t-il battu son indice de référence sur 1 an ?"
+    expected_tools: []
+    expected_answer: |
+      On dispose du NOM du benchmark et de la performance du fonds, mais PAS de la
+      série de l'indice → la surperformance n'est pas calculable. L'agent doit le
+      dire honnêtement (et peut donner la performance du fonds), SANS fabriquer un
+      écart de surperformance.
+    tags: [anti-hallucination, benchmark, non-calculable]

@@ -110,6 +110,8 @@ dit aussi *quand NE PAS* l'utiliser.
 | `list_documents()` | Liste les fonds/documents indexés (1ʳᵉ étape d'une comparaison). |
 | `fund_summary(isin, fields)` | Faits d'un fonds **Amundi** lus dans `summary.json` (SFDR, SRI, benchmark, frais, gérant… — structuré, exact) — remplace `rag_search` pour ce dataset (→ §7). |
 | `fund_stats(isin, rf)` | **Profil risque/rendement complet** d'un fonds Amundi calculé sur son historique NAV : rendement annualisé, volatilité, Sharpe/Sortino/STARR/Martin, max drawdown, CVaR (→ §7). |
+| `fund_performance(isin, periods)` | **Performance par période** (YTD, 1 an, 3 ans, 5 ans, depuis création) — cumulée et annualisée, calculée sur la NAV. |
+| `screen_funds(sort_by, top, …)` | **Screening / palmarès** : classe les fonds Amundi par critère (Sharpe, Sortino, rendement…) avec filtres (classe d'actifs, SFDR, SRI) → top N. |
 | `read_file(path)` | Lit un fichier déjà connu (workspace ou documents). |
 | `write_file(path, content)` | Écrit le livrable — **confiné à `workspace/`** ; recopie seulement, aucun calcul. |
 | `calculator(expression)` | Évalue une expression arithmétique (`eval` neutralisé par liste blanche de caractères). Obligatoire pour tout calcul. |
