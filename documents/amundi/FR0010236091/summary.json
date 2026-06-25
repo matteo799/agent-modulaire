@@ -1,0 +1,279 @@
+{
+  "isin": "FR0010236091",
+  "name": "AMUNDI CONVERTIBLES RESPONSABLE - I3 (C)",
+  "currency": "EUR",
+  "share_type": "C",
+  "nav": 1609.47,
+  "nav_date": "15/06/2026",
+  "aum": 138226946.08,
+  "aum_raw": null,
+  "aum_date": "15/06/2026",
+  "sfdr": "Art. 8",
+  "risk_sri": 3,
+  "benchmark": "100% REFINITIV CONVERTIBLE EUROZONE FOCUS HEDGED (EUR)",
+  "is_benchmarked": true,
+  "characteristics": {
+    "Indice de référence": "100% REFINITIV CONVERTIBLE EUROZONE FOCUS HEDGED (EUR)",
+    "Dépositaire": "CACEIS Bank",
+    "Gérant": "Huet Matthieu",
+    "Durée minimum de placement recommandée": "3 ans",
+    "Classe d'actifs": "obligataire",
+    "Forme/Structure Juridique": "fcp",
+    "Date de création": "13/10/2005",
+    "Date de première NAV": "12/10/2005",
+    "Code part (shareCode)": "28656"
+  },
+  "asset_allocation": [
+    {
+      "label": "Performance YTD Au 15/06/2026",
+      "pct": 7.21
+    },
+    {
+      "label": "AMUNDI CONVERTIBLES RESPONSABLE - I3 (C)",
+      "pct": 16.83
+    },
+    {
+      "label": "QIAGEN NV 2% 09/32 USD CV",
+      "pct": 5.78
+    },
+    {
+      "label": "LEG IMMO 1% 09/30 CV",
+      "pct": 5.25
+    },
+    {
+      "label": "SCHNEIDER ELEC 1.97% 11/30 CV",
+      "pct": 5.14
+    },
+    {
+      "label": "VONOVIA 0% 05/30 CV",
+      "pct": 5.06
+    },
+    {
+      "label": "LEGRAND SA 1.50% 06/33 CV",
+      "pct": 4.84
+    },
+    {
+      "label": "STMICROELECTRONICS 0% 08/27 CV",
+      "pct": 3.9
+    },
+    {
+      "label": "SCHNEIDER 1.625% 06/31 EUR CV",
+      "pct": 3.84
+    },
+    {
+      "label": "CELLNEX 0.5% 07/28 CV",
+      "pct": 3.71
+    },
+    {
+      "label": "FERROVIAL 0.75% 05/31 EUR CV",
+      "pct": 3.68
+    },
+    {
+      "label": "VINCI 0.70% 02/30 CV",
+      "pct": 3.23
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 2.0
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 0.78
+    }
+  ],
+  "currency_allocation": [
+    {
+      "label": "Performance YTD Au 15/06/2026",
+      "pct": 7.21
+    },
+    {
+      "label": "AMUNDI CONVERTIBLES RESPONSABLE - I3 (C)",
+      "pct": 16.83
+    },
+    {
+      "label": "QIAGEN NV 2% 09/32 USD CV",
+      "pct": 5.78
+    },
+    {
+      "label": "LEG IMMO 1% 09/30 CV",
+      "pct": 5.25
+    },
+    {
+      "label": "SCHNEIDER ELEC 1.97% 11/30 CV",
+      "pct": 5.14
+    },
+    {
+      "label": "VONOVIA 0% 05/30 CV",
+      "pct": 5.06
+    },
+    {
+      "label": "LEGRAND SA 1.50% 06/33 CV",
+      "pct": 4.84
+    },
+    {
+      "label": "STMICROELECTRONICS 0% 08/27 CV",
+      "pct": 3.9
+    },
+    {
+      "label": "SCHNEIDER 1.625% 06/31 EUR CV",
+      "pct": 3.84
+    },
+    {
+      "label": "CELLNEX 0.5% 07/28 CV",
+      "pct": 3.71
+    },
+    {
+      "label": "FERROVIAL 0.75% 05/31 EUR CV",
+      "pct": 3.68
+    },
+    {
+      "label": "VINCI 0.70% 02/30 CV",
+      "pct": 3.23
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 2.0
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 0.78
+    }
+  ],
+  "synthetic_benchmark": [],
+  "costs": {
+    "entry_pct": 2.0,
+    "entry_eur": 200,
+    "exit_pct": 0.0,
+    "exit_eur": 0.0,
+    "ongoing_pct": 0.777,
+    "ongoing_eur": 76.19,
+    "transaction_pct": 0.369,
+    "transaction_eur": 36.17,
+    "performance_pct": 0.0,
+    "performance_eur": 0.0,
+    "raw": {
+      "ea": {
+        "exitMaxAcquired": 0.0,
+        "italyFixedEntry": 0.0,
+        "italyFixedExit": 0.0,
+        "ogc": 0.00777,
+        "trx": 0.00369
+      },
+      "eap": {
+        "entry": 200,
+        "entryNotAcquired": 0.02,
+        "exit": 0.0,
+        "exitNotAcquired": 0.0,
+        "ogc": 76.19,
+        "perfFees": 0.0,
+        "trx": 36.17
+      },
+      "entry": 0.02,
+      "exit1Year": 0.0,
+      "maxPerformanceFees": 0.0
+    }
+  },
+  "publications": [
+    {
+      "kind": "Rapport annuel",
+      "url": "https://www.amundi.fr/dl/doc/annual-report/FR0010236091/FRA/20250930?inline",
+      "raw_href": "/dl/doc/annual-report/FR0010236091/FRA/20250930?inline",
+      "date": "30/09/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Rapport périodique",
+      "url": "https://www.amundi.fr/dl/doc/periodic-report/FR0010236091/FRA/20250331?inline",
+      "raw_href": "/dl/doc/periodic-report/FR0010236091/FRA/20250331?inline",
+      "date": "31/03/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Prospectus",
+      "url": "https://www.amundi.fr/dl/doc/prospectus/FR0010236091/FRA/FRA/20260211?inline",
+      "raw_href": "/dl/doc/prospectus/FR0010236091/FRA/FRA/20260211?inline",
+      "date": "11/02/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "DIC PRIIPs",
+      "url": "https://www.amundi.fr/dl/doc/kid-priips/FR0010236091/FRA/FRA/20260210?inline",
+      "raw_href": "/dl/doc/kid-priips/FR0010236091/FRA/FRA/20260210?inline",
+      "date": "10/02/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Reporting mensuel",
+      "url": "https://www.amundi.fr/dl/doc/monthly-factsheet/FR0010236091/FRA/FRA/INSTITUTIONNEL/AMUNDI/20260531?inline",
+      "raw_href": "/dl/doc/monthly-factsheet/FR0010236091/FRA/FRA/INSTITUTIONNEL/AMUNDI/20260531?inline",
+      "date": "31/05/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Code de transparence ISR",
+      "url": "https://www.amundi.fr/dl/doc/transparency-code/FR0010236091/FRA/FRA/20250402?inline",
+      "raw_href": "/dl/doc/transparency-code/FR0010236091/FRA/FRA/20250402?inline",
+      "date": "02/04/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Reporting Climat",
+      "url": "https://www.amundi.fr/dl/doc/climate-report/FR0010236091/FRA/FRA/AMUNDI/20260531?inline",
+      "raw_href": "/dl/doc/climate-report/FR0010236091/FRA/FRA/AMUNDI/20260531?inline",
+      "date": "31/05/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Informations Internet Durabilité (SFDR)",
+      "url": "https://www.amundi.fr/dl/doc/website-sfdr-disclosure/FR0010236091/FRA/FRA/20250331?inline",
+      "raw_href": "/dl/doc/website-sfdr-disclosure/FR0010236091/FRA/FRA/20250331?inline",
+      "date": "31/03/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Informations Internet Durabilité (SFDR) – Résumé",
+      "url": "https://www.amundi.fr/dl/doc/website-sfdr-disclosure-summary/FR0010236091/FRA/FRA/20250331?inline",
+      "raw_href": "/dl/doc/website-sfdr-disclosure-summary/FR0010236091/FRA/FRA/20250331?inline",
+      "date": "31/03/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Annexe précontractuelle SFDR",
+      "url": "https://www.amundi.fr/dl/doc/pre-contractual-document/FR0010236091/FRA/FRA/20250331?inline",
+      "raw_href": "/dl/doc/pre-contractual-document/FR0010236091/FRA/FRA/20250331?inline",
+      "date": "31/03/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "SFDR Periodic Annex",
+      "url": "https://www.amundi.fr/dl/doc/sfdr-periodic-annex/FR0010236091/FRA/FRA/20250930?inline",
+      "raw_href": "/dl/doc/sfdr-periodic-annex/FR0010236091/FRA/FRA/20250930?inline",
+      "date": "30/09/2025",
+      "lang": null,
+      "fmt": "PDF"
+    }
+  ],
+  "prospectus_url": "https://www.amundi.fr/dl/doc/prospectus/FR0010236091/FRA/FRA/20260211?inline",
+  "api_endpoints": [
+    "https://www.amundi.fr/product-services/i18n/translations/v1/list?format=json&locale=fr-FR&partnerId=752&withoutParam=true&placeholderCharacters[]={&placeholderCharacters[]=}&domain=productSheetFront,fundsData,commentary",
+    "https://www.amundi.fr/product-services/psa/productsheet/v9/fr_FR/752?isin=FR0010236091&src=fdr",
+    "https://www.amundi.fr/product-services/fdr/share/v1/partner/752/isin/FR0010236091?version=1.38.1",
+    "https://www.amundi.fr/product-services/stp/api/factsheets?filters%5BsubFundId%5D%5B%24eqi%5D=PF23226&filters%5BpartnerId%5D%5B%24eqi%5D=752&locale=fr_FR&populate=deep",
+    "https://www.amundi.fr/product-services/fdr/share/v3/full/FR0010236091",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=28656&docTypes=WebsiteSfdrDisclosure,WebsiteSfdrDisclosureSummary,PreContractualDocument,SfdrPeriodicAnnex&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=28656&docTypes=MonthlyFactsheet,KIDPRIIPs,DailyHoldings,AIFMG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=28656&docTypes=AnnualReport,ESGAnnualReport,FinalTerms,FundFactsheet,MonthlyFactsheet,PeriodicReport,Prospectus,Regulation,SalesRetailBrochure,SRITransparencyCode,LabelReport,KIDPRIIPs,LEC29,FundTeaser,WeeklyReporting,FundHoldings,Snapshot,InformationNotice,SupplementProspectus,AnnualImpactReport,QuarterlyFactsheet,ClimateReport,DividendComposition,DailyHoldings,AIFMG,SimplifiedAnnualReport,SupervisoryBoardMinutes,Status&fallbackLanguage=ENG&tempLink=0"
+  ],
+  "error": null,
+  "_nav_file": "out_amundi\\nav\\FR0010236091_nav.csv"
+}

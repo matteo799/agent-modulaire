@@ -1,0 +1,199 @@
+{
+  "isin": "LU0568621709",
+  "name": "AMUNDI FUNDS CASH USD - A2 USD AD (D)",
+  "currency": "USD",
+  "share_type": "D",
+  "nav": 106.99,
+  "nav_date": "16/06/2026",
+  "aum": 5061184279.93,
+  "aum_raw": null,
+  "aum_date": "16/06/2026",
+  "sfdr": "Art. 8",
+  "risk_sri": 1,
+  "benchmark": "100% US FEDERAL FUNDS CAPITALISED",
+  "is_benchmarked": true,
+  "characteristics": {
+    "Indice de référence": "100% US FEDERAL FUNDS CAPITALISED",
+    "Dépositaire": "CACEIS Bank, Luxembourg Branch",
+    "Gérant": "Clerc Alexis",
+    "Durée minimum de placement recommandée": "0 ans",
+    "Classe d'actifs": "tresorerie",
+    "Forme/Structure Juridique": "sicav",
+    "Date de création": "24/06/2011",
+    "Date de première NAV": "18/06/1996",
+    "Code part (shareCode)": "26451"
+  },
+  "asset_allocation": [
+    {
+      "label": "Performance YTD Au 16/06/2026",
+      "pct": 3.42
+    },
+    {
+      "label": "AMUNDI FUNDS CASH USD - A2 USD AD (D) ( ",
+      "pct": 28.04
+    },
+    {
+      "label": "Liquidité 1J Date Liquidité 1J 17/06/202",
+      "pct": 19.55
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 4.5
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 0.46
+    }
+  ],
+  "currency_allocation": [
+    {
+      "label": "Performance YTD Au 16/06/2026",
+      "pct": 3.42
+    },
+    {
+      "label": "AMUNDI FUNDS CASH USD - A2 USD AD (D) ( ",
+      "pct": 28.04
+    },
+    {
+      "label": "Liquidité 1J Date Liquidité 1J 17/06/202",
+      "pct": 19.55
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 4.5
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 0.46
+    }
+  ],
+  "synthetic_benchmark": [],
+  "costs": {
+    "entry_pct": 4.5,
+    "entry_eur": 450,
+    "exit_pct": 0.0,
+    "exit_eur": 0.0,
+    "ongoing_pct": 0.46,
+    "ongoing_eur": 0.12,
+    "transaction_pct": 0.031,
+    "transaction_eur": 0.01,
+    "performance_pct": 0.0,
+    "performance_eur": 0.0,
+    "raw": {
+      "ea": {
+        "exitMaxAcquired": 0.0,
+        "italyFixedEntry": 0.0,
+        "italyFixedExit": 0.0,
+        "ogc": 0.0046,
+        "trx": 0.00031
+      },
+      "eap": {
+        "entry": 450,
+        "entryNotAcquired": 0.045,
+        "exit": 0.0,
+        "exitNotAcquired": 0.0,
+        "ogc": 0.12,
+        "perfFees": 0.0,
+        "trx": 0.01
+      },
+      "entry": 0.045,
+      "exit1Year": 0.0,
+      "maxPerformanceFees": 0.0
+    }
+  },
+  "publications": [
+    {
+      "kind": "Rapport annuel",
+      "url": "https://www.amundi.fr/dl/doc/annual-report/LU0568621709/FRA/FRA/20250630?inline",
+      "raw_href": "/dl/doc/annual-report/LU0568621709/FRA/FRA/20250630?inline",
+      "date": "30/06/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Prospectus",
+      "url": "https://www.amundi.fr/dl/doc/prospectus/LU0568621709/FRA/FRA/20250601?inline",
+      "raw_href": "/dl/doc/prospectus/LU0568621709/FRA/FRA/20250601?inline",
+      "date": "01/06/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "DIC PRIIPs",
+      "url": "https://www.amundi.fr/dl/doc/kid-priips/LU0568621709/FRA/FRA/20250905?inline",
+      "raw_href": "/dl/doc/kid-priips/LU0568621709/FRA/FRA/20250905?inline",
+      "date": "05/09/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Rapport périodique",
+      "url": "https://www.amundi.fr/dl/doc/periodic-report/LU0568621709/ENG/20251231?inline",
+      "raw_href": "/dl/doc/periodic-report/LU0568621709/ENG/20251231?inline",
+      "date": "31/12/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Code de transparence ISR",
+      "url": "https://www.amundi.fr/dl/doc/transparency-code/LU0568621709/ENG/FRA/20251231?inline",
+      "raw_href": "/dl/doc/transparency-code/LU0568621709/ENG/FRA/20251231?inline",
+      "date": "31/12/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Reporting hebdomadaire",
+      "url": "https://www.amundi.fr/dl/doc/weekly-factsheet/LU0568621709/FRA/FRA/INSTITUTIONNEL/AMUNDI/20260615?inline",
+      "raw_href": "/dl/doc/weekly-factsheet/LU0568621709/FRA/FRA/INSTITUTIONNEL/AMUNDI/20260615?inline",
+      "date": "15/06/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Status",
+      "url": "https://www.amundi.fr/dl/doc/status/LU0568621709/ENG/20230517?inline",
+      "raw_href": "/dl/doc/status/LU0568621709/ENG/20230517?inline",
+      "date": "17/05/2023",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Informations Internet Durabilité (SFDR)",
+      "url": "https://www.amundi.fr/dl/doc/website-sfdr-disclosure/LU0568621709/ENG/20231027?inline",
+      "raw_href": "/dl/doc/website-sfdr-disclosure/LU0568621709/ENG/20231027?inline",
+      "date": "27/10/2023",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Informations Internet Durabilité (SFDR) – Résumé",
+      "url": "https://www.amundi.fr/dl/doc/website-sfdr-disclosure-summary/LU0568621709/ENG/20231027?inline",
+      "raw_href": "/dl/doc/website-sfdr-disclosure-summary/LU0568621709/ENG/20231027?inline",
+      "date": "27/10/2023",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Annexe précontractuelle SFDR",
+      "url": "https://www.amundi.fr/dl/doc/pre-contractual-document/LU0568621709/FRA/FRA/20230719?inline",
+      "raw_href": "/dl/doc/pre-contractual-document/LU0568621709/FRA/FRA/20230719?inline",
+      "date": "19/07/2023",
+      "lang": null,
+      "fmt": "PDF"
+    }
+  ],
+  "prospectus_url": "https://www.amundi.fr/dl/doc/prospectus/LU0568621709/FRA/FRA/20250601?inline",
+  "api_endpoints": [
+    "https://www.amundi.fr/product-services/i18n/translations/v1/list?format=json&locale=fr-FR&partnerId=752&withoutParam=true&placeholderCharacters[]={&placeholderCharacters[]=}&domain=productSheetFront,fundsData,commentary",
+    "https://www.amundi.fr/product-services/psa/productsheet/v9/fr_FR/752?isin=LU0568621709&src=fdr",
+    "https://www.amundi.fr/product-services/fdr/share/v1/partner/752/isin/LU0568621709?version=1.38.1",
+    "https://www.amundi.fr/product-services/stp/api/factsheets?filters%5BsubFundId%5D%5B%24eqi%5D=PF20414&filters%5BpartnerId%5D%5B%24eqi%5D=752&locale=fr_FR&populate=deep",
+    "https://www.amundi.fr/product-services/fdr/share/v3/full/LU0568621709",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=26451&docTypes=WebsiteSfdrDisclosure,WebsiteSfdrDisclosureSummary,PreContractualDocument,SfdrPeriodicAnnex&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=26451&docTypes=AnnualReport,ESGAnnualReport,FinalTerms,FundFactsheet,MonthlyFactsheet,PeriodicReport,Prospectus,Regulation,SalesRetailBrochure,SRITransparencyCode,LabelReport,KIDPRIIPs,LEC29,FundTeaser,WeeklyReporting,FundHoldings,Snapshot,InformationNotice,SupplementProspectus,AnnualImpactReport,QuarterlyFactsheet,ClimateReport,DividendComposition,DailyHoldings,AIFMG,SimplifiedAnnualReport,SupervisoryBoardMinutes,Status&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=26451&docTypes=MonthlyFactsheet,KIDPRIIPs,DailyHoldings,AIFMG&tempLink=0"
+  ],
+  "error": null,
+  "_nav_file": "out_amundi\\nav\\LU0568621709_nav.csv"
+}

@@ -1,0 +1,159 @@
+{
+  "isin": "LU1437023242",
+  "name": "Amundi Core Global Aggregate Bond AHE Acc",
+  "currency": "EUR",
+  "share_type": "C",
+  "nav": 102.41,
+  "nav_date": "16/06/2026",
+  "aum": 4224256161.45,
+  "aum_raw": null,
+  "aum_date": "16/06/2026",
+  "sfdr": "Art. 6",
+  "risk_sri": 2,
+  "benchmark": "100% BLOOMBERG GLOBAL AGGREGATE EUR HEDGED INDEX",
+  "is_benchmarked": true,
+  "characteristics": {
+    "Indice de référence": "100% BLOOMBERG GLOBAL AGGREGATE EUR HEDGED INDEX",
+    "Dépositaire": "CACEIS Bank, Luxembourg Branch",
+    "Gérant": "Pless Stéphanie",
+    "Durée minimum de placement recommandée": "4 ans",
+    "Classe d'actifs": "obligataire",
+    "Forme/Structure Juridique": "sicav",
+    "Date de création": "06/09/2016",
+    "Date de première NAV": "20/12/2024",
+    "Code part (shareCode)": "49381"
+  },
+  "asset_allocation": [
+    {
+      "label": "Performance YTD Au 16/06/2026",
+      "pct": 0.06
+    },
+    {
+      "label": "Amundi Core Global Aggregate Bond AHE Ac",
+      "pct": 2.14
+    },
+    {
+      "label": "Date d'effet: 30/04/2026 Avril a été dom",
+      "pct": 2.0
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 4.5
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 0.35
+    }
+  ],
+  "currency_allocation": [
+    {
+      "label": "Performance YTD Au 16/06/2026",
+      "pct": 0.06
+    },
+    {
+      "label": "Amundi Core Global Aggregate Bond AHE Ac",
+      "pct": 2.14
+    },
+    {
+      "label": "Date d'effet: 30/04/2026 Avril a été dom",
+      "pct": 2.0
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 4.5
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 0.35
+    }
+  ],
+  "synthetic_benchmark": [],
+  "costs": {
+    "entry_pct": 4.5,
+    "entry_eur": 450,
+    "exit_pct": 0.0,
+    "exit_eur": 0.0,
+    "ongoing_pct": 0.349,
+    "ongoing_eur": 33.33,
+    "transaction_pct": 0.056,
+    "transaction_eur": 5.32,
+    "performance_pct": 0.0,
+    "performance_eur": 0.0,
+    "raw": {
+      "ea": {
+        "exitMaxAcquired": 0.0,
+        "italyFixedEntry": 0.0,
+        "italyFixedExit": 0.0,
+        "ogc": 0.00349,
+        "trx": 0.00056
+      },
+      "eap": {
+        "entry": 450,
+        "entryNotAcquired": 0.045,
+        "exit": 0.0,
+        "exitNotAcquired": 0.0,
+        "ogc": 33.33,
+        "perfFees": 0.0,
+        "trx": 5.32
+      },
+      "entry": 0.045,
+      "exit1Year": 0.0,
+      "maxPerformanceFees": 0.0
+    }
+  },
+  "publications": [
+    {
+      "kind": "Rapport annuel",
+      "url": "https://www.amundi.fr/dl/doc/annual-report/LU1437023242/FRA/FRA/20240930?inline",
+      "raw_href": "/dl/doc/annual-report/LU1437023242/FRA/FRA/20240930?inline",
+      "date": "30/09/2024",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Rapport périodique",
+      "url": "https://www.amundi.fr/dl/doc/periodic-report/LU1437023242/FRA/FRA/20240331?inline",
+      "raw_href": "/dl/doc/periodic-report/LU1437023242/FRA/FRA/20240331?inline",
+      "date": "31/03/2024",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Prospectus",
+      "url": "https://www.amundi.fr/dl/doc/prospectus/LU1437023242/FRA/FRA/20251215?inline",
+      "raw_href": "/dl/doc/prospectus/LU1437023242/FRA/FRA/20251215?inline",
+      "date": "15/12/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "DIC PRIIPs",
+      "url": "https://www.amundi.fr/dl/doc/kid-priips/LU1437023242/FRA/FRA/20260605?inline",
+      "raw_href": "/dl/doc/kid-priips/LU1437023242/FRA/FRA/20260605?inline",
+      "date": "05/06/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Status",
+      "url": "https://www.amundi.fr/dl/doc/status/LU1437023242/ENG/20220729?inline",
+      "raw_href": "/dl/doc/status/LU1437023242/ENG/20220729?inline",
+      "date": "29/07/2022",
+      "lang": null,
+      "fmt": "PDF"
+    }
+  ],
+  "prospectus_url": "https://www.amundi.fr/dl/doc/prospectus/LU1437023242/FRA/FRA/20251215?inline",
+  "api_endpoints": [
+    "https://www.amundi.fr/product-services/i18n/translations/v1/list?format=json&locale=fr-FR&partnerId=752&withoutParam=true&placeholderCharacters[]={&placeholderCharacters[]=}&domain=productSheetFront,fundsData,commentary",
+    "https://www.amundi.fr/product-services/psa/productsheet/v9/fr_FR/752?isin=LU1437023242&src=fdr",
+    "https://www.amundi.fr/product-services/fdr/share/v1/partner/752/isin/LU1437023242?version=1.38.1",
+    "https://www.amundi.fr/product-services/stp/api/factsheets?filters%5BsubFundId%5D%5B%24eqi%5D=PF49753&filters%5BpartnerId%5D%5B%24eqi%5D=752&locale=fr_FR&populate=deep",
+    "https://www.amundi.fr/product-services/fdr/share/v3/full/LU1437023242",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=49381&docTypes=MonthlyFactsheet,KIDPRIIPs,DailyHoldings,AIFMG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=49381&docTypes=WebsiteSfdrDisclosure,WebsiteSfdrDisclosureSummary,PreContractualDocument,SfdrPeriodicAnnex&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=49381&docTypes=AnnualReport,ESGAnnualReport,FinalTerms,FundFactsheet,MonthlyFactsheet,PeriodicReport,Prospectus,Regulation,SalesRetailBrochure,SRITransparencyCode,LabelReport,KIDPRIIPs,LEC29,FundTeaser,WeeklyReporting,FundHoldings,Snapshot,InformationNotice,SupplementProspectus,AnnualImpactReport,QuarterlyFactsheet,ClimateReport,DividendComposition,DailyHoldings,AIFMG,SimplifiedAnnualReport,SupervisoryBoardMinutes,Status&fallbackLanguage=ENG&tempLink=0"
+  ],
+  "error": null,
+  "_nav_file": "out_amundi\\nav\\LU1437023242_nav.csv"
+}

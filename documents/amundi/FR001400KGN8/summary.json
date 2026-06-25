@@ -1,0 +1,247 @@
+{
+  "isin": "FR001400KGN8",
+  "name": "AMUNDI ABS AAA - I3 (C)",
+  "currency": "EUR",
+  "share_type": "C",
+  "nav": 106188.32,
+  "nav_date": "15/06/2026",
+  "aum": 102031759.23,
+  "aum_raw": null,
+  "aum_date": "15/06/2026",
+  "sfdr": "Art. 8",
+  "risk_sri": 2,
+  "benchmark": "70% BLOOMBERG PAN EUROPEAN FLOATING ABS BOND HEDGED INDEX AAA + 30% ESTR CAPITALISE (OIS)",
+  "is_benchmarked": true,
+  "characteristics": {
+    "Indice de référence": "70% BLOOMBERG PAN EUROPEAN FLOATING ABS BOND HEDGED INDEX AAA + 30% ESTR CAPITALISE (OIS)",
+    "Dépositaire": "CACEIS Bank",
+    "Gérant": "Loum Amadou",
+    "Durée minimum de placement recommandée": "1 ans",
+    "Classe d'actifs": "obligataire",
+    "Forme/Structure Juridique": "fcp",
+    "Date de création": "10/06/2024",
+    "Date de première NAV": "10/06/2024",
+    "Code part (shareCode)": "84723"
+  },
+  "asset_allocation": [
+    {
+      "label": "Performance YTD Au 15/06/2026",
+      "pct": 1.06
+    },
+    {
+      "label": "AMUNDI ABS AAA - I3 (C) ( sur la période",
+      "pct": 6.19
+    },
+    {
+      "label": "AVOCA 31X FRN 15/07/2038",
+      "pct": 3.88
+    },
+    {
+      "label": "AVOCA 28X FRN 15/10/2037",
+      "pct": 2.91
+    },
+    {
+      "label": "ACLO 9X FRN 28/10/2034",
+      "pct": 2.41
+    },
+    {
+      "label": "MCCPF 2025-1 FRN 25/11/2040",
+      "pct": 2.22
+    },
+    {
+      "label": "AFUND 2025-2 FRN 20/07/2067",
+      "pct": 2.2
+    },
+    {
+      "label": "BRACN 2025-2X FRN 17/01/2068",
+      "pct": 2.02
+    },
+    {
+      "label": "BRGPT 5X FRN 31/03/2038",
+      "pct": 1.94
+    },
+    {
+      "label": "ADAGI XII-X FRN 20/10/2037",
+      "pct": 1.94
+    },
+    {
+      "label": "PENTA 2024-16X FRN 18/10/2039",
+      "pct": 1.94
+    },
+    {
+      "label": "CRNCL 2024-19X FRN 15/04/2039",
+      "pct": 1.94
+    },
+    {
+      "label": "Date d'effet: 31/03/2026 En mars 2026, l",
+      "pct": 2.5
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 0.24
+    }
+  ],
+  "currency_allocation": [
+    {
+      "label": "Performance YTD Au 15/06/2026",
+      "pct": 1.06
+    },
+    {
+      "label": "AMUNDI ABS AAA - I3 (C) ( sur la période",
+      "pct": 6.19
+    },
+    {
+      "label": "AVOCA 31X FRN 15/07/2038",
+      "pct": 3.88
+    },
+    {
+      "label": "AVOCA 28X FRN 15/10/2037",
+      "pct": 2.91
+    },
+    {
+      "label": "ACLO 9X FRN 28/10/2034",
+      "pct": 2.41
+    },
+    {
+      "label": "MCCPF 2025-1 FRN 25/11/2040",
+      "pct": 2.22
+    },
+    {
+      "label": "AFUND 2025-2 FRN 20/07/2067",
+      "pct": 2.2
+    },
+    {
+      "label": "BRACN 2025-2X FRN 17/01/2068",
+      "pct": 2.02
+    },
+    {
+      "label": "BRGPT 5X FRN 31/03/2038",
+      "pct": 1.94
+    },
+    {
+      "label": "ADAGI XII-X FRN 20/10/2037",
+      "pct": 1.94
+    },
+    {
+      "label": "PENTA 2024-16X FRN 18/10/2039",
+      "pct": 1.94
+    },
+    {
+      "label": "CRNCL 2024-19X FRN 15/04/2039",
+      "pct": 1.94
+    },
+    {
+      "label": "Date d'effet: 31/03/2026 En mars 2026, l",
+      "pct": 2.5
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 0.24
+    }
+  ],
+  "synthetic_benchmark": [],
+  "costs": {
+    "entry_pct": 0.0,
+    "entry_eur": 0,
+    "exit_pct": 0.0,
+    "exit_eur": 0.0,
+    "ongoing_pct": 0.243,
+    "ongoing_eur": 24.3,
+    "transaction_pct": 0.068,
+    "transaction_eur": 6.84,
+    "performance_pct": 0.0,
+    "performance_eur": 0.0,
+    "raw": {
+      "ea": {
+        "exitMaxAcquired": 0.0,
+        "italyFixedEntry": 0.0,
+        "italyFixedExit": 0.0,
+        "ogc": 0.00243,
+        "trx": 0.00068
+      },
+      "eap": {
+        "entry": 0,
+        "entryNotAcquired": 0.0,
+        "exit": 0.0,
+        "exitNotAcquired": 0.0,
+        "ogc": 24.3,
+        "perfFees": 0.0,
+        "trx": 6.84
+      },
+      "entry": 0.0,
+      "exit1Year": 0.0,
+      "maxPerformanceFees": 0.0
+    }
+  },
+  "publications": [
+    {
+      "kind": "Rapport périodique",
+      "url": "https://www.amundi.fr/dl/doc/periodic-report/FR001400KGN8/FRA/20250630?inline",
+      "raw_href": "/dl/doc/periodic-report/FR001400KGN8/FRA/20250630?inline",
+      "date": "30/06/2025",
+      "lang": null,
+      "fmt": null
+    },
+    {
+      "kind": "Prospectus",
+      "url": "https://www.amundi.fr/dl/doc/prospectus/FR001400KGN8/FRA/FRA/20260331?inline",
+      "raw_href": "/dl/doc/prospectus/FR001400KGN8/FRA/FRA/20260331?inline",
+      "date": "31/03/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "DIC PRIIPs",
+      "url": "https://www.amundi.fr/dl/doc/kid-priips/FR001400KGN8/FRA/FRA/20260331?inline",
+      "raw_href": "/dl/doc/kid-priips/FR001400KGN8/FRA/FRA/20260331?inline",
+      "date": "31/03/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Informations Internet Durabilité (SFDR)",
+      "url": "https://www.amundi.fr/dl/doc/website-sfdr-disclosure/FR001400KGN8/FRA/FRA/20260401?inline",
+      "raw_href": "/dl/doc/website-sfdr-disclosure/FR001400KGN8/FRA/FRA/20260401?inline",
+      "date": "01/04/2026",
+      "lang": null,
+      "fmt": null
+    },
+    {
+      "kind": "Informations Internet Durabilité (SFDR) – Résumé",
+      "url": "https://www.amundi.fr/dl/doc/website-sfdr-disclosure-summary/FR001400KGN8/FRA/FRA/20260401?inline",
+      "raw_href": "/dl/doc/website-sfdr-disclosure-summary/FR001400KGN8/FRA/FRA/20260401?inline",
+      "date": "01/04/2026",
+      "lang": null,
+      "fmt": null
+    },
+    {
+      "kind": "Annexe précontractuelle SFDR",
+      "url": "https://www.amundi.fr/dl/doc/pre-contractual-document/FR001400KGN8/FRA/FRA/20260331?inline",
+      "raw_href": "/dl/doc/pre-contractual-document/FR001400KGN8/FRA/FRA/20260331?inline",
+      "date": "31/03/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "SFDR Periodic Annex",
+      "url": "https://www.amundi.fr/dl/doc/sfdr-periodic-annex/FR001400KGN8/FRA/FRA/20251130?inline",
+      "raw_href": "/dl/doc/sfdr-periodic-annex/FR001400KGN8/FRA/FRA/20251130?inline",
+      "date": "30/11/2025",
+      "lang": null,
+      "fmt": "PDF"
+    }
+  ],
+  "prospectus_url": "https://www.amundi.fr/dl/doc/prospectus/FR001400KGN8/FRA/FRA/20260331?inline",
+  "api_endpoints": [
+    "https://www.amundi.fr/product-services/i18n/translations/v1/list?format=json&locale=fr-FR&partnerId=752&withoutParam=true&placeholderCharacters[]={&placeholderCharacters[]=}&domain=productSheetFront,fundsData,commentary",
+    "https://www.amundi.fr/product-services/psa/productsheet/v9/fr_FR/752?isin=FR001400KGN8&src=fdr",
+    "https://www.amundi.fr/product-services/fdr/share/v1/partner/752/isin/FR001400KGN8?version=1.38.1",
+    "https://www.amundi.fr/product-services/stp/api/factsheets?filters%5BsubFundId%5D%5B%24eqi%5D=PF102883&filters%5BpartnerId%5D%5B%24eqi%5D=752&locale=fr_FR&populate=deep",
+    "https://www.amundi.fr/product-services/fdr/share/v3/full/FR001400KGN8",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=84723&docTypes=AnnualReport,ESGAnnualReport,FinalTerms,FundFactsheet,MonthlyFactsheet,PeriodicReport,Prospectus,Regulation,SalesRetailBrochure,SRITransparencyCode,LabelReport,KIDPRIIPs,LEC29,FundTeaser,WeeklyReporting,FundHoldings,Snapshot,InformationNotice,SupplementProspectus,AnnualImpactReport,QuarterlyFactsheet,ClimateReport,DividendComposition,DailyHoldings,AIFMG,SimplifiedAnnualReport,SupervisoryBoardMinutes,Status&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=84723&docTypes=MonthlyFactsheet,KIDPRIIPs,DailyHoldings,AIFMG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=84723&docTypes=WebsiteSfdrDisclosure,WebsiteSfdrDisclosureSummary,PreContractualDocument,SfdrPeriodicAnnex&fallbackLanguage=ENG&tempLink=0"
+  ],
+  "error": null,
+  "_nav_file": "out_amundi\\nav\\FR001400KGN8_nav.csv"
+}

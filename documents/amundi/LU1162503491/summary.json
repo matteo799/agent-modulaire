@@ -1,0 +1,239 @@
+{
+  "isin": "LU1162503491",
+  "name": "Amundi Core MSCI Emerging Markets A3U Dist",
+  "currency": "USD",
+  "share_type": "D",
+  "nav": 186.59,
+  "nav_date": "16/06/2026",
+  "aum": 11286853939.91,
+  "aum_raw": null,
+  "aum_date": "16/06/2026",
+  "sfdr": "Art. 6",
+  "risk_sri": 4,
+  "benchmark": "100% MSCI EM (EMERGING MARKETS)",
+  "is_benchmarked": true,
+  "characteristics": {
+    "Indice de référence": "100% MSCI EM (EMERGING MARKETS)",
+    "Dépositaire": "CACEIS Bank, Luxembourg Branch",
+    "Gérant": "Heard David",
+    "Durée minimum de placement recommandée": "5 ans",
+    "Classe d'actifs": "action",
+    "Forme/Structure Juridique": "sicav",
+    "Date de création": "29/06/2016",
+    "Date de première NAV": "04/12/2015",
+    "Code part (shareCode)": "49590"
+  },
+  "asset_allocation": [
+    {
+      "label": "Performance YTD Au 16/06/2026",
+      "pct": 27.47
+    },
+    {
+      "label": "Amundi Core MSCI Emerging Markets A3U Di",
+      "pct": 169.55
+    },
+    {
+      "label": "TAIWAN SEMICONDUCTOR MANUFAC",
+      "pct": 14.31
+    },
+    {
+      "label": "SAMSUNG ELECTRONICS",
+      "pct": 7.41
+    },
+    {
+      "label": "SK HYNIX INC",
+      "pct": 6.47
+    },
+    {
+      "label": "TENCENT HOLDINGS LTD",
+      "pct": 2.75
+    },
+    {
+      "label": "ALIBABA GROUP HOLDING LTD",
+      "pct": 2.13
+    },
+    {
+      "label": "MEDIATEK INC",
+      "pct": 1.7
+    },
+    {
+      "label": "DELTA ELECTRONICS INC",
+      "pct": 1.18
+    },
+    {
+      "label": "HON HAI PRECISION INDUSTRY",
+      "pct": 0.84
+    },
+    {
+      "label": "CHINA CONSTRUCT BANK",
+      "pct": 0.83
+    },
+    {
+      "label": "SAMSUNG ELECT-PFD",
+      "pct": 0.81
+    },
+    {
+      "label": "Date d'effet: 30/09/2024 Le mois de sept",
+      "pct": 5.0
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 4.5
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 0.15
+    }
+  ],
+  "currency_allocation": [
+    {
+      "label": "Performance YTD Au 16/06/2026",
+      "pct": 27.47
+    },
+    {
+      "label": "Amundi Core MSCI Emerging Markets A3U Di",
+      "pct": 169.55
+    },
+    {
+      "label": "TAIWAN SEMICONDUCTOR MANUFAC",
+      "pct": 14.31
+    },
+    {
+      "label": "SAMSUNG ELECTRONICS",
+      "pct": 7.41
+    },
+    {
+      "label": "SK HYNIX INC",
+      "pct": 6.47
+    },
+    {
+      "label": "TENCENT HOLDINGS LTD",
+      "pct": 2.75
+    },
+    {
+      "label": "ALIBABA GROUP HOLDING LTD",
+      "pct": 2.13
+    },
+    {
+      "label": "MEDIATEK INC",
+      "pct": 1.7
+    },
+    {
+      "label": "DELTA ELECTRONICS INC",
+      "pct": 1.18
+    },
+    {
+      "label": "HON HAI PRECISION INDUSTRY",
+      "pct": 0.84
+    },
+    {
+      "label": "CHINA CONSTRUCT BANK",
+      "pct": 0.83
+    },
+    {
+      "label": "SAMSUNG ELECT-PFD",
+      "pct": 0.81
+    },
+    {
+      "label": "Date d'effet: 30/09/2024 Le mois de sept",
+      "pct": 5.0
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 4.5
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 0.15
+    }
+  ],
+  "synthetic_benchmark": [],
+  "costs": {
+    "entry_pct": 4.5,
+    "entry_eur": 450,
+    "exit_pct": 0.0,
+    "exit_eur": 0.0,
+    "ongoing_pct": 0.151,
+    "ongoing_eur": 14.44,
+    "transaction_pct": 0.058,
+    "transaction_eur": 5.58,
+    "performance_pct": 0.0,
+    "performance_eur": 0.0,
+    "raw": {
+      "ea": {
+        "exitMaxAcquired": 0.0,
+        "italyFixedEntry": 0.0,
+        "italyFixedExit": 0.0,
+        "ogc": 0.00151,
+        "trx": 0.00058
+      },
+      "eap": {
+        "entry": 450,
+        "entryNotAcquired": 0.045,
+        "exit": 0.0,
+        "exitNotAcquired": 0.0,
+        "ogc": 14.44,
+        "perfFees": 0.0,
+        "trx": 5.58
+      },
+      "entry": 0.045,
+      "exit1Year": 0.0,
+      "maxPerformanceFees": 0.0
+    }
+  },
+  "publications": [
+    {
+      "kind": "Rapport annuel",
+      "url": "https://www.amundi.fr/dl/doc/annual-report/LU1162503491/FRA/FRA/20240930?inline",
+      "raw_href": "/dl/doc/annual-report/LU1162503491/FRA/FRA/20240930?inline",
+      "date": "30/09/2024",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Rapport périodique",
+      "url": "https://www.amundi.fr/dl/doc/periodic-report/LU1162503491/FRA/FRA/20240331?inline",
+      "raw_href": "/dl/doc/periodic-report/LU1162503491/FRA/FRA/20240331?inline",
+      "date": "31/03/2024",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Prospectus",
+      "url": "https://www.amundi.fr/dl/doc/prospectus/LU1162503491/FRA/FRA/20251215?inline",
+      "raw_href": "/dl/doc/prospectus/LU1162503491/FRA/FRA/20251215?inline",
+      "date": "15/12/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "DIC PRIIPs",
+      "url": "https://www.amundi.fr/dl/doc/kid-priips/LU1162503491/FRA/FRA/20260428?inline",
+      "raw_href": "/dl/doc/kid-priips/LU1162503491/FRA/FRA/20260428?inline",
+      "date": "28/04/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Status",
+      "url": "https://www.amundi.fr/dl/doc/status/LU1162503491/ENG/20220729?inline",
+      "raw_href": "/dl/doc/status/LU1162503491/ENG/20220729?inline",
+      "date": "29/07/2022",
+      "lang": null,
+      "fmt": "PDF"
+    }
+  ],
+  "prospectus_url": "https://www.amundi.fr/dl/doc/prospectus/LU1162503491/FRA/FRA/20251215?inline",
+  "api_endpoints": [
+    "https://www.amundi.fr/product-services/i18n/translations/v1/list?format=json&locale=fr-FR&partnerId=752&withoutParam=true&placeholderCharacters[]={&placeholderCharacters[]=}&domain=productSheetFront,fundsData,commentary",
+    "https://www.amundi.fr/product-services/psa/productsheet/v9/fr_FR/752?isin=LU1162503491&src=fdr",
+    "https://www.amundi.fr/product-services/fdr/share/v1/partner/752/isin/LU1162503491?version=1.38.1",
+    "https://www.amundi.fr/product-services/stp/api/factsheets?filters%5BsubFundId%5D%5B%24eqi%5D=&filters%5BpartnerId%5D%5B%24eqi%5D=752&locale=fr_FR&populate=deep",
+    "https://www.amundi.fr/product-services/fdr/share/v3/full/LU1162503491",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=49590&docTypes=WebsiteSfdrDisclosure,WebsiteSfdrDisclosureSummary,PreContractualDocument,SfdrPeriodicAnnex&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=49590&docTypes=AnnualReport,ESGAnnualReport,FinalTerms,FundFactsheet,MonthlyFactsheet,PeriodicReport,Prospectus,Regulation,SalesRetailBrochure,SRITransparencyCode,LabelReport,KIDPRIIPs,LEC29,FundTeaser,WeeklyReporting,FundHoldings,Snapshot,InformationNotice,SupplementProspectus,AnnualImpactReport,QuarterlyFactsheet,ClimateReport,DividendComposition,DailyHoldings,AIFMG,SimplifiedAnnualReport,SupervisoryBoardMinutes,Status&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=49590&docTypes=MonthlyFactsheet,KIDPRIIPs,DailyHoldings,AIFMG&tempLink=0"
+  ],
+  "error": null,
+  "_nav_file": "out_amundi\\nav\\LU1162503491_nav.csv"
+}

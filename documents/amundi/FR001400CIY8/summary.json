@@ -1,0 +1,159 @@
+{
+  "isin": "FR001400CIY8",
+  "name": "AMUNDI BUY & WATCH 2028 - I (C)",
+  "currency": "EUR",
+  "share_type": "C",
+  "nav": 1181.3,
+  "nav_date": "15/06/2026",
+  "aum": 194063660.91,
+  "aum_raw": null,
+  "aum_date": "15/06/2026",
+  "sfdr": "Art. 6",
+  "risk_sri": 2,
+  "benchmark": "Non benchmarké",
+  "is_benchmarked": false,
+  "characteristics": {
+    "Indice de référence": "Non benchmarké",
+    "Dépositaire": "CACEIS Bank",
+    "Gérant": "Alvarez Alejandro",
+    "Durée minimum de placement recommandée": "5 ans",
+    "Classe d'actifs": "obligataire",
+    "Forme/Structure Juridique": "fcp",
+    "Date de création": "09/11/2022",
+    "Date de première NAV": "09/11/2022",
+    "Code part (shareCode)": "85109"
+  },
+  "asset_allocation": [
+    {
+      "label": "Performance YTD",
+      "pct": 0.0
+    },
+    {
+      "label": "AMUNDI BUY & WATCH 2028 - I (C) ( sur la",
+      "pct": 18.13
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 2.5
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 0.35
+    }
+  ],
+  "currency_allocation": [
+    {
+      "label": "Performance YTD",
+      "pct": 0.0
+    },
+    {
+      "label": "AMUNDI BUY & WATCH 2028 - I (C) ( sur la",
+      "pct": 18.13
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 2.5
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 0.35
+    }
+  ],
+  "synthetic_benchmark": [],
+  "costs": {
+    "entry_pct": 2.5,
+    "entry_eur": 250,
+    "exit_pct": 0.0,
+    "exit_eur": 0.0,
+    "ongoing_pct": 0.349,
+    "ongoing_eur": 34.03,
+    "transaction_pct": 0.193,
+    "transaction_eur": 18.81,
+    "performance_pct": 0.0,
+    "performance_eur": 0.0,
+    "raw": {
+      "ea": {
+        "exitMaxAcquired": 0.0,
+        "italyFixedEntry": 0.0,
+        "italyFixedExit": 0.0,
+        "ogc": 0.00349,
+        "trx": 0.00193
+      },
+      "eap": {
+        "entry": 250,
+        "entryNotAcquired": 0.025,
+        "exit": 0.0,
+        "exitNotAcquired": 0.0,
+        "ogc": 34.03,
+        "perfFees": 0.0,
+        "trx": 18.81
+      },
+      "entry": 0.025,
+      "exit1Year": 0.0,
+      "maxPerformanceFees": 0.0
+    }
+  },
+  "publications": [
+    {
+      "kind": "Rapport annuel",
+      "url": "https://www.amundi.fr/dl/doc/annual-report/FR001400CIY8/FRA/20240930?inline",
+      "raw_href": "/dl/doc/annual-report/FR001400CIY8/FRA/20240930?inline",
+      "date": "30/09/2024",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Rapport périodique",
+      "url": "https://www.amundi.fr/dl/doc/periodic-report/FR001400CIY8/FRA/20250331?inline",
+      "raw_href": "/dl/doc/periodic-report/FR001400CIY8/FRA/20250331?inline",
+      "date": "31/03/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Prospectus",
+      "url": "https://www.amundi.fr/dl/doc/prospectus/FR001400CIY8/FRA/FRA/20251215?inline",
+      "raw_href": "/dl/doc/prospectus/FR001400CIY8/FRA/FRA/20251215?inline",
+      "date": "15/12/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "DIC PRIIPs",
+      "url": "https://www.amundi.fr/dl/doc/kid-priips/FR001400CIY8/FRA/FRA/20251210?inline",
+      "raw_href": "/dl/doc/kid-priips/FR001400CIY8/FRA/FRA/20251210?inline",
+      "date": "10/12/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Reporting mensuel",
+      "url": "https://www.amundi.fr/dl/doc/monthly-factsheet/FR001400CIY8/FRA/FRA/INSTITUTIONNEL/AMUNDI/20260430?inline",
+      "raw_href": "/dl/doc/monthly-factsheet/FR001400CIY8/FRA/FRA/INSTITUTIONNEL/AMUNDI/20260430?inline",
+      "date": "30/04/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Yield To Maturity",
+      "url": "https://www.amundi.fr/dl/doc/aifmg/FR001400CIY8/FRA/FRA/20260617?inline",
+      "raw_href": "/dl/doc/aifmg/FR001400CIY8/FRA/FRA/20260617?inline",
+      "date": "17/06/2026",
+      "lang": null,
+      "fmt": null
+    }
+  ],
+  "prospectus_url": "https://www.amundi.fr/dl/doc/prospectus/FR001400CIY8/FRA/FRA/20251215?inline",
+  "api_endpoints": [
+    "https://www.amundi.fr/product-services/i18n/translations/v1/list?format=json&locale=fr-FR&partnerId=752&withoutParam=true&placeholderCharacters[]={&placeholderCharacters[]=}&domain=productSheetFront,fundsData,commentary",
+    "https://www.amundi.fr/product-services/psa/productsheet/v9/fr_FR/752?isin=FR001400CIY8&src=fdr",
+    "https://www.amundi.fr/product-services/fdr/share/v1/partner/752/isin/FR001400CIY8?version=1.38.1",
+    "https://www.amundi.fr/product-services/stp/api/factsheets?filters%5BsubFundId%5D%5B%24eqi%5D=PF103407&filters%5BpartnerId%5D%5B%24eqi%5D=752&locale=fr_FR&populate=deep",
+    "https://www.amundi.fr/product-services/fdr/share/v3/full/FR001400CIY8",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=85109&docTypes=AnnualReport,ESGAnnualReport,FinalTerms,FundFactsheet,MonthlyFactsheet,PeriodicReport,Prospectus,Regulation,SalesRetailBrochure,SRITransparencyCode,LabelReport,KIDPRIIPs,LEC29,FundTeaser,WeeklyReporting,FundHoldings,Snapshot,InformationNotice,SupplementProspectus,AnnualImpactReport,QuarterlyFactsheet,ClimateReport,DividendComposition,DailyHoldings,AIFMG,SimplifiedAnnualReport,SupervisoryBoardMinutes,Status&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=85109&docTypes=MonthlyFactsheet,KIDPRIIPs,DailyHoldings,AIFMG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=85109&docTypes=WebsiteSfdrDisclosure,WebsiteSfdrDisclosureSummary,PreContractualDocument,SfdrPeriodicAnnex&fallbackLanguage=ENG&tempLink=0"
+  ],
+  "error": null,
+  "_nav_file": "out_amundi\\nav\\FR001400CIY8_nav.csv"
+}

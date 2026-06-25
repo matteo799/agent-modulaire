@@ -1,0 +1,239 @@
+{
+  "isin": "FR0013526696",
+  "name": "Afer Index CAC 40 - Dist",
+  "currency": "EUR",
+  "share_type": "D",
+  "nav": 19.0514,
+  "nav_date": "16/06/2026",
+  "aum": 80698110.8,
+  "aum_raw": null,
+  "aum_date": "16/06/2026",
+  "sfdr": "Art. 6",
+  "risk_sri": 4,
+  "benchmark": "100% CAC 40",
+  "is_benchmarked": true,
+  "characteristics": {
+    "Indice de référence": "100% CAC 40",
+    "Dépositaire": "SOCIETE GENERALE",
+    "Gérant": "Neves Christophe",
+    "Durée minimum de placement recommandée": "5 ans",
+    "Classe d'actifs": "action",
+    "Forme/Structure Juridique": "fcp",
+    "Date de création": "15/09/2020",
+    "Date de première NAV": "15/09/2020",
+    "Code part (shareCode)": "80487"
+  },
+  "asset_allocation": [
+    {
+      "label": "Performance YTD Au 15/06/2026",
+      "pct": 5.15
+    },
+    {
+      "label": "Afer Index CAC 40 - Dist ( sur la périod",
+      "pct": 92.64
+    },
+    {
+      "label": "TOTALENERGIES SE PARIS",
+      "pct": 8.47
+    },
+    {
+      "label": "SCHNEIDER ELECT SE",
+      "pct": 8.44
+    },
+    {
+      "label": "LVMH MOET HENNESSY LOUIS VUI",
+      "pct": 6.58
+    },
+    {
+      "label": "AIRBUS SE PARIS",
+      "pct": 5.77
+    },
+    {
+      "label": "AIR LIQUIDE SA",
+      "pct": 5.76
+    },
+    {
+      "label": "BNP PARIBAS",
+      "pct": 5.39
+    },
+    {
+      "label": "SAFRAN SA",
+      "pct": 5.26
+    },
+    {
+      "label": "L OREAL (PARIS)",
+      "pct": 5.07
+    },
+    {
+      "label": "SANOFI - PARIS",
+      "pct": 4.87
+    },
+    {
+      "label": "AXA SA",
+      "pct": 4.0
+    },
+    {
+      "label": "Date d'effet: 31/05/2026 La conjoncture ",
+      "pct": 0.8
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 0.5
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 0.55
+    }
+  ],
+  "currency_allocation": [
+    {
+      "label": "Performance YTD Au 15/06/2026",
+      "pct": 5.15
+    },
+    {
+      "label": "Afer Index CAC 40 - Dist ( sur la périod",
+      "pct": 92.64
+    },
+    {
+      "label": "TOTALENERGIES SE PARIS",
+      "pct": 8.47
+    },
+    {
+      "label": "SCHNEIDER ELECT SE",
+      "pct": 8.44
+    },
+    {
+      "label": "LVMH MOET HENNESSY LOUIS VUI",
+      "pct": 6.58
+    },
+    {
+      "label": "AIRBUS SE PARIS",
+      "pct": 5.77
+    },
+    {
+      "label": "AIR LIQUIDE SA",
+      "pct": 5.76
+    },
+    {
+      "label": "BNP PARIBAS",
+      "pct": 5.39
+    },
+    {
+      "label": "SAFRAN SA",
+      "pct": 5.26
+    },
+    {
+      "label": "L OREAL (PARIS)",
+      "pct": 5.07
+    },
+    {
+      "label": "SANOFI - PARIS",
+      "pct": 4.87
+    },
+    {
+      "label": "AXA SA",
+      "pct": 4.0
+    },
+    {
+      "label": "Date d'effet: 31/05/2026 La conjoncture ",
+      "pct": 0.8
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 0.5
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 0.55
+    }
+  ],
+  "synthetic_benchmark": [],
+  "costs": {
+    "entry_pct": 0.5,
+    "entry_eur": 50,
+    "exit_pct": 0.0,
+    "exit_eur": 0.0,
+    "ongoing_pct": 0.55,
+    "ongoing_eur": 54.73,
+    "transaction_pct": 0.0,
+    "transaction_eur": 0.0,
+    "performance_pct": 0.0,
+    "performance_eur": 0.0,
+    "raw": {
+      "ea": {
+        "exitMaxAcquired": 0.0,
+        "italyFixedEntry": 0.0,
+        "italyFixedExit": 0.0,
+        "ogc": 0.0055,
+        "trx": 0.0
+      },
+      "eap": {
+        "entry": 50,
+        "entryNotAcquired": 0.005,
+        "exit": 0.0,
+        "exitNotAcquired": 0.0,
+        "ogc": 54.73,
+        "perfFees": 0.0,
+        "trx": 0.0
+      },
+      "entry": 0.005,
+      "exit1Year": 0.0,
+      "maxPerformanceFees": 0.0
+    }
+  },
+  "publications": [
+    {
+      "kind": "Rapport annuel",
+      "url": "https://www.amundi.fr/dl/doc/annual-report/FR0013526696/FRA/20241031?inline",
+      "raw_href": "/dl/doc/annual-report/FR0013526696/FRA/20241031?inline",
+      "date": "31/10/2024",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Rapport périodique",
+      "url": "https://www.amundi.fr/dl/doc/periodic-report/FR0013526696/FRA/20250430?inline",
+      "raw_href": "/dl/doc/periodic-report/FR0013526696/FRA/20250430?inline",
+      "date": "30/04/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Prospectus",
+      "url": "https://www.amundi.fr/dl/doc/prospectus/FR0013526696/FRA/FRA/20260526?inline",
+      "raw_href": "/dl/doc/prospectus/FR0013526696/FRA/FRA/20260526?inline",
+      "date": "26/05/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "DIC PRIIPs",
+      "url": "https://www.amundi.fr/dl/doc/kid-priips/FR0013526696/FRA/FRA/20260526?inline",
+      "raw_href": "/dl/doc/kid-priips/FR0013526696/FRA/FRA/20260526?inline",
+      "date": "26/05/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Règlements ou Statuts",
+      "url": "https://www.amundi.fr/dl/doc/regulation/FR0013526696/FRA/FRA/20230217?inline",
+      "raw_href": "/dl/doc/regulation/FR0013526696/FRA/FRA/20230217?inline",
+      "date": "17/02/2023",
+      "lang": null,
+      "fmt": "PDF"
+    }
+  ],
+  "prospectus_url": "https://www.amundi.fr/dl/doc/prospectus/FR0013526696/FRA/FRA/20260526?inline",
+  "api_endpoints": [
+    "https://www.amundi.fr/product-services/i18n/translations/v1/list?format=json&locale=fr-FR&partnerId=752&withoutParam=true&placeholderCharacters[]={&placeholderCharacters[]=}&domain=productSheetFront,fundsData,commentary",
+    "https://www.amundi.fr/product-services/psa/productsheet/v9/fr_FR/752?isin=FR0013526696&src=fdr",
+    "https://www.amundi.fr/product-services/fdr/share/v1/partner/752/isin/FR0013526696?version=1.38.1",
+    "https://www.amundi.fr/product-services/stp/api/factsheets?filters%5BsubFundId%5D%5B%24eqi%5D=PF95753&filters%5BpartnerId%5D%5B%24eqi%5D=752&locale=fr_FR&populate=deep",
+    "https://www.amundi.fr/product-services/fdr/share/v3/full/FR0013526696",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=80487&docTypes=WebsiteSfdrDisclosure,WebsiteSfdrDisclosureSummary,PreContractualDocument,SfdrPeriodicAnnex&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=80487&docTypes=AnnualReport,ESGAnnualReport,FinalTerms,FundFactsheet,MonthlyFactsheet,PeriodicReport,Prospectus,Regulation,SalesRetailBrochure,SRITransparencyCode,LabelReport,KIDPRIIPs,LEC29,FundTeaser,WeeklyReporting,FundHoldings,Snapshot,InformationNotice,SupplementProspectus,AnnualImpactReport,QuarterlyFactsheet,ClimateReport,DividendComposition,DailyHoldings,AIFMG,SimplifiedAnnualReport,SupervisoryBoardMinutes,Status&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=80487&docTypes=MonthlyFactsheet,KIDPRIIPs,DailyHoldings,AIFMG&tempLink=0"
+  ],
+  "error": null,
+  "_nav_file": "out_amundi\\nav\\FR0013526696_nav.csv"
+}

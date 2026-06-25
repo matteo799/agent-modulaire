@@ -1,0 +1,167 @@
+{
+  "isin": "FR0010755744",
+  "name": "AMUNDI DIVERSIFIES MONDE - A (C)",
+  "currency": "EUR",
+  "share_type": "C",
+  "nav": 206.32,
+  "nav_date": "16/06/2026",
+  "aum": 59594375.54,
+  "aum_raw": null,
+  "aum_date": "16/06/2026",
+  "sfdr": "Art. 6",
+  "risk_sri": 3,
+  "benchmark": "Non benchmarké",
+  "is_benchmarked": false,
+  "characteristics": {
+    "Indice de référence": "Non benchmarké",
+    "Dépositaire": "SOCIETE GENERALE",
+    "Gérant": "Toledano Moche",
+    "Durée minimum de placement recommandée": "5 ans",
+    "Classe d'actifs": "diversifie",
+    "Forme/Structure Juridique": "fcp",
+    "Date de création": "05/06/2009",
+    "Date de première NAV": "05/06/2009",
+    "Code part (shareCode)": "81832"
+  },
+  "asset_allocation": [
+    {
+      "label": "Performance YTD Au 15/06/2026",
+      "pct": 8.62
+    },
+    {
+      "label": "AMUNDI DIVERSIFIES MONDE - A (C) ( sur l",
+      "pct": 51.36
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 4.0
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 1.51
+    },
+    {
+      "label": "de la surperformance annuelle de l'actif",
+      "pct": 10.0
+    }
+  ],
+  "currency_allocation": [
+    {
+      "label": "Performance YTD Au 15/06/2026",
+      "pct": 8.62
+    },
+    {
+      "label": "AMUNDI DIVERSIFIES MONDE - A (C) ( sur l",
+      "pct": 51.36
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 4.0
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 1.51
+    },
+    {
+      "label": "de la surperformance annuelle de l'actif",
+      "pct": 10.0
+    }
+  ],
+  "synthetic_benchmark": [],
+  "costs": {
+    "entry_pct": 4.0,
+    "entry_eur": 400,
+    "exit_pct": 0.0,
+    "exit_eur": 0.0,
+    "ongoing_pct": 1.506,
+    "ongoing_eur": 144.59,
+    "transaction_pct": 0.059,
+    "transaction_eur": 5.68,
+    "performance_pct": 10.0,
+    "performance_eur": 0.0,
+    "raw": {
+      "ea": {
+        "exitMaxAcquired": 0.0,
+        "italyFixedEntry": 0.0,
+        "italyFixedExit": 0.0,
+        "ogc": 0.01506,
+        "trx": 0.00059
+      },
+      "eap": {
+        "entry": 400,
+        "entryNotAcquired": 0.04,
+        "exit": 0.0,
+        "exitNotAcquired": 0.0,
+        "ogc": 144.59,
+        "perfFees": 0.0,
+        "trx": 5.68
+      },
+      "entry": 0.04,
+      "exit1Year": 0.0,
+      "maxPerformanceFees": 0.1
+    }
+  },
+  "publications": [
+    {
+      "kind": "Rapport annuel",
+      "url": "https://www.amundi.fr/dl/doc/annual-report/FR0010755744/FRA/20241231?inline",
+      "raw_href": "/dl/doc/annual-report/FR0010755744/FRA/20241231?inline",
+      "date": "31/12/2024",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Rapport périodique",
+      "url": "https://www.amundi.fr/dl/doc/periodic-report/FR0010755744/FRA/20250630?inline",
+      "raw_href": "/dl/doc/periodic-report/FR0010755744/FRA/20250630?inline",
+      "date": "30/06/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Prospectus",
+      "url": "https://www.amundi.fr/dl/doc/prospectus/FR0010755744/FRA/FRA/20260217?inline",
+      "raw_href": "/dl/doc/prospectus/FR0010755744/FRA/FRA/20260217?inline",
+      "date": "17/02/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "DIC PRIIPs",
+      "url": "https://www.amundi.fr/dl/doc/kid-priips/FR0010755744/FRA/FRA/20260217?inline",
+      "raw_href": "/dl/doc/kid-priips/FR0010755744/FRA/FRA/20260217?inline",
+      "date": "17/02/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Reporting mensuel",
+      "url": "https://www.amundi.fr/dl/doc/monthly-factsheet/FR0010755744/FRA/FRA/INSTITUTIONNEL/AMUNDI/20260531?inline",
+      "raw_href": "/dl/doc/monthly-factsheet/FR0010755744/FRA/FRA/INSTITUTIONNEL/AMUNDI/20260531?inline",
+      "date": "31/05/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Reporting hebdomadaire",
+      "url": "https://www.amundi.fr/dl/doc/weekly-factsheet/FR0010755744/FRA/FRA/INSTITUTIONNEL/AMUNDI/20260612?inline",
+      "raw_href": "/dl/doc/weekly-factsheet/FR0010755744/FRA/FRA/INSTITUTIONNEL/AMUNDI/20260612?inline",
+      "date": "12/06/2026",
+      "lang": null,
+      "fmt": "PDF"
+    }
+  ],
+  "prospectus_url": "https://www.amundi.fr/dl/doc/prospectus/FR0010755744/FRA/FRA/20260217?inline",
+  "api_endpoints": [
+    "https://www.amundi.fr/product-services/i18n/translations/v1/list?format=json&locale=fr-FR&partnerId=752&withoutParam=true&placeholderCharacters[]={&placeholderCharacters[]=}&domain=productSheetFront,fundsData,commentary",
+    "https://www.amundi.fr/product-services/psa/productsheet/v9/fr_FR/752?isin=FR0010755744&src=fdr",
+    "https://www.amundi.fr/product-services/fdr/share/v1/partner/752/isin/FR0010755744?version=1.38.1",
+    "https://www.amundi.fr/product-services/stp/api/factsheets?filters%5BsubFundId%5D%5B%24eqi%5D=PF98206&filters%5BpartnerId%5D%5B%24eqi%5D=752&locale=fr_FR&populate=deep",
+    "https://www.amundi.fr/product-services/fdr/share/v3/full/FR0010755744",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=81832&docTypes=AnnualReport,ESGAnnualReport,FinalTerms,FundFactsheet,MonthlyFactsheet,PeriodicReport,Prospectus,Regulation,SalesRetailBrochure,SRITransparencyCode,LabelReport,KIDPRIIPs,LEC29,FundTeaser,WeeklyReporting,FundHoldings,Snapshot,InformationNotice,SupplementProspectus,AnnualImpactReport,QuarterlyFactsheet,ClimateReport,DividendComposition,DailyHoldings,AIFMG,SimplifiedAnnualReport,SupervisoryBoardMinutes,Status&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=81832&docTypes=MonthlyFactsheet,KIDPRIIPs,DailyHoldings,AIFMG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=81832&docTypes=WebsiteSfdrDisclosure,WebsiteSfdrDisclosureSummary,PreContractualDocument,SfdrPeriodicAnnex&fallbackLanguage=ENG&tempLink=0"
+  ],
+  "error": null,
+  "_nav_file": "out_amundi\\nav\\FR0010755744_nav.csv"
+}
