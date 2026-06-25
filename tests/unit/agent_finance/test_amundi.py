@@ -77,3 +77,33 @@ def test_fund_stats_panel(amundi_tmp):
 
 def test_fund_stats_guard_no_nav(amundi_tmp):
     assert "aucun historique" in TOOLS["fund_stats"]["function"]("ABSENT0000").lower()
+
+
+def _daily(base, isin, n, drift):
+    """Crée un fonds avec n NAV à variation quotidienne constante + une fiche action Art. 8."""
+    from datetime import date, timedelta
+    d0, nav, rows = date(2023, 1, 1), 100.0, ["date;nav"]
+    for i in range(n):
+        nav *= 1 + drift
+        rows.append(f"{(d0 + timedelta(days=i)).strftime('%d/%m/%Y')};{nav:.4f}")
+    d = base / isin
+    d.mkdir()
+    (d / "nav.csv").write_text("\n".join(rows), encoding="utf-8")
+    (d / "summary.json").write_text(
+        json.dumps({"isin": isin, "name": f"Fund {isin}", "sfdr": "Art. 8",
+                    "characteristics": {"Classe d'actifs": "action"}}),
+        encoding="utf-8")
+
+
+def test_fund_performance_periods(amundi_tmp):
+    _daily(amundi_tmp, "PERF00000001", 400, 0.0003)
+    out = TOOLS["fund_performance"]["function"]("PERF00000001", periods="1y,all")
+    assert "1Y" in out and "ALL" in out and "%" in out
+
+
+def test_screen_funds_ranks_and_filters(amundi_tmp):
+    _daily(amundi_tmp, "AAAA00000001", 300, 0.0005)  # progresse plus vite
+    _daily(amundi_tmp, "BBBB00000001", 300, 0.0001)  # progresse moins vite
+    out = TOOLS["screen_funds"]["function"](sort_by="rendement", top=2, asset_class="action", sfdr="8")
+    assert "Top" in out
+    assert out.index("AAAA00000001") < out.index("BBBB00000001")  # meilleur rendement en tête

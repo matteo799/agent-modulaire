@@ -218,6 +218,28 @@ def fund_stats(isin: str = "", rf=None) -> str:
         return f"Erreur de calcul du profil de {isin} : {exc}"
 
 
+def fund_performance(isin: str = "", periods: str = "ytd,1y,3y,5y,all") -> str:
+    """Performance d'un fonds Amundi par période, calculée sur l'historique NAV."""
+    isin = (isin or "").strip()
+    if not isin:
+        return "Erreur : ISIN manquant pour fund_performance."
+    if not amundi.has_nav(isin):
+        return f"Erreur : aucun historique NAV pour {isin} — performance non calculable."
+    try:
+        return amundi.performance_text(isin, periods)
+    except Exception as exc:
+        return f"Erreur de calcul de la performance de {isin} : {exc}"
+
+
+def screen_funds(sort_by: str = "sharpe", top=5, asset_class: str = "",
+                 sfdr: str = "", sri=None, rf=None) -> str:
+    """Classe/filtre les fonds Amundi du dataset par un critère, renvoie le top N."""
+    try:
+        return amundi.screen_text(sort_by, int(top), asset_class, sfdr, sri, _to_decimal(rf) or 0.0)
+    except Exception as exc:
+        return f"Erreur de screening : {exc}"
+
+
 TOOLS = {
     "rag_search": {
         "function": rag_search,
@@ -254,6 +276,22 @@ TOOLS = {
         "volatilité / le max drawdown / le rendement annualisé du fonds X », ou un panorama de "
         "risque. Pour UN seul ratio précis (ou un choix par intention client), utiliser plutôt "
         "metric_*. Arguments : isin (str), rf (taux sans risque, optionnel — ex. 2 pour 2 %).",
+    },
+    "fund_performance": {
+        "function": fund_performance,
+        "description": "Performance d'un fonds Amundi PAR PÉRIODE (YTD, 1 an, 3 ans, 5 ans, depuis "
+        "création), calculée sur l'historique NAV : rendement cumulé ET annualisé par fenêtre. "
+        "À utiliser pour « performance / rendement sur 1 an / 3 ans / YTD du fonds X ». Arguments : "
+        "isin (str), periods (str, optionnel : liste séparée par virgules parmi ytd,1y,3y,5y,all).",
+    },
+    "screen_funds": {
+        "function": screen_funds,
+        "description": "Classe/filtre les fonds Amundi du dataset par un critère et renvoie le TOP N. "
+        "À utiliser pour un PALMARÈS / SCREENING : « les meilleurs fonds par Sharpe/Sortino/"
+        "rendement », « le top 5 des fonds actions Article 8 par Sortino », etc. Arguments : "
+        "sort_by (sharpe|sortino|rendement|volatilite|max_drawdown), top (int, défaut 5), "
+        "asset_class (action|obligataire|tresorerie|diversifie|specialise — optionnel), "
+        "sfdr (6|8|9 — optionnel), sri (1-7 — optionnel), rf (taux sans risque — optionnel).",
     },
     "read_file": {
         "function": read_file,
