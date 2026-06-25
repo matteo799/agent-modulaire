@@ -232,9 +232,10 @@ def tool_description(s: MetricSpec) -> str:
         )
     else:
         action = (
-            f"Calcule et/ou explique le {s.nom}. Calcule si on fournit les entrées "
-            f"(ex. R et σ, ou une série de rendements) ; sinon tente de les lire dans "
-            f"le document via `source` (ISIN) ; sinon explique sans inventer de chiffre."
+            f"Calcule le {s.nom}. Si `source` est l'ISIN d'un fonds Amundi (documents/amundi/), "
+            f"calcule le VRAI ratio depuis son historique NAV (nav.csv) ; sinon calcule à partir "
+            f"des entrées fournies (R et σ, ou une série `returns`) ; sinon explique la métrique "
+            f"sans inventer de chiffre."
         )
     return (
         f"{action} Formule : {s.formule}. "

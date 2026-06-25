@@ -3,7 +3,7 @@
 import re
 from pathlib import Path
 
-from agent.finance import metric_catalog
+from agent.finance import amundi, metric_catalog
 from agent.finance.metric_catalog import CATALOG, MetricSpec
 from agent.rag_adapter import list_sources, rag_search
 
@@ -43,12 +43,13 @@ def calculator(expression: str) -> str:
 # ── Outils « métriques d'optimisation » (projet rating fond) ──────────────
 #
 # Un outil PAR métrique, généré depuis le catalogue. Chaque outil :
-#   1. calcule si les entrées sont fournies (R/σ, ou une série de rendements) ;
-#   2. sinon tente de lire R et σ dans le document via `source` (ISIN) ;
-#   3. sinon explique la métrique et ses caractéristiques SANS inventer de
-#      chiffre (garde-fou honnête : un KID ne contient pas de série de
-#      rendements). La famille « budget » (CVaR/drawdown) est explicative
-#      seulement (le calcul réel exige un univers multi-fonds + rendements).
+#   1. calcule si une série de rendements / des scalaires sont fournis ;
+#   1bis. si `source` est un ISIN du dataset Amundi → calcule le VRAI ratio sur
+#         l'historique NAV (documents/amundi/<ISIN>/nav.csv) ;
+#   2. sinon tente de lire R et σ dans un document KID via le RAG (best-effort) ;
+#   3. sinon explique la métrique SANS inventer de chiffre (garde-fou honnête).
+#   La famille « budget » (CVaR/drawdown) est explicative seulement (le calcul
+#   réel exige un univers multi-fonds + rendements).
 
 _PCT_RE = re.compile(r"(-?\d+(?:[.,]\d+)?)\s*%")
 
@@ -118,6 +119,19 @@ def build_metric_tool(s: MetricSpec):
             except Exception as exc:
                 return f"Erreur de calcul ({s.nom}) : {exc}"
 
+        # 1bis) Source = ISIN du dataset Amundi avec historique NAV → VRAI calcul
+        # sur la série de rendements lue dans nav.csv (rendements quotidiens → ppy=252).
+        if s.returns_fn is not None and source and amundi.has_nav(source):
+            try:
+                series = amundi.load_returns(source)
+                value = s.returns_fn(series, rf_dec, periods_per_year)
+                return (
+                    f"{s.nom} = {value:.4f} (calculé sur {len(series)} rendements "
+                    f"quotidiens de {source}, rf={rf_dec:.2%})"
+                )
+            except Exception as exc:
+                return f"Erreur de calcul ({s.nom}) depuis l'historique NAV de {source} : {exc}"
+
         # 2) Entrées scalaires fournies (ou récupérables depuis le document).
         # On ne lit QUE les paramètres numériques reconnus : un argument parasite
         # passé par le planner est ignoré, pas coercé.
@@ -151,13 +165,26 @@ def build_metric_tool(s: MetricSpec):
         src = f" pour {source}" if source else ""
         return (
             f"Calcul du {s.nom} impossible{src} : il manque {', '.join(missing)}. "
-            f"Cette métrique requiert {s.donnees_requises}, absent(e) d'un KID/DICI. "
-            f"Aucune valeur inventée. Caractéristiques :\n{carac}"
+            f"Cette métrique requiert {s.donnees_requises} — ni entrées fournies, ni "
+            f"historique NAV pour cet ISIN. Aucune valeur inventée. Caractéristiques :\n{carac}"
         )
 
     _tool.__name__ = f"metric_{s.key}"
     _tool.__doc__ = metric_catalog.tool_description(s)
     return _tool
+
+
+def fund_summary(isin: str = "", fields: str = "") -> str:
+    """Faits d'un fonds Amundi, lus dans sa fiche structurée `summary.json`."""
+    isin = (isin or "").strip()
+    if not isin:
+        return "Erreur : ISIN manquant pour fund_summary."
+    if not amundi.has_summary(isin):
+        return f"Erreur : aucune fiche pour l'ISIN {isin} dans le dataset Amundi (documents/amundi/)."
+    try:
+        return amundi.summary_text(isin, fields)
+    except Exception as exc:
+        return f"Erreur de lecture de la fiche {isin} : {exc}"
 
 
 TOOLS = {
@@ -176,6 +203,16 @@ TOOLS = {
         "description": "Liste les documents/fonds disponibles dans documents/. Sans argument. "
         "Utile en première étape pour comparer plusieurs fonds un par un "
         "(via le paramètre source de rag_search).",
+    },
+    "fund_summary": {
+        "function": fund_summary,
+        "description": "Renvoie les FAITS d'un fonds Amundi à partir de son ISIN, lus dans sa "
+        "fiche structurée (nom, devise, NAV, encours/AUM, classification SFDR, indicateur de "
+        "risque SRI, indice de référence, dépositaire, gérant, durée recommandée, date de "
+        "création, performances). EXACT et sans recherche sémantique — à PRÉFÉRER à rag_search "
+        "dès qu'on dispose de l'ISIN d'un fonds Amundi. NE PAS l'utiliser pour calculer un "
+        "ratio (pour cela : les outils metric_*). Arguments : isin (str), fields (str, "
+        "optionnel : sous-ensemble de champs, ex. 'SFDR, SRI').",
     },
     "read_file": {
         "function": read_file,
