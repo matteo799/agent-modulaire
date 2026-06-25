@@ -55,21 +55,25 @@ _PCT_RE = re.compile(r"(-?\d+(?:[.,]\d+)?)\s*%")
 
 
 def _to_decimal(value):
-    """Coerce une entrée numérique tolérante en décimal (None reste None).
+    """Coerce une entrée financière (rendement, vol, rf…) en décimal (None reste None).
 
-    "8 %" → 0.08 ; "0,08" → 0.08 ; "0.08" → 0.08 ; 0.08 → 0.08.
-    Un nombre nu (sans %) est pris tel quel : on attend des décimaux (cf. doc).
+    "8 %" → 0.08 ; "0,08" → 0.08 ; 0.08 → 0.08 ; **2 → 0.02 ; 8 → 0.08**.
+    Convention : un nombre **≥ 1** est interprété comme un POURCENTAGE (un LLM écrit
+    `2` pour 2 %), car en décimal ces grandeurs sont toujours < 1. Un nombre < 1 est
+    déjà un décimal et reste inchangé.
     """
     if value is None or isinstance(value, bool):
         return None
     if isinstance(value, int | float):
-        return float(value)
-    text = str(value).strip().replace(",", ".")
-    if not text:
-        return None
-    if text.endswith("%"):
-        return float(text[:-1].strip()) / 100.0
-    return float(text)
+        v = float(value)
+    else:
+        text = str(value).strip().replace(",", ".")
+        if not text:
+            return None
+        if text.endswith("%"):  # pourcentage explicite → décimal, terminé
+            return float(text[:-1].strip()) / 100.0
+        v = float(text)
+    return v / 100.0 if abs(v) >= 1 else v
 
 
 def _source_r_sigma(source: str) -> tuple[float | None, float | None]:

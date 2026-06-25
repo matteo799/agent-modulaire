@@ -26,6 +26,13 @@ def test_sharpe_accepts_percent_strings():
     assert "0.6000" in out
 
 
+def test_bare_numbers_ge_1_are_percentages():
+    # Régression : un LLM passe 8/10/2 pour 8%/10%/2% → même résultat que les décimaux.
+    # (Sans ça, rf=2 valait 200% et donnait des ratios absurdes.)
+    assert "0.6000" in _sharpe(R=8, sigma=10, rf=2)
+    assert "0.6000" in _sharpe(R=0.08, sigma=0.10, rf=0.02)
+
+
 def test_sharpe_honest_guard_without_data():
     out = _sharpe()  # aucune donnée, aucun source
     assert "impossible" in out.lower()
