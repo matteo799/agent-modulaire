@@ -1,18 +1,19 @@
 """Fait tourner l'agent sur un golden set et MESURE ce qu'il fait.
 
 Usage :
-    python tests/run_golden.py [fichier.yaml] [limite | ids]
+    python tests/agent_eval/run_golden.py [fichier.yaml] [limite | ids]
 
-- fichier.yaml : jeu de questions (défaut : tests/question_test.yaml, qui exerce
-  toute la boîte à outils ; tests/golden_fonds_v1.yaml = lookups RAG seuls)
+- fichier.yaml : jeu de questions (défaut : tests/agent_eval/question_test.yaml, qui
+  exerce toute la boîte à outils ; golden_fonds_v1.yaml = lookups RAG seuls)
 - 2e argument :
     * un nombre  → ne traiter que les N premières questions ;
     * une liste d'ids séparés par des virgules (ex. "v2-08,v2-12") → filtrage par
-      préfixe d'id (rapport dans tests/golden_report_rerun.md) ;
+      préfixe d'id (rapport suffixé `_rerun`) ;
     * absent     → toutes les questions.
 
-Tout tourne dans UN seul processus : l'index RAG (embedding coûteux) n'est
-construit qu'une fois et réutilisé. Le rapport est écrit dans tests/golden_report.md.
+Tout tourne dans UN seul processus : l'index RAG (embedding coûteux) n'est construit
+qu'une fois et réutilisé. Les rapports sont écrits dans tests/agent_eval/reports/,
+auto-étiquetés par modèle (golden_report_<modèle>.md).
 
 Métriques AUTOMATIQUES (en tête du rapport) : couverture d'outils
 (expected_tools ⊆ outils appelés), latence et tokens par question, agrégés par
@@ -27,8 +28,9 @@ import yaml
 
 # L'éval tourne sur le modèle PAR DÉFAUT du projet (Claude Opus 4.8, cf.
 # rag_engine/configs). Pour une passe économe, surcharger avant de lancer :
-#   RAG__LLM__OPENAI__MODEL=claude-haiku-4-5 python tests/run_golden.py
-ROOT = Path(__file__).resolve().parent.parent
+#   RAG__LLM__OPENAI__MODEL=claude-haiku-4-5 python tests/agent_eval/run_golden.py
+HERE = Path(__file__).resolve().parent  # tests/agent_eval/
+ROOT = HERE.parents[1]  # racine du dépôt
 sys.path.insert(0, str(ROOT))
 
 from agent import llm  # noqa: E402
@@ -36,7 +38,8 @@ from agent.finance.select import auto_ask  # noqa: E402
 from agent.tools import TOOLS  # noqa: E402
 from main import answer_query  # noqa: E402
 
-DEFAULT_GOLDEN = ROOT / "tests" / "question_test.yaml"
+DEFAULT_GOLDEN = HERE / "question_test.yaml"
+REPORTS_DIR = HERE / "reports"
 
 
 def _model_slug() -> str:
@@ -54,8 +57,9 @@ def main():
     data = yaml.safe_load(golden_path.read_text(encoding="utf-8"))
     items = data["items"]
     # Rapport auto-étiqueté par modèle → comparaisons multi-modèles sans écrasement.
+    REPORTS_DIR.mkdir(exist_ok=True)
     model = _model_slug()
-    report_path = ROOT / "tests" / f"golden_report_{model}.md"
+    report_path = REPORTS_DIR / f"golden_report_{model}.md"
     if arg2 and arg2.isdigit():
         items = items[:int(arg2)]
     elif arg2:

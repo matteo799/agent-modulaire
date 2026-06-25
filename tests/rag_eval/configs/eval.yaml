@@ -3,7 +3,7 @@
 # La CI compare les scores agrégés aux thresholds ci-dessous et fail si on
 # régresse en dessous. Augmenter un threshold = engagement à le maintenir.
 
-golden_set: tests/golden/golden_v1.yaml
+golden_set: tests/rag_eval/golden/golden_v1.yaml
 
 retrieval:
   k: 5

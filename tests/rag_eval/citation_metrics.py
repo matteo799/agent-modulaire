@@ -23,9 +23,9 @@ Ce module ne dépend ni de LLM ni d'embeddings : tests rapides et stables.
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
+from rag.interfaces.types import Answer
 
 from .golden import GoldenItem
-from rag.interfaces.types import Answer
 
 
 def _f1(precision: float, recall: float) -> float:

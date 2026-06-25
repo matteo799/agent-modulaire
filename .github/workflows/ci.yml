@@ -21,7 +21,7 @@ jobs:
         run: pip install ruff pytest httpx
 
       - name: Lint (ruff, conventions du dépôt)
-        run: ruff check agent main.py tests/agent tests/agent_finance
+        run: ruff check agent main.py tests/unit
 
       - name: Tests déterministes (sans réseau)
-        run: pytest tests/agent tests/agent_finance
+        run: pytest tests/unit

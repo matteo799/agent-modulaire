@@ -1,8 +1,10 @@
-# rag-engine
+# rag-engine — sous-package du projet Harness
 
-> Moteur RAG modulaire **Parent-Child + Corrective RAG**, réutilisable.
-> Dans ce dépôt, il est rapatrié comme moteur de récupération de l'agent Harness
-> (voir le `README.md` racine). Une collection PAR dataset, jamais combinées —
+> 📦 **Sous-package autonome.** Le point d'entrée du projet est le
+> [`README.md` racine](../README.md) ; ce fichier ne documente que le **moteur RAG**
+> en tant que brique réutilisable.
+>
+> Moteur RAG modulaire **Parent-Child + Corrective RAG**. Une collection PAR dataset, jamais combinées —
 > corpus actuels : `dataset_finance` (prospectus) et `dataset_droit` (cours de droit).
 > Les PDF sources vivent à la racine du dépôt dans `documents/finance` et
 > `documents/droit` ; les index dérivés (Qdrant/SQLite) dans `rag_engine/data/`.
@@ -44,7 +46,7 @@ RAG__EMBEDDER__MODEL=bge-m3  RAG__EMBEDDER__API_KEY=ollama  python …
 | **Choisir les modèles** (LLM, embeddings, reranker) | [`configs/default.yaml`](configs/default.yaml) (sections `llm`, `embedder`, `reranker`) |
 | **Paramètres RAG** (retrieval, reranker, CRAG) | [`configs/default.yaml`](configs/default.yaml) (sections `retrieval`, `crag`) |
 | **Schéma typé + valeurs par défaut commentées** | [`src/rag/config/settings.py`](src/rag/config/settings.py) — la référence des paramètres |
-| **Évaluation du moteur** (golden sets, runner) | **côté Harness** : `tests/golden/`, `tests/rag_eval/`, `tests/eval*.yaml` — voir le `README.md` racine |
+| **Évaluation du moteur** (golden sets, runner) | **côté Harness** : `tests/rag_eval/golden/`, `tests/rag_eval/`, `tests/rag_eval/configs/eval*.yaml` — voir le `README.md` racine |
 | **Vue d'ensemble du code** | section [Structure du repo](#structure-du-repo) plus bas |
 | **Intégration dans l'agent Harness** | le `README.md` à la racine du dépôt + `agent/rag.py` |
 

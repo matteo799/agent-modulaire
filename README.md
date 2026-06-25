@@ -33,10 +33,10 @@ réutilisable traité comme une brique.
 | `agent/` | L'agent : `llm.py` (accès LLM + résilience), `planner.py`, `tools.py`, `executor.py`, `rag.py` (adaptateur sur le moteur). |
 | `agent/finance/` | Couche métriques *rating fond* : `metrics.py` (calcul pur), `metric_catalog.py`, `select.py` (sélection + clarification). |
 | `main.py` | Point d'entrée CLI + synthèse finale. |
-| `rag_engine/` | Moteur RAG modulaire (bge-m3 → parent-child → reranker + juge de pertinence LLM). Package installable, packagé/typé à part. |
+| `rag_engine/` | Moteur RAG modulaire (bge-m3 → parent-child → reranker + juge de pertinence LLM). **Sous-package autonome, avec son propre `README.md`** (ce README-ci reste le point d'entrée du projet). |
 | `documents/<dataset>/` | Corpus source (PDF), **un dossier par dataset** : `finance/`, `droit/`. |
 | `workspace/` | Mémoire de l'agent (régénérée à chaque run) : `plan.md`, `notes.md`, `rapport.md`. |
-| `tests/` | Tests unitaires (`agent/`, `agent_finance/`) + éval bout-en-bout (`run_golden.py`) + éval récupération (`rag_eval/`). |
+| `tests/` | Trois zones : `unit/` (pytest, rapide), `agent_eval/` (éval de l'agent), `rag_eval/` (éval du moteur) — voir `tests/README.md`. |
 | `docs/architecture.md` · `docs/CHOIX_DE_CONCEPTION.md` · `docs/GUARDRAILS.md` | Documentation (voir plus bas). |
 
 ---
@@ -103,18 +103,18 @@ démos rejouables.
 
 ```bash
 # Tests unitaires (calcul des métriques, outils, sélection, résilience) — rapides, sans réseau
-pytest tests/agent tests/agent_finance
+pytest tests/unit
 
 # Agent de bout en bout (golden set)
-python tests/run_golden.py
+python tests/agent_eval/run_golden.py
 
 # Récupération du moteur (par dataset, jamais combinés)
-python -m tests.rag_eval.run --config tests/eval_finance.yaml
+python -m tests.rag_eval.run --config tests/rag_eval/configs/eval_finance.yaml
 ```
 
 ### Évaluation — couverture d'outils & ablation modèle
 
-`tests/question_test.yaml` exerce **toute la boîte à outils** (20 questions, 9 catégories) ;
+`tests/agent_eval/question_test.yaml` exerce **toute la boîte à outils** (20 questions, 9 catégories) ;
 `run_golden.py` mesure automatiquement, par question, la **couverture d'outils**
 (`expected_tools ⊆ outils réellement appelés`), la latence et les tokens, agrégés par
 catégorie + une matrice des outils exercés. Dernière passe (19 questions, set v2.0) :
@@ -133,16 +133,20 @@ catégorie + une matrice des outils exercés. Dernière passe (19 questions, set
   (Sharpe/Sortino sur un KID = pas de chiffre inventé), refus hors-corpus.
 - **Latence/tokens** — la passe Haiku a subi des coupures passerelle (une question ~60 min) :
   le temps mural n'est **pas** une comparaison de vitesse fiable ici, et le harness résilient a
-  tout de même terminé. Détail complet : `tests/golden_report_<modèle>.md`.
+  tout de même terminé. Détail complet : `tests/agent_eval/reports/golden_report_<modèle>.md`.
 
 ```bash
-python tests/run_golden.py                                          # modèle par défaut (Opus)
-RAG__LLM__OPENAI__MODEL=claude-haiku-4-5 python tests/run_golden.py # ablation Haiku
+python tests/agent_eval/run_golden.py                                          # modèle par défaut (Opus)
+RAG__LLM__OPENAI__MODEL=claude-haiku-4-5 python tests/agent_eval/run_golden.py # ablation Haiku
 ```
 
 ---
 
 ## Documentation
+
+**Ce `README.md` est le point d'entrée unique du projet.** Les autres documents sont
+subordonnés : `docs/` pour la conception, `tests/README.md` pour les tests, et
+`rag_engine/README.md` pour le moteur en tant que sous-package réutilisable.
 
 | Fichier | Contenu |
 |---|---|
@@ -151,7 +155,8 @@ RAG__LLM__OPENAI__MODEL=claude-haiku-4-5 python tests/run_golden.py # ablation H
 | **`docs/GUARDRAILS.md`** | Récapitulatif des garde-fous (rejet hors-corpus, calcul honnête, robustesse…). |
 | `docs/metriques_optimisation_gold.md` | Définitions de référence des 6 métriques d'optimisation. |
 | `docs/demos/` | Sorties de démonstration rejouables (30 questions, comparaison, multi-tâches). |
-| `rag_engine/README.md` | Le moteur RAG : ingestion, stack de récupération, éval. |
+| `tests/README.md` | Carte des tests : `unit/` · `agent_eval/` · `rag_eval/`. |
+| `rag_engine/README.md` | Le moteur RAG (sous-package) : ingestion, stack de récupération, éval. |
 
 ---
 
