@@ -1,0 +1,186 @@
+version: "demo-gerant-v1.0"
+description: |
+  Démo « du point de vue d'un GÉRANT DE FONDS » — sur de vrais ISIN du dataset
+  Amundi (documents/amundi/). Conçue pour VENDRE *rating fund* : elle déroule le
+  workflow réel d'un gérant et montre l'agent en autonomie —
+    • due diligence factuelle (fund_summary : SFDR, SRI, benchmark, frais, gérant…)
+    • profil risque/rendement complet calculé sur l'historique NAV (fund_stats)
+    • ratio précis (metric_*) et sélection par intention client (clarification)
+    • comparaison de fonds, recommandation d'adéquation
+    • garde-fous honnêtes (fonds sans historique, ISIN inexistant)
+
+  Casting (réel, varié) :
+    FR0011223569  actions micro-caps eurozone  (Art 6, SRI 3 — offensif, vol élevée)
+    LU1882473009  obligataire corporate euro   (Art 8, SRI 2)
+    LU1882469403  obligataire aggregate euro   (Art 8, SRI 2)
+    FR0011585629  diversifié climat            (Art 8, SRI 3)
+    LU0568620214  monétaire EUR                (Art 8, SRI 1 — le refuge)
+    FR0010655704  (fonds SANS historique NAV — garde-fou attendu sur les métriques)
+
+  Lancer : python tests/agent_eval/run_golden.py demo_gerant.yaml
+
+items:
+# ── A. Due diligence factuelle (fund_summary) ─────────────────────────────
+  - id: g01-fiche-esg
+    category: fiche
+    question: "Pour le fonds FR0011223569 : quelle est sa classification SFDR, son indicateur de risque SRI et son indice de référence ?"
+    expected_tools: [fund_summary]
+    expected_answer: |
+      SFDR (Art. 6/8/9), SRI sur 7, et l'indice de référence, lus dans la fiche.
+    tags: [factuel, esg, risque]
+
+  - id: g02-frais
+    category: fiche
+    question: "Quels sont les frais du fonds FR0011223569 : frais d'entrée, frais courants et commission de surperformance ?"
+    expected_tools: [fund_summary]
+    expected_answer: |
+      Frais d'entrée (~5 %), frais courants (~1,3 %), commission de surperformance,
+      tels qu'indiqués dans la fiche (bloc costs).
+    tags: [factuel, frais]
+
+  - id: g03-gouvernance
+    category: fiche
+    question: "Qui est le gérant et le dépositaire du fonds LU1882473009, et quelle est sa date de création ?"
+    expected_tools: [fund_summary]
+    expected_answer: |
+      Nom du gérant, du dépositaire et date de création, depuis la fiche.
+    tags: [factuel, gouvernance]
+
+  - id: g04-caracteristiques
+    category: fiche
+    question: "Donne la classe d'actifs, la devise, la durée de placement recommandée et l'encours du fonds FR0011585629."
+    expected_tools: [fund_summary]
+    expected_answer: |
+      Classe d'actifs, devise, durée recommandée et encours (AUM), depuis la fiche.
+    tags: [factuel, caracteristiques]
+
+# ── B. Profil risque/rendement complet (fund_stats) ───────────────────────
+  - id: g05-profil-complet
+    category: profil
+    question: "Donne-moi le profil risque/rendement complet du fonds FR0011223569 (taux sans risque 2 %)."
+    expected_tools: [fund_stats]
+    expected_answer: |
+      Panorama calculé sur l'historique NAV : rendement annualisé, volatilité,
+      Sharpe, Sortino, STARR, Martin, max drawdown, CVaR.
+    tags: [profil, metriques, nav]
+
+  - id: g06-vol-drawdown
+    category: profil
+    question: "Quelle est la volatilité annualisée et le drawdown maximal historique du fonds FR0011223569 ?"
+    expected_tools: [fund_stats]
+    expected_answer: |
+      Volatilité annualisée et max drawdown (le fonds micro-caps a un drawdown élevé),
+      calculés sur la NAV.
+    tags: [profil, volatilite, drawdown]
+
+# ── C. Ratio précis (metric_*) ────────────────────────────────────────────
+  - id: g07-sharpe
+    category: metrique
+    question: "Quel est le ratio de Sharpe du fonds FR0011223569 avec un taux sans risque de 2 % ?"
+    expected_tools: [metric_sharpe]
+    expected_answer: |
+      Sharpe calculé sur l'historique NAV (valeur numérique, rf=2 %).
+    tags: [metrique, sharpe, nav]
+
+  - id: g08-sortino
+    category: metrique
+    question: "Calcule le ratio de Sortino du fonds LU1882473009 (taux sans risque 2 %)."
+    expected_tools: [metric_sortino]
+    expected_answer: |
+      Sortino calculé sur l'historique NAV (≈ -0,30 pour ce fonds, rf=2 %).
+    tags: [metrique, sortino, nav]
+
+# ── D. Sélection par intention client (select → metric_*) ─────────────────
+  - id: g09-intention-baisse
+    category: selection
+    question: "J'ai un client qui craint surtout les baisses, sans vouloir pénaliser les hausses. Quelle métrique utiliser pour évaluer le fonds FR0011223569, et quelle est sa valeur ?"
+    expected_tools: [metric_sortino]
+    expected_answer: |
+      Oriente vers Sortino (risque de baisse) et en donne la valeur calculée.
+    tags: [selection, sortino, intention]
+
+  - id: g10-intention-queue
+    category: selection
+    question: "Pour un client obsédé par les pertes extrêmes, quelle métrique privilégier sur LU1882473009 et que vaut-elle ?"
+    expected_tools: [metric_starr]
+    expected_answer: |
+      Oriente vers STARR (rendement / CVaR, risque de queue) et en donne la valeur.
+    tags: [selection, starr, queue]
+
+  - id: g11-intention-regularite
+    category: selection
+    question: "Un client veut un fonds régulier, qui minimise le temps passé sous l'eau. Quelle métrique sur FR0011585629, et sa valeur ?"
+    expected_tools: [metric_martin]
+    expected_answer: |
+      Oriente vers Martin (rendement / Ulcer, régularité des drawdowns) + valeur.
+    tags: [selection, martin, drawdown]
+
+  - id: g12-ambigu
+    category: selection
+    question: "Quelle est la meilleure métrique rendement/risque pour juger le fonds FR0011223569 ?"
+    expected_tools: []
+    expected_answer: |
+      Ambiguïté (Sharpe vs Sortino) → l'agent demande une clarification au lieu de trancher.
+    tags: [selection, clarification, ambigu]
+
+# ── E. Comparaison de fonds ───────────────────────────────────────────────
+  - id: g13-compare-sharpe
+    category: comparaison
+    question: "Compare le ratio de Sharpe (rf 2 %) du fonds actions FR0011223569 et du fonds monétaire LU0568620214 : lequel offre le meilleur rapport rendement/risque ?"
+    expected_tools: [metric_sharpe]
+    expected_answer: |
+      Sharpe de CHAQUE fonds (calculés sur leurs NAV), puis désignation du meilleur.
+    tags: [comparaison, sharpe, multi-fonds]
+
+  - id: g14-compare-sortino
+    category: comparaison
+    question: "Entre LU1882473009 et LU1882469403, lequel a le meilleur ratio de Sortino (rf 2 %) ?"
+    expected_tools: [metric_sortino]
+    expected_answer: |
+      Sortino des deux fonds + le meilleur.
+    tags: [comparaison, sortino, multi-fonds]
+
+  - id: g15-compare-frais
+    category: comparaison
+    question: "Compare les frais courants des fonds FR0011223569 et FR0011585629, et donne l'écart."
+    expected_tools: [fund_summary, calculator]
+    expected_answer: |
+      Frais courants de chacun (via fund_summary) puis l'écart via calculator.
+    tags: [comparaison, frais, calculator]
+
+# ── F. Adéquation / recommandation ────────────────────────────────────────
+  - id: g16-adequation-defensif
+    category: adequation
+    question: "Le fonds FR0011223569 convient-il à un client défensif ? Justifie avec son indicateur de risque SRI, sa volatilité et son drawdown maximal."
+    expected_tools: [fund_summary, fund_stats]
+    expected_answer: |
+      Recommandation argumentée : SRI (fiche) + volatilité et max drawdown (NAV).
+      Conclusion attendue : peu adapté à un défensif (micro-caps, drawdown ~40 %).
+    tags: [adequation, recommandation]
+
+  - id: g17-adequation-tresorerie
+    category: adequation
+    question: "Le fonds LU0568620214 est-il adapté à un placement de trésorerie court terme ? Appuie-toi sur son SRI, sa durée de placement recommandée et sa volatilité."
+    expected_tools: [fund_summary, fund_stats]
+    expected_answer: |
+      SRI (1, faible) + durée recommandée + volatilité faible → cohérent avec une
+      poche de trésorerie ; mention du rendement actuel.
+    tags: [adequation, tresorerie]
+
+# ── G. Garde-fous honnêtes ────────────────────────────────────────────────
+  - id: g18-sans-historique
+    category: gardefou
+    question: "Donne la classification SFDR et le ratio de Sortino du fonds FR0010655704."
+    expected_tools: [fund_summary]
+    expected_answer: |
+      SFDR depuis la fiche ; pour le Sortino, garde-fou honnête : pas d'historique NAV
+      pour ce fonds → aucune valeur inventée.
+    tags: [gardefou, no-hallucination]
+
+  - id: g19-isin-inexistant
+    category: gardefou
+    question: "Quel est le profil risque/rendement du fonds ZZ0000000000 ?"
+    expected_tools: []
+    expected_answer: |
+      Refus honnête : cet ISIN n'existe pas dans le dataset → aucune donnée, rien d'inventé.
+    tags: [gardefou, refus]

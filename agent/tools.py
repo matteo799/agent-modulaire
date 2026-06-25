@@ -3,7 +3,7 @@
 import re
 from pathlib import Path
 
-from agent.finance import amundi, metric_catalog
+from agent.finance import amundi, metric_catalog, metrics
 from agent.finance.metric_catalog import CATALOG, MetricSpec
 from agent.rag_adapter import list_sources, rag_search
 
@@ -191,6 +191,33 @@ def fund_summary(isin: str = "", fields: str = "") -> str:
         return f"Erreur de lecture de la fiche {isin} : {exc}"
 
 
+def fund_stats(isin: str = "", rf=None) -> str:
+    """Profil risque/rendement COMPLET d'un fonds Amundi, calculé sur son historique NAV."""
+    isin = (isin or "").strip()
+    if not isin:
+        return "Erreur : ISIN manquant pour fund_stats."
+    if not amundi.has_nav(isin):
+        return f"Erreur : aucun historique NAV pour {isin} — profil risque/rendement non calculable."
+    try:
+        r = amundi.load_returns(isin)
+        rf_dec = _to_decimal(rf) or 0.0
+        ann_r, sigma = metrics.annualized_return(r), metrics.annualized_vol(r)
+        return "\n".join([
+            f"Fonds {isin} — profil risque/rendement "
+            f"(sur {len(r)} rendements quotidiens, rf={rf_dec:.2%}) :",
+            f"  • Rendement annualisé : {ann_r:.2%}",
+            f"  • Volatilité annualisée : {sigma:.2%}",
+            f"  • Ratio de Sharpe : {metrics.sharpe(ann_r, sigma, rf_dec):.3f}",
+            f"  • Ratio de Sortino : {metrics.sortino_from_returns(r, rf_dec):.3f}",
+            f"  • STARR (rendement / CVaR) : {metrics.starr_from_returns(r, rf_dec):.3f}",
+            f"  • Ratio de Martin (rendement / Ulcer) : {metrics.martin_from_returns(r):.3f}",
+            f"  • Max drawdown : {metrics.max_drawdown(r):.2%}",
+            f"  • CVaR 5 % (perte de queue quotidienne) : {metrics.cvar(r):.2%}",
+        ])
+    except Exception as exc:
+        return f"Erreur de calcul du profil de {isin} : {exc}"
+
+
 TOOLS = {
     "rag_search": {
         "function": rag_search,
@@ -213,10 +240,20 @@ TOOLS = {
         "description": "Renvoie les FAITS d'un fonds Amundi à partir de son ISIN, lus dans sa "
         "fiche structurée (nom, devise, NAV, encours/AUM, classification SFDR, indicateur de "
         "risque SRI, indice de référence, dépositaire, gérant, durée recommandée, date de "
-        "création, performances). EXACT et sans recherche sémantique — à PRÉFÉRER à rag_search "
-        "dès qu'on dispose de l'ISIN d'un fonds Amundi. NE PAS l'utiliser pour calculer un "
-        "ratio (pour cela : les outils metric_*). Arguments : isin (str), fields (str, "
-        "optionnel : sous-ensemble de champs, ex. 'SFDR, SRI').",
+        "création, FRAIS — entrée/sortie/courants/surperformance —, performance YTD). EXACT et "
+        "sans recherche sémantique — à PRÉFÉRER à rag_search dès qu'on dispose de l'ISIN d'un "
+        "fonds Amundi. NE PAS l'utiliser pour calculer un ratio (pour cela : metric_* ou "
+        "fund_stats). Arguments : isin (str), fields (str, optionnel : sous-ensemble de "
+        "champs, ex. 'frais' ou 'SFDR, SRI').",
+    },
+    "fund_stats": {
+        "function": fund_stats,
+        "description": "Calcule le PROFIL risque/rendement COMPLET d'un fonds Amundi à partir de "
+        "son historique NAV : rendement annualisé, volatilité, ratios de Sharpe/Sortino/STARR/"
+        "Martin, max drawdown, CVaR. À utiliser pour « donne le profil / les statistiques / la "
+        "volatilité / le max drawdown / le rendement annualisé du fonds X », ou un panorama de "
+        "risque. Pour UN seul ratio précis (ou un choix par intention client), utiliser plutôt "
+        "metric_*. Arguments : isin (str), rf (taux sans risque, optionnel — ex. 2 pour 2 %).",
     },
     "read_file": {
         "function": read_file,
