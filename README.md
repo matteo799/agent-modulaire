@@ -34,7 +34,7 @@ réutilisable traité comme une brique.
 | `agent/finance/` | Couche métriques *rating fond* : `metrics.py` (calcul pur), `metric_catalog.py`, `select.py` (sélection + clarification). |
 | `main.py` | Point d'entrée CLI + synthèse finale. |
 | `rag_engine/` | Moteur RAG modulaire (bge-m3 → parent-child → reranker + juge de pertinence LLM). **Sous-package autonome, avec son propre `README.md`** (ce README-ci reste le point d'entrée du projet). |
-| `documents/<dataset>/` | Corpus source (PDF), **un dossier par dataset** : `finance/`, `droit/`. |
+| `documents/<dataset>/` | Corpus source, **un dossier par dataset**. `finance/` & `droit/` : PDF (KID/prospectus, cours). `amundi/` : **un sous-dossier par ISIN** avec `nav.csv` (historique NAV) + `summary.json` (résumé structuré, remplace le RAG). |
 | `workspace/` | Mémoire de l'agent (régénérée à chaque run) : `plan.md`, `notes.md`, `rapport.md`. |
 | `tests/` | Trois zones : `unit/` (pytest, rapide), `agent_eval/` (éval de l'agent), `rag_eval/` (éval du moteur) — voir `tests/README.md`. |
 | `docs/architecture.md` · `docs/CHOIX_DE_CONCEPTION.md` · `docs/GUARDRAILS.md` | Documentation (voir plus bas). |

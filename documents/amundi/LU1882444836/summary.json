@@ -1,0 +1,151 @@
+{
+  "isin": "LU1882444836",
+  "name": "AMUNDI FUNDS ASIA EQUITY FOCUS - I2 USD (C)",
+  "currency": "USD",
+  "share_type": "C",
+  "nav": 2311.93,
+  "nav_date": "16/06/2026",
+  "aum": 253997902.79,
+  "aum_raw": null,
+  "aum_date": "16/06/2026",
+  "sfdr": "Art. 8",
+  "risk_sri": 4,
+  "benchmark": "100% MSCI AC ASIA EX JAPAN",
+  "is_benchmarked": true,
+  "characteristics": {
+    "Indice de référence": "100% MSCI AC ASIA EX JAPAN",
+    "Dépositaire": "CACEIS Bank, Luxembourg Branch",
+    "Gérant": "Park Ji Young",
+    "Durée minimum de placement recommandée": "5 ans",
+    "Classe d'actifs": "action",
+    "Forme/Structure Juridique": "sicav",
+    "Date de création": "31/05/2019",
+    "Date de première NAV": "03/06/2019",
+    "Code part (shareCode)": "68006"
+  },
+  "asset_allocation": [
+    {
+      "label": "Performance YTD Au 16/06/2026",
+      "pct": 35.95
+    },
+    {
+      "label": "AMUNDI FUNDS ASIA EQUITY FOCUS - I2 USD ",
+      "pct": 129.57
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 1.12
+    }
+  ],
+  "currency_allocation": [
+    {
+      "label": "Performance YTD Au 16/06/2026",
+      "pct": 35.95
+    },
+    {
+      "label": "AMUNDI FUNDS ASIA EQUITY FOCUS - I2 USD ",
+      "pct": 129.57
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 1.12
+    }
+  ],
+  "synthetic_benchmark": [],
+  "costs": {
+    "entry_pct": 0.0,
+    "entry_eur": 0,
+    "exit_pct": 0.0,
+    "exit_eur": 0.0,
+    "ongoing_pct": 1.12,
+    "ongoing_eur": 112.0,
+    "transaction_pct": 0.259,
+    "transaction_eur": 25.94,
+    "performance_pct": 0.0,
+    "performance_eur": 0.0,
+    "raw": {
+      "ea": {
+        "exitMaxAcquired": 0.0,
+        "italyFixedEntry": 0.0,
+        "italyFixedExit": 0.0,
+        "ogc": 0.0112,
+        "trx": 0.00259
+      },
+      "eap": {
+        "entry": 0,
+        "entryNotAcquired": 0.0,
+        "exit": 0.0,
+        "exitNotAcquired": 0.0,
+        "ogc": 112.0,
+        "perfFees": 0.0,
+        "trx": 25.94
+      },
+      "entry": 0.0,
+      "exit1Year": 0.0,
+      "maxPerformanceFees": 0.0
+    }
+  },
+  "publications": [
+    {
+      "kind": "MonthlyFactsheet",
+      "url": "https://www.amundi.fr/fr_instit/dl/doc/monthly-factsheet/LU1882444836/FRA/FRA/INSTITUTIONNEL/AMUNDI/20260531",
+      "raw_href": "https://www.amundi.fr/fr_instit/dl/doc/monthly-factsheet/LU1882444836/FRA/FRA/INSTITUTIONNEL/AMUNDI/20260531",
+      "date": "31/05/2026",
+      "lang": "FR",
+      "fmt": "PDF"
+    },
+    {
+      "kind": "KIDPRIIPs",
+      "url": "https://www.amundi.fr/fr_instit/dl/doc/kid-priips/LU1882444836/FRA/FRA/20260515",
+      "raw_href": "https://www.amundi.fr/fr_instit/dl/doc/kid-priips/LU1882444836/FRA/FRA/20260515",
+      "date": "15/05/2026",
+      "lang": "FR",
+      "fmt": "PDF"
+    },
+    {
+      "kind": "AnnualReport",
+      "url": "https://www.amundi.fr/fr_instit/dl/doc/annual-report/LU1882444836/FRA/FRA/20250630",
+      "raw_href": "https://www.amundi.fr/fr_instit/dl/doc/annual-report/LU1882444836/FRA/FRA/20250630",
+      "date": "30/06/2025",
+      "lang": "FR",
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Prospectus",
+      "url": "https://www.amundi.fr/fr_instit/dl/doc/prospectus/LU1882444836/FRA/FRA/20250601",
+      "raw_href": "https://www.amundi.fr/fr_instit/dl/doc/prospectus/LU1882444836/FRA/FRA/20250601",
+      "date": "01/06/2025",
+      "lang": "FR",
+      "fmt": "PDF"
+    },
+    {
+      "kind": "PeriodicReport",
+      "url": "https://www.amundi.fr/fr_instit/dl/doc/periodic-report/LU1882444836/ENG/20251231",
+      "raw_href": "https://www.amundi.fr/fr_instit/dl/doc/periodic-report/LU1882444836/ENG/20251231",
+      "date": "31/12/2025",
+      "lang": "EN",
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Status",
+      "url": "https://www.amundi.fr/fr_instit/dl/doc/status/LU1882444836/ENG/20230517",
+      "raw_href": "https://www.amundi.fr/fr_instit/dl/doc/status/LU1882444836/ENG/20230517",
+      "date": "17/05/2023",
+      "lang": "EN",
+      "fmt": "PDF"
+    }
+  ],
+  "prospectus_url": "https://www.amundi.fr/fr_instit/dl/doc/prospectus/LU1882444836/FRA/FRA/20250601",
+  "api_endpoints": [
+    "https://www.amundi.fr/product-services/i18n/translations/v1/list?format=json&locale=fr-FR&partnerId=752&withoutParam=true&placeholderCharacters[]={&placeholderCharacters[]=}&domain=productSheetFront,fundsData,commentary",
+    "https://www.amundi.fr/product-services/psa/productsheet/v9/fr_FR/752?isin=LU1882444836&src=fdr",
+    "https://www.amundi.fr/product-services/fdr/share/v1/partner/752/isin/LU1882444836?version=1.38.1",
+    "https://www.amundi.fr/product-services/stp/api/factsheets?filters%5BsubFundId%5D%5B%24eqi%5D=PF2728&filters%5BpartnerId%5D%5B%24eqi%5D=752&locale=fr_FR&populate=deep",
+    "https://www.amundi.fr/product-services/fdr/share/v3/full/LU1882444836",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=68006&docTypes=MonthlyFactsheet,KIDPRIIPs,DailyHoldings,AIFMG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=68006&docTypes=AnnualReport,ESGAnnualReport,FinalTerms,FundFactsheet,MonthlyFactsheet,PeriodicReport,Prospectus,Regulation,SalesRetailBrochure,SRITransparencyCode,LabelReport,KIDPRIIPs,LEC29,FundTeaser,WeeklyReporting,FundHoldings,Snapshot,InformationNotice,SupplementProspectus,AnnualImpactReport,QuarterlyFactsheet,ClimateReport,DividendComposition,DailyHoldings,AIFMG,SimplifiedAnnualReport,SupervisoryBoardMinutes,Status&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=68006&docTypes=WebsiteSfdrDisclosure,WebsiteSfdrDisclosureSummary,PreContractualDocument,SfdrPeriodicAnnex&fallbackLanguage=ENG&tempLink=0"
+  ],
+  "error": null,
+  "_nav_file": "out_amundi\\nav\\LU1882444836_nav.csv"
+}

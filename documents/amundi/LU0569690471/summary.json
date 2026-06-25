@@ -1,0 +1,159 @@
+{
+  "isin": "LU0569690471",
+  "name": "AMUNDI FUNDS EQUITY MENA - A EUR Hgd (C)",
+  "currency": "EUR",
+  "share_type": "C",
+  "nav": 197.53,
+  "nav_date": "16/06/2026",
+  "aum": 34130320.83,
+  "aum_raw": null,
+  "aum_date": "16/06/2026",
+  "sfdr": "Art. 6",
+  "risk_sri": 4,
+  "benchmark": "100% S&P PAN ARAB COMPOSITE LARGE MIDCAP NR Close",
+  "is_benchmarked": true,
+  "characteristics": {
+    "Indice de référence": "100% S&P PAN ARAB COMPOSITE LARGE MIDCAP NR Close",
+    "Dépositaire": "CACEIS Bank, Luxembourg Branch",
+    "Gérant": "Marcel-Villerabel Rémy",
+    "Durée minimum de placement recommandée": "5 ans",
+    "Classe d'actifs": "action",
+    "Forme/Structure Juridique": "sicav",
+    "Date de création": "24/06/2011",
+    "Date de première NAV": "13/05/2008",
+    "Code part (shareCode)": "26378"
+  },
+  "asset_allocation": [
+    {
+      "label": "Performance YTD Au 16/06/2026",
+      "pct": 1.15
+    },
+    {
+      "label": "AMUNDI FUNDS EQUITY MENA - A EUR Hgd (C)",
+      "pct": 60.74
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 4.5
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 2.08
+    },
+    {
+      "label": "de la surperformance annuelle de l'actif",
+      "pct": 20.0
+    }
+  ],
+  "currency_allocation": [
+    {
+      "label": "Performance YTD Au 16/06/2026",
+      "pct": 1.15
+    },
+    {
+      "label": "AMUNDI FUNDS EQUITY MENA - A EUR Hgd (C)",
+      "pct": 60.74
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 4.5
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 2.08
+    },
+    {
+      "label": "de la surperformance annuelle de l'actif",
+      "pct": 20.0
+    }
+  ],
+  "synthetic_benchmark": [],
+  "costs": {
+    "entry_pct": 4.5,
+    "entry_eur": 450,
+    "exit_pct": 0.0,
+    "exit_eur": 0.0,
+    "ongoing_pct": 2.08,
+    "ongoing_eur": 198.64,
+    "transaction_pct": 0.66,
+    "transaction_eur": 63.03,
+    "performance_pct": 20.0,
+    "performance_eur": 0.0,
+    "raw": {
+      "ea": {
+        "exitMaxAcquired": 0.0,
+        "italyFixedEntry": 0.0,
+        "italyFixedExit": 0.0,
+        "ogc": 0.0208,
+        "trx": 0.0066
+      },
+      "eap": {
+        "entry": 450,
+        "entryNotAcquired": 0.045,
+        "exit": 0.0,
+        "exitNotAcquired": 0.0,
+        "ogc": 198.64,
+        "perfFees": 0.0,
+        "trx": 63.03
+      },
+      "entry": 0.045,
+      "exit1Year": 0.0,
+      "maxPerformanceFees": 0.2
+    }
+  },
+  "publications": [
+    {
+      "kind": "Rapport annuel",
+      "url": "https://www.amundi.fr/dl/doc/annual-report/LU0569690471/FRA/FRA/20250630?inline",
+      "raw_href": "/dl/doc/annual-report/LU0569690471/FRA/FRA/20250630?inline",
+      "date": "30/06/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Prospectus",
+      "url": "https://www.amundi.fr/dl/doc/prospectus/LU0569690471/FRA/FRA/20250601?inline",
+      "raw_href": "/dl/doc/prospectus/LU0569690471/FRA/FRA/20250601?inline",
+      "date": "01/06/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "DIC PRIIPs",
+      "url": "https://www.amundi.fr/dl/doc/kid-priips/LU0569690471/FRA/FRA/20260515?inline",
+      "raw_href": "/dl/doc/kid-priips/LU0569690471/FRA/FRA/20260515?inline",
+      "date": "15/05/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Rapport périodique",
+      "url": "https://www.amundi.fr/dl/doc/periodic-report/LU0569690471/ENG/20251231?inline",
+      "raw_href": "/dl/doc/periodic-report/LU0569690471/ENG/20251231?inline",
+      "date": "31/12/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Status",
+      "url": "https://www.amundi.fr/dl/doc/status/LU0569690471/ENG/20230517?inline",
+      "raw_href": "/dl/doc/status/LU0569690471/ENG/20230517?inline",
+      "date": "17/05/2023",
+      "lang": null,
+      "fmt": "PDF"
+    }
+  ],
+  "prospectus_url": "https://www.amundi.fr/dl/doc/prospectus/LU0569690471/FRA/FRA/20250601?inline",
+  "api_endpoints": [
+    "https://www.amundi.fr/product-services/i18n/translations/v1/list?format=json&locale=fr-FR&partnerId=752&withoutParam=true&placeholderCharacters[]={&placeholderCharacters[]=}&domain=productSheetFront,fundsData,commentary",
+    "https://www.amundi.fr/product-services/psa/productsheet/v9/fr_FR/752?isin=LU0569690471&src=fdr",
+    "https://www.amundi.fr/product-services/fdr/share/v1/partner/752/isin/LU0569690471?version=1.38.1",
+    "https://www.amundi.fr/product-services/stp/api/factsheets?filters%5BsubFundId%5D%5B%24eqi%5D=PF20335&filters%5BpartnerId%5D%5B%24eqi%5D=752&locale=fr_FR&populate=deep",
+    "https://www.amundi.fr/product-services/fdr/share/v3/full/LU0569690471",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=26378&docTypes=WebsiteSfdrDisclosure,WebsiteSfdrDisclosureSummary,PreContractualDocument,SfdrPeriodicAnnex&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=26378&docTypes=AnnualReport,ESGAnnualReport,FinalTerms,FundFactsheet,MonthlyFactsheet,PeriodicReport,Prospectus,Regulation,SalesRetailBrochure,SRITransparencyCode,LabelReport,KIDPRIIPs,LEC29,FundTeaser,WeeklyReporting,FundHoldings,Snapshot,InformationNotice,SupplementProspectus,AnnualImpactReport,QuarterlyFactsheet,ClimateReport,DividendComposition,DailyHoldings,AIFMG,SimplifiedAnnualReport,SupervisoryBoardMinutes,Status&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=26378&docTypes=MonthlyFactsheet,KIDPRIIPs,DailyHoldings,AIFMG&tempLink=0"
+  ],
+  "error": null,
+  "_nav_file": "out_amundi\\nav\\LU0569690471_nav.csv"
+}

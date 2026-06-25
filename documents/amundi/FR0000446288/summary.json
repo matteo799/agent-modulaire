@@ -1,0 +1,215 @@
+{
+  "isin": "FR0000446288",
+  "name": "AMUNDI CREDIT EURO - I (C)",
+  "currency": "EUR",
+  "share_type": "C",
+  "nav": 28009.82,
+  "nav_date": "16/06/2026",
+  "aum": 288967148.18,
+  "aum_raw": null,
+  "aum_date": "16/06/2026",
+  "sfdr": "Art. 8",
+  "risk_sri": 2,
+  "benchmark": "100% BLOOMBERG EURO AGGREGATE CORPORATE (E)",
+  "is_benchmarked": true,
+  "characteristics": {
+    "Indice de référence": "100% BLOOMBERG EURO AGGREGATE CORPORATE (E)",
+    "Dépositaire": "CACEIS Bank",
+    "Gérant": "Boiral Hervé",
+    "Durée minimum de placement recommandée": "3 ans",
+    "Classe d'actifs": "obligataire",
+    "Forme/Structure Juridique": "fcp",
+    "Date de création": "24/05/1991",
+    "Date de première NAV": "24/05/1991",
+    "Code part (shareCode)": "1605"
+  },
+  "asset_allocation": [
+    {
+      "label": "Performance YTD",
+      "pct": 0.0
+    },
+    {
+      "label": "AMUNDI CREDIT EURO - I (C) ( sur la péri",
+      "pct": 15.11
+    },
+    {
+      "label": "Le crédit IG euro est resté remarquablem",
+      "pct": 3.8
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 1.0
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 0.65
+    },
+    {
+      "label": "de la surperformance annuelle de l'actif",
+      "pct": 20.0
+    }
+  ],
+  "currency_allocation": [
+    {
+      "label": "Performance YTD",
+      "pct": 0.0
+    },
+    {
+      "label": "AMUNDI CREDIT EURO - I (C) ( sur la péri",
+      "pct": 15.11
+    },
+    {
+      "label": "Le crédit IG euro est resté remarquablem",
+      "pct": 3.8
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 1.0
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 0.65
+    },
+    {
+      "label": "de la surperformance annuelle de l'actif",
+      "pct": 20.0
+    }
+  ],
+  "synthetic_benchmark": [],
+  "costs": {
+    "entry_pct": 1.0,
+    "entry_eur": 100,
+    "exit_pct": 0.0,
+    "exit_eur": 0.0,
+    "ongoing_pct": 0.65,
+    "ongoing_eur": 64.34,
+    "transaction_pct": 0.499,
+    "transaction_eur": 49.4,
+    "performance_pct": 20.0,
+    "performance_eur": 10.99,
+    "raw": {
+      "ea": {
+        "exitMaxAcquired": 0.0,
+        "italyFixedEntry": 0.0,
+        "italyFixedExit": 0.0,
+        "ogc": 0.0065,
+        "trx": 0.00499
+      },
+      "eap": {
+        "entry": 100,
+        "entryNotAcquired": 0.01,
+        "exit": 0.0,
+        "exitNotAcquired": 0.0,
+        "ogc": 64.34,
+        "perfFees": 10.99,
+        "trx": 49.4
+      },
+      "entry": 0.01,
+      "exit1Year": 0.0,
+      "maxPerformanceFees": 0.2
+    }
+  },
+  "publications": [
+    {
+      "kind": "Rapport annuel",
+      "url": "https://www.amundi.fr/dl/doc/annual-report/FR0000446288/FRA/20250228?inline",
+      "raw_href": "/dl/doc/annual-report/FR0000446288/FRA/20250228?inline",
+      "date": "28/02/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Rapport périodique",
+      "url": "https://www.amundi.fr/dl/doc/periodic-report/FR0000446288/FRA/20250630?inline",
+      "raw_href": "/dl/doc/periodic-report/FR0000446288/FRA/20250630?inline",
+      "date": "30/06/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Prospectus",
+      "url": "https://www.amundi.fr/dl/doc/prospectus/FR0000446288/FRA/FRA/20260313?inline",
+      "raw_href": "/dl/doc/prospectus/FR0000446288/FRA/FRA/20260313?inline",
+      "date": "13/03/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "DIC PRIIPs",
+      "url": "https://www.amundi.fr/dl/doc/kid-priips/FR0000446288/FRA/FRA/20260313?inline",
+      "raw_href": "/dl/doc/kid-priips/FR0000446288/FRA/FRA/20260313?inline",
+      "date": "13/03/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Reporting mensuel",
+      "url": "https://www.amundi.fr/dl/doc/monthly-factsheet/FR0000446288/FRA/FRA/INSTITUTIONNEL/AMUNDI/20260531?inline",
+      "raw_href": "/dl/doc/monthly-factsheet/FR0000446288/FRA/FRA/INSTITUTIONNEL/AMUNDI/20260531?inline",
+      "date": "31/05/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Reporting Climat",
+      "url": "https://www.amundi.fr/dl/doc/climate-report/FR0000446288/FRA/FRA/AMUNDI/20260531?inline",
+      "raw_href": "/dl/doc/climate-report/FR0000446288/FRA/FRA/AMUNDI/20260531?inline",
+      "date": "31/05/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Règlements ou Statuts",
+      "url": "https://www.amundi.fr/dl/doc/regulation/FR0000446288/FRA/FRA/20110802?inline",
+      "raw_href": "/dl/doc/regulation/FR0000446288/FRA/FRA/20110802?inline",
+      "date": "02/08/2011",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Informations Internet Durabilité (SFDR)",
+      "url": "https://www.amundi.fr/dl/doc/website-sfdr-disclosure/FR0000446288/FRA/FRA/20230101?inline",
+      "raw_href": "/dl/doc/website-sfdr-disclosure/FR0000446288/FRA/FRA/20230101?inline",
+      "date": "01/01/2023",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Informations Internet Durabilité (SFDR) – Résumé",
+      "url": "https://www.amundi.fr/dl/doc/website-sfdr-disclosure-summary/FR0000446288/FRA/FRA/20230101?inline",
+      "raw_href": "/dl/doc/website-sfdr-disclosure-summary/FR0000446288/FRA/FRA/20230101?inline",
+      "date": "01/01/2023",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Annexe précontractuelle SFDR",
+      "url": "https://www.amundi.fr/dl/doc/pre-contractual-document/FR0000446288/FRA/FRA/20231012?inline",
+      "raw_href": "/dl/doc/pre-contractual-document/FR0000446288/FRA/FRA/20231012?inline",
+      "date": "12/10/2023",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "SFDR Periodic Annex",
+      "url": "https://www.amundi.fr/dl/doc/sfdr-periodic-annex/FR0000446288/FRA/FRA/20251231?inline",
+      "raw_href": "/dl/doc/sfdr-periodic-annex/FR0000446288/FRA/FRA/20251231?inline",
+      "date": "31/12/2025",
+      "lang": null,
+      "fmt": "PDF"
+    }
+  ],
+  "prospectus_url": "https://www.amundi.fr/dl/doc/prospectus/FR0000446288/FRA/FRA/20260313?inline",
+  "api_endpoints": [
+    "https://www.amundi.fr/product-services/i18n/translations/v1/list?format=json&locale=fr-FR&partnerId=752&withoutParam=true&placeholderCharacters[]={&placeholderCharacters[]=}&domain=productSheetFront,fundsData,commentary",
+    "https://www.amundi.fr/product-services/psa/productsheet/v9/fr_FR/752?isin=FR0000446288&src=fdr",
+    "https://www.amundi.fr/product-services/fdr/share/v1/partner/752/isin/FR0000446288?version=1.38.1",
+    "https://www.amundi.fr/product-services/stp/api/factsheets?filters%5BsubFundId%5D%5B%24eqi%5D=PF3477&filters%5BpartnerId%5D%5B%24eqi%5D=752&locale=fr_FR&populate=deep",
+    "https://www.amundi.fr/product-services/fdr/share/v3/full/FR0000446288",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=1605&docTypes=WebsiteSfdrDisclosure,WebsiteSfdrDisclosureSummary,PreContractualDocument,SfdrPeriodicAnnex&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=1605&docTypes=AnnualReport,ESGAnnualReport,FinalTerms,FundFactsheet,MonthlyFactsheet,PeriodicReport,Prospectus,Regulation,SalesRetailBrochure,SRITransparencyCode,LabelReport,KIDPRIIPs,LEC29,FundTeaser,WeeklyReporting,FundHoldings,Snapshot,InformationNotice,SupplementProspectus,AnnualImpactReport,QuarterlyFactsheet,ClimateReport,DividendComposition,DailyHoldings,AIFMG,SimplifiedAnnualReport,SupervisoryBoardMinutes,Status&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=1605&docTypes=MonthlyFactsheet,KIDPRIIPs,DailyHoldings,AIFMG&tempLink=0"
+  ],
+  "error": null,
+  "_nav_file": "out_amundi\\nav\\FR0000446288_nav.csv"
+}

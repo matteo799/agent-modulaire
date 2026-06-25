@@ -1,0 +1,158 @@
+{
+  "isin": "IE000B77BK84",
+  "name": "Amundi CFM Cumulus Fund - I EUR (C)",
+  "currency": "EUR",
+  "share_type": "C",
+  "nav": 105.7512,
+  "nav_date": "15/06/2026",
+  "aum": 414727052.03,
+  "aum_raw": null,
+  "aum_date": "15/06/2026",
+  "sfdr": "Art. 6",
+  "risk_sri": 3,
+  "benchmark": "Non benchmarké",
+  "is_benchmarked": false,
+  "characteristics": {
+    "Indice de référence": "Non benchmarké",
+    "Dépositaire": "Société Générale S.A., Dublin Branch",
+    "Durée minimum de placement recommandée": "5 ans",
+    "Classe d'actifs": "specialise",
+    "Forme/Structure Juridique": "public limited company",
+    "Date de création": "16/09/2025",
+    "Date de première NAV": "16/09/2025",
+    "Code part (shareCode)": "212794"
+  },
+  "asset_allocation": [
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 5.0
+    },
+    {
+      "label": "de votre investissement avant qu’il ne v",
+      "pct": 3.0
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 1.9
+    },
+    {
+      "label": "de la surperformance annuelle de l'actif",
+      "pct": 15.0
+    }
+  ],
+  "currency_allocation": [
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 5.0
+    },
+    {
+      "label": "de votre investissement avant qu’il ne v",
+      "pct": 3.0
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 1.9
+    },
+    {
+      "label": "de la surperformance annuelle de l'actif",
+      "pct": 15.0
+    }
+  ],
+  "synthetic_benchmark": [],
+  "costs": {
+    "entry_pct": 5.0,
+    "entry_eur": 500,
+    "exit_pct": 3.0,
+    "exit_eur": 285.0,
+    "ongoing_pct": 1.9,
+    "ongoing_eur": 180.5,
+    "transaction_pct": 1.55,
+    "transaction_eur": 147.25,
+    "performance_pct": 15.0,
+    "performance_eur": 0.0,
+    "raw": {
+      "ea": {
+        "exitMaxAcquired": 0.0,
+        "italyFixedEntry": 0.0,
+        "italyFixedExit": 0.0,
+        "ogc": 0.019,
+        "trx": 0.0155
+      },
+      "eap": {
+        "entry": 500,
+        "entryNotAcquired": 0.05,
+        "exit": 285.0,
+        "exitNotAcquired": 0.03,
+        "ogc": 180.5,
+        "perfFees": 0.0,
+        "trx": 147.25
+      },
+      "entry": 0.05,
+      "exit1Year": 0.03,
+      "maxPerformanceFees": 0.15
+    }
+  },
+  "publications": [
+    {
+      "kind": "Rapport annuel",
+      "url": "https://www.amundi.fr/dl/doc/annual-report/IE000B77BK84/ENG/20241231?inline",
+      "raw_href": "/dl/doc/annual-report/IE000B77BK84/ENG/20241231?inline",
+      "date": "31/12/2024",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Rapport périodique",
+      "url": "https://www.amundi.fr/dl/doc/periodic-report/IE000B77BK84/ENG/20240630?inline",
+      "raw_href": "/dl/doc/periodic-report/IE000B77BK84/ENG/20240630?inline",
+      "date": "30/06/2024",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Prospectus",
+      "url": "https://www.amundi.fr/dl/doc/prospectus/IE000B77BK84/ENG/FRA/20230929?inline",
+      "raw_href": "/dl/doc/prospectus/IE000B77BK84/ENG/FRA/20230929?inline",
+      "date": "29/09/2023",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Supplement Prospectus",
+      "url": "https://www.amundi.fr/dl/doc/supplement-prospectus/IE000B77BK84/ENG/FRA/20251024?inline",
+      "raw_href": "/dl/doc/supplement-prospectus/IE000B77BK84/ENG/FRA/20251024?inline",
+      "date": "24/10/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "DIC PRIIPs",
+      "url": "https://www.amundi.fr/dl/doc/kid-priips/IE000B77BK84/FRA/FRA/20250801?inline",
+      "raw_href": "/dl/doc/kid-priips/IE000B77BK84/FRA/FRA/20250801?inline",
+      "date": "01/08/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Reporting mensuel",
+      "url": "https://www.amundi.fr/dl/doc/monthly-factsheet/IE000B77BK84/ENG/FRA/INSTITUTIONNEL/AMUNDI/20260531?inline",
+      "raw_href": "/dl/doc/monthly-factsheet/IE000B77BK84/ENG/FRA/INSTITUTIONNEL/AMUNDI/20260531?inline",
+      "date": "31/05/2026",
+      "lang": null,
+      "fmt": "PDF"
+    }
+  ],
+  "prospectus_url": "https://www.amundi.fr/dl/doc/prospectus/IE000B77BK84/ENG/FRA/20230929?inline",
+  "api_endpoints": [
+    "https://www.amundi.fr/product-services/i18n/translations/v1/list?format=json&locale=fr-FR&partnerId=752&withoutParam=true&placeholderCharacters[]={&placeholderCharacters[]=}&domain=productSheetFront,fundsData,commentary",
+    "https://www.amundi.fr/product-services/psa/productsheet/v9/fr_FR/752?isin=IE000B77BK84&src=fdr",
+    "https://www.amundi.fr/product-services/fdr/share/v1/partner/752/isin/IE000B77BK84?version=1.38.1",
+    "https://www.amundi.fr/product-services/stp/api/factsheets?filters%5BsubFundId%5D%5B%24eqi%5D=PF212776&filters%5BpartnerId%5D%5B%24eqi%5D=752&locale=fr_FR&populate=deep",
+    "https://www.amundi.fr/product-services/fdr/share/v3/full/IE000B77BK84",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=212794&docTypes=AnnualReport,ESGAnnualReport,FinalTerms,FundFactsheet,MonthlyFactsheet,PeriodicReport,Prospectus,Regulation,SalesRetailBrochure,SRITransparencyCode,LabelReport,KIDPRIIPs,LEC29,FundTeaser,WeeklyReporting,FundHoldings,Snapshot,InformationNotice,SupplementProspectus,AnnualImpactReport,QuarterlyFactsheet,ClimateReport,DividendComposition,DailyHoldings,AIFMG,SimplifiedAnnualReport,SupervisoryBoardMinutes,Status&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=212794&docTypes=WebsiteSfdrDisclosure,WebsiteSfdrDisclosureSummary,PreContractualDocument,SfdrPeriodicAnnex&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=212794&docTypes=MonthlyFactsheet,KIDPRIIPs,DailyHoldings,AIFMG&tempLink=0"
+  ],
+  "error": null,
+  "_nav_file": "out_amundi\\nav\\IE000B77BK84_nav.csv"
+}

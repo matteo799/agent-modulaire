@@ -1,0 +1,215 @@
+{
+  "isin": "FR0010807842",
+  "name": "AMUNDI ACTIONS EUROPE RESPONSABLE - I",
+  "currency": "EUR",
+  "share_type": "C",
+  "nav": 169532.39,
+  "nav_date": "16/06/2026",
+  "aum": 65398758.93,
+  "aum_raw": null,
+  "aum_date": "16/06/2026",
+  "sfdr": "Art. 8",
+  "risk_sri": 4,
+  "benchmark": "100% MSCI EUROPE",
+  "is_benchmarked": true,
+  "characteristics": {
+    "Indice de référence": "100% MSCI EUROPE",
+    "Dépositaire": "CACEIS Bank",
+    "Gérant": "Lafargue Isabelle",
+    "Durée minimum de placement recommandée": "5 ans",
+    "Classe d'actifs": "action",
+    "Forme/Structure Juridique": "fcp",
+    "Date de création": "05/10/2009",
+    "Date de première NAV": "06/10/2009",
+    "Code part (shareCode)": "17934"
+  },
+  "asset_allocation": [
+    {
+      "label": "Performance YTD Au 15/06/2026",
+      "pct": 6.71
+    },
+    {
+      "label": "AMUNDI ACTIONS EUROPE RESPONSABLE - I ( ",
+      "pct": 120.75
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 2.5
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 0.8
+    },
+    {
+      "label": "de la surperformance annuelle de l'actif",
+      "pct": 20.0
+    }
+  ],
+  "currency_allocation": [
+    {
+      "label": "Performance YTD Au 15/06/2026",
+      "pct": 6.71
+    },
+    {
+      "label": "AMUNDI ACTIONS EUROPE RESPONSABLE - I ( ",
+      "pct": 120.75
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 2.5
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 0.8
+    },
+    {
+      "label": "de la surperformance annuelle de l'actif",
+      "pct": 20.0
+    }
+  ],
+  "synthetic_benchmark": [],
+  "costs": {
+    "entry_pct": 2.5,
+    "entry_eur": 250,
+    "exit_pct": 0.0,
+    "exit_eur": 0.0,
+    "ongoing_pct": 0.8,
+    "ongoing_eur": 78.0,
+    "transaction_pct": 0.291,
+    "transaction_eur": 28.36,
+    "performance_pct": 20.0,
+    "performance_eur": 0.0,
+    "raw": {
+      "ea": {
+        "exitMaxAcquired": 0.0,
+        "italyFixedEntry": 0.0,
+        "italyFixedExit": 0.0,
+        "ogc": 0.008,
+        "trx": 0.00291
+      },
+      "eap": {
+        "entry": 250,
+        "entryNotAcquired": 0.025,
+        "exit": 0.0,
+        "exitNotAcquired": 0.0,
+        "ogc": 78.0,
+        "perfFees": 0.0,
+        "trx": 28.36
+      },
+      "entry": 0.025,
+      "exit1Year": 0.0,
+      "maxPerformanceFees": 0.2
+    }
+  },
+  "publications": [
+    {
+      "kind": "Rapport annuel",
+      "url": "https://www.amundi.fr/dl/doc/annual-report/FR0010807842/FRA/20241031?inline",
+      "raw_href": "/dl/doc/annual-report/FR0010807842/FRA/20241031?inline",
+      "date": "31/10/2024",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Rapport périodique",
+      "url": "https://www.amundi.fr/dl/doc/periodic-report/FR0010807842/FRA/20250430?inline",
+      "raw_href": "/dl/doc/periodic-report/FR0010807842/FRA/20250430?inline",
+      "date": "30/04/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Prospectus",
+      "url": "https://www.amundi.fr/dl/doc/prospectus/FR0010807842/FRA/FRA/20251105?inline",
+      "raw_href": "/dl/doc/prospectus/FR0010807842/FRA/FRA/20251105?inline",
+      "date": "05/11/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "DIC PRIIPs",
+      "url": "https://www.amundi.fr/dl/doc/kid-priips/FR0010807842/FRA/FRA/20260210?inline",
+      "raw_href": "/dl/doc/kid-priips/FR0010807842/FRA/FRA/20260210?inline",
+      "date": "10/02/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Reporting mensuel",
+      "url": "https://www.amundi.fr/dl/doc/monthly-factsheet/FR0010807842/FRA/FRA/INSTITUTIONNEL/AMUNDI/20260531?inline",
+      "raw_href": "/dl/doc/monthly-factsheet/FR0010807842/FRA/FRA/INSTITUTIONNEL/AMUNDI/20260531?inline",
+      "date": "31/05/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Code de transparence ISR",
+      "url": "https://www.amundi.fr/dl/doc/transparency-code/FR0010807842/FRA/FRA/20250624?inline",
+      "raw_href": "/dl/doc/transparency-code/FR0010807842/FRA/FRA/20250624?inline",
+      "date": "24/06/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Reporting Climat",
+      "url": "https://www.amundi.fr/dl/doc/climate-report/FR0010807842/FRA/FRA/AMUNDI/20260531?inline",
+      "raw_href": "/dl/doc/climate-report/FR0010807842/FRA/FRA/AMUNDI/20260531?inline",
+      "date": "31/05/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Règlements ou Statuts",
+      "url": "https://www.amundi.fr/dl/doc/regulation/FR0010807842/FRA/FRA/20110728?inline",
+      "raw_href": "/dl/doc/regulation/FR0010807842/FRA/FRA/20110728?inline",
+      "date": "28/07/2011",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Informations Internet Durabilité (SFDR)",
+      "url": "https://www.amundi.fr/dl/doc/website-sfdr-disclosure/FR0010807842/FRA/FRA/20250331?inline",
+      "raw_href": "/dl/doc/website-sfdr-disclosure/FR0010807842/FRA/FRA/20250331?inline",
+      "date": "31/03/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Informations Internet Durabilité (SFDR) – Résumé",
+      "url": "https://www.amundi.fr/dl/doc/website-sfdr-disclosure-summary/FR0010807842/FRA/FRA/20250331?inline",
+      "raw_href": "/dl/doc/website-sfdr-disclosure-summary/FR0010807842/FRA/FRA/20250331?inline",
+      "date": "31/03/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Annexe précontractuelle SFDR",
+      "url": "https://www.amundi.fr/dl/doc/pre-contractual-document/FR0010807842/FRA/FRA/20250331?inline",
+      "raw_href": "/dl/doc/pre-contractual-document/FR0010807842/FRA/FRA/20250331?inline",
+      "date": "31/03/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "SFDR Periodic Annex",
+      "url": "https://www.amundi.fr/dl/doc/sfdr-periodic-annex/FR0010807842/FRA/FRA/20251031?inline",
+      "raw_href": "/dl/doc/sfdr-periodic-annex/FR0010807842/FRA/FRA/20251031?inline",
+      "date": "31/10/2025",
+      "lang": null,
+      "fmt": "PDF"
+    }
+  ],
+  "prospectus_url": "https://www.amundi.fr/dl/doc/prospectus/FR0010807842/FRA/FRA/20251105?inline",
+  "api_endpoints": [
+    "https://www.amundi.fr/product-services/i18n/translations/v1/list?format=json&locale=fr-FR&partnerId=752&withoutParam=true&placeholderCharacters[]={&placeholderCharacters[]=}&domain=productSheetFront,fundsData,commentary",
+    "https://www.amundi.fr/product-services/psa/productsheet/v9/fr_FR/752?isin=FR0010807842&src=fdr",
+    "https://www.amundi.fr/product-services/fdr/share/v1/partner/752/isin/FR0010807842?version=1.38.1",
+    "https://www.amundi.fr/product-services/stp/api/factsheets?filters%5BsubFundId%5D%5B%24eqi%5D=PF3483&filters%5BpartnerId%5D%5B%24eqi%5D=752&locale=fr_FR&populate=deep",
+    "https://www.amundi.fr/product-services/fdr/share/v3/full/FR0010807842",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=17934&docTypes=WebsiteSfdrDisclosure,WebsiteSfdrDisclosureSummary,PreContractualDocument,SfdrPeriodicAnnex&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=17934&docTypes=MonthlyFactsheet,KIDPRIIPs,DailyHoldings,AIFMG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=17934&docTypes=AnnualReport,ESGAnnualReport,FinalTerms,FundFactsheet,MonthlyFactsheet,PeriodicReport,Prospectus,Regulation,SalesRetailBrochure,SRITransparencyCode,LabelReport,KIDPRIIPs,LEC29,FundTeaser,WeeklyReporting,FundHoldings,Snapshot,InformationNotice,SupplementProspectus,AnnualImpactReport,QuarterlyFactsheet,ClimateReport,DividendComposition,DailyHoldings,AIFMG,SimplifiedAnnualReport,SupervisoryBoardMinutes,Status&fallbackLanguage=ENG&tempLink=0"
+  ],
+  "error": null,
+  "_nav_file": "out_amundi\\nav\\FR0010807842_nav.csv"
+}

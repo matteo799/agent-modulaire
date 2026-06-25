@@ -1,0 +1,134 @@
+{
+  "isin": "FR001400RVF8",
+  "name": "AMUNDI BUY & WATCH HIGH YIELD 2029 - PM (C)",
+  "currency": "EUR",
+  "share_type": "C",
+  "nav": 105.01,
+  "nav_date": "16/06/2026",
+  "aum": 25481748.53,
+  "aum_raw": null,
+  "aum_date": "16/06/2026",
+  "sfdr": "Art. 8",
+  "risk_sri": 2,
+  "benchmark": "Non benchmarké",
+  "is_benchmarked": false,
+  "characteristics": {
+    "Indice de référence": "Non benchmarké",
+    "Dépositaire": "CACEIS Bank",
+    "Gérant": "Thomas Jean Luc",
+    "Durée minimum de placement recommandée": "5 ans",
+    "Classe d'actifs": "obligataire",
+    "Forme/Structure Juridique": "fcp",
+    "Date de création": "15/10/2024",
+    "Code part (shareCode)": "93172"
+  },
+  "asset_allocation": [
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 10.0
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 0.82
+    }
+  ],
+  "currency_allocation": [
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 10.0
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 0.82
+    }
+  ],
+  "synthetic_benchmark": [],
+  "costs": {
+    "entry_pct": 10.0,
+    "entry_eur": 1000,
+    "exit_pct": 0.0,
+    "exit_eur": 0.0,
+    "ongoing_pct": 0.822,
+    "ongoing_eur": 73.98,
+    "transaction_pct": 0.128,
+    "transaction_eur": 11.51,
+    "performance_pct": 0.0,
+    "performance_eur": 0.0,
+    "raw": {
+      "ea": {
+        "exitMaxAcquired": 0.0,
+        "italyFixedEntry": 0.0,
+        "italyFixedExit": 0.0,
+        "ogc": 0.00822,
+        "trx": 0.00128
+      },
+      "eap": {
+        "entry": 1000,
+        "entryNotAcquired": 0.1,
+        "exit": 0.0,
+        "exitNotAcquired": 0.0,
+        "ogc": 73.98,
+        "perfFees": 0.0,
+        "trx": 11.51
+      },
+      "entry": 0.1,
+      "exit1Year": 0.0,
+      "maxPerformanceFees": 0.0
+    }
+  },
+  "publications": [
+    {
+      "kind": "Rapport périodique",
+      "url": "https://www.amundi.fr/dl/doc/periodic-report/FR001400RVF8/FRA/20250630?inline",
+      "raw_href": "/dl/doc/periodic-report/FR001400RVF8/FRA/20250630?inline",
+      "date": "30/06/2025",
+      "lang": null,
+      "fmt": null
+    },
+    {
+      "kind": "Prospectus",
+      "url": "https://www.amundi.fr/dl/doc/prospectus/FR001400RVF8/FRA/FRA/20260526?inline",
+      "raw_href": "/dl/doc/prospectus/FR001400RVF8/FRA/FRA/20260526?inline",
+      "date": "26/05/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "DIC PRIIPs",
+      "url": "https://www.amundi.fr/dl/doc/kid-priips/FR001400RVF8/FRA/FRA/20260526?inline",
+      "raw_href": "/dl/doc/kid-priips/FR001400RVF8/FRA/FRA/20260526?inline",
+      "date": "26/05/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Annexe précontractuelle SFDR",
+      "url": "https://www.amundi.fr/dl/doc/pre-contractual-document/FR001400RVF8/FRA/FRA/20241001?inline",
+      "raw_href": "/dl/doc/pre-contractual-document/FR001400RVF8/FRA/FRA/20241001?inline",
+      "date": "01/10/2024",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "SFDR Periodic Annex",
+      "url": "https://www.amundi.fr/dl/doc/sfdr-periodic-annex/FR001400RVF8/FRA/FRA/20251231?inline",
+      "raw_href": "/dl/doc/sfdr-periodic-annex/FR001400RVF8/FRA/FRA/20251231?inline",
+      "date": "31/12/2025",
+      "lang": null,
+      "fmt": "PDF"
+    }
+  ],
+  "prospectus_url": "https://www.amundi.fr/dl/doc/prospectus/FR001400RVF8/FRA/FRA/20260526?inline",
+  "api_endpoints": [
+    "https://www.amundi.fr/product-services/i18n/translations/v1/list?format=json&locale=fr-FR&partnerId=752&withoutParam=true&placeholderCharacters[]={&placeholderCharacters[]=}&domain=productSheetFront,fundsData,commentary",
+    "https://www.amundi.fr/product-services/psa/productsheet/v9/fr_FR/752?isin=FR001400RVF8&src=fdr",
+    "https://www.amundi.fr/product-services/fdr/share/v1/partner/752/isin/FR001400RVF8?version=1.38.1",
+    "https://www.amundi.fr/product-services/stp/api/factsheets?filters%5BsubFundId%5D%5B%24eqi%5D=PF115030&filters%5BpartnerId%5D%5B%24eqi%5D=752&locale=fr_FR&populate=deep",
+    "https://www.amundi.fr/product-services/fdr/share/v3/full/FR001400RVF8",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=93172&docTypes=WebsiteSfdrDisclosure,WebsiteSfdrDisclosureSummary,PreContractualDocument,SfdrPeriodicAnnex&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=93172&docTypes=AnnualReport,ESGAnnualReport,FinalTerms,FundFactsheet,MonthlyFactsheet,PeriodicReport,Prospectus,Regulation,SalesRetailBrochure,SRITransparencyCode,LabelReport,KIDPRIIPs,LEC29,FundTeaser,WeeklyReporting,FundHoldings,Snapshot,InformationNotice,SupplementProspectus,AnnualImpactReport,QuarterlyFactsheet,ClimateReport,DividendComposition,DailyHoldings,AIFMG,SimplifiedAnnualReport,SupervisoryBoardMinutes,Status&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=93172&docTypes=MonthlyFactsheet,KIDPRIIPs,DailyHoldings,AIFMG&tempLink=0"
+  ],
+  "error": null,
+  "_nav_file": "out_amundi\\nav\\FR001400RVF8_nav.csv"
+}

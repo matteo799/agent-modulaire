@@ -1,0 +1,182 @@
+{
+  "isin": "LU1386074709",
+  "name": "AMUNDI FUNDS EURO BOND INCOME - A2 EUR AD (D)",
+  "currency": "EUR",
+  "share_type": "D",
+  "nav": 92.67,
+  "nav_date": "16/06/2026",
+  "aum": 313064792.23,
+  "aum_raw": null,
+  "aum_date": "16/06/2026",
+  "sfdr": "Art. 8",
+  "risk_sri": 2,
+  "benchmark": "Non benchmarké",
+  "is_benchmarked": false,
+  "characteristics": {
+    "Indice de référence": "Non benchmarké",
+    "Dépositaire": "CACEIS Bank, Luxembourg Branch",
+    "Gérant": "Chemla Raphaël",
+    "Durée minimum de placement recommandée": "3 ans",
+    "Classe d'actifs": "obligataire",
+    "Forme/Structure Juridique": "sicav",
+    "Date de création": "28/04/2016",
+    "Date de première NAV": "03/05/2016",
+    "Code part (shareCode)": "48363"
+  },
+  "asset_allocation": [
+    {
+      "label": "Performance YTD Au 16/06/2026",
+      "pct": 0.75
+    },
+    {
+      "label": "AMUNDI FUNDS EURO BOND INCOME - A2 EUR A",
+      "pct": 30.95
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 4.5
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 1.09
+    }
+  ],
+  "currency_allocation": [
+    {
+      "label": "Performance YTD Au 16/06/2026",
+      "pct": 0.75
+    },
+    {
+      "label": "AMUNDI FUNDS EURO BOND INCOME - A2 EUR A",
+      "pct": 30.95
+    },
+    {
+      "label": "Cela comprend des coûts de distribution ",
+      "pct": 4.5
+    },
+    {
+      "label": "de la valeur de votre investissement par",
+      "pct": 1.09
+    }
+  ],
+  "synthetic_benchmark": [
+    {
+      "proxy": "Bloomberg Euro Agg",
+      "asset_class": "RATES",
+      "currency": "EUR",
+      "weight": 100.0
+    }
+  ],
+  "costs": {
+    "entry_pct": 4.5,
+    "entry_eur": 450,
+    "exit_pct": 0.0,
+    "exit_eur": 0.0,
+    "ongoing_pct": 1.09,
+    "ongoing_eur": 104.1,
+    "transaction_pct": 0.001,
+    "transaction_eur": 0.07,
+    "performance_pct": 0.0,
+    "performance_eur": 0.0,
+    "raw": {
+      "ea": {
+        "exitMaxAcquired": 0.0,
+        "italyFixedEntry": 0.0,
+        "italyFixedExit": 0.0,
+        "ogc": 0.0109,
+        "trx": 1e-05
+      },
+      "eap": {
+        "entry": 450,
+        "entryNotAcquired": 0.045,
+        "exit": 0.0,
+        "exitNotAcquired": 0.0,
+        "ogc": 104.1,
+        "perfFees": 0.0,
+        "trx": 0.07
+      },
+      "entry": 0.045,
+      "exit1Year": 0.0,
+      "maxPerformanceFees": 0.0
+    }
+  },
+  "publications": [
+    {
+      "kind": "Rapport annuel",
+      "url": "https://www.amundi.fr/dl/doc/annual-report/LU1386074709/FRA/FRA/20250630?inline",
+      "raw_href": "/dl/doc/annual-report/LU1386074709/FRA/FRA/20250630?inline",
+      "date": "30/06/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Prospectus",
+      "url": "https://www.amundi.fr/dl/doc/prospectus/LU1386074709/FRA/FRA/20250601?inline",
+      "raw_href": "/dl/doc/prospectus/LU1386074709/FRA/FRA/20250601?inline",
+      "date": "01/06/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "DIC PRIIPs",
+      "url": "https://www.amundi.fr/dl/doc/kid-priips/LU1386074709/FRA/FRA/20260515?inline",
+      "raw_href": "/dl/doc/kid-priips/LU1386074709/FRA/FRA/20260515?inline",
+      "date": "15/05/2026",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Rapport périodique",
+      "url": "https://www.amundi.fr/dl/doc/periodic-report/LU1386074709/ENG/20251231?inline",
+      "raw_href": "/dl/doc/periodic-report/LU1386074709/ENG/20251231?inline",
+      "date": "31/12/2025",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Status",
+      "url": "https://www.amundi.fr/dl/doc/status/LU1386074709/ENG/20230517?inline",
+      "raw_href": "/dl/doc/status/LU1386074709/ENG/20230517?inline",
+      "date": "17/05/2023",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Informations Internet Durabilité (SFDR)",
+      "url": "https://www.amundi.fr/dl/doc/website-sfdr-disclosure/LU1386074709/ENG/20230101?inline",
+      "raw_href": "/dl/doc/website-sfdr-disclosure/LU1386074709/ENG/20230101?inline",
+      "date": "01/01/2023",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Informations Internet Durabilité (SFDR) – Résumé",
+      "url": "https://www.amundi.fr/dl/doc/website-sfdr-disclosure-summary/LU1386074709/FRA/20230101?inline",
+      "raw_href": "/dl/doc/website-sfdr-disclosure-summary/LU1386074709/FRA/20230101?inline",
+      "date": "01/01/2023",
+      "lang": null,
+      "fmt": "PDF"
+    },
+    {
+      "kind": "Annexe précontractuelle SFDR",
+      "url": "https://www.amundi.fr/dl/doc/pre-contractual-document/LU1386074709/FRA/FRA/20230719?inline",
+      "raw_href": "/dl/doc/pre-contractual-document/LU1386074709/FRA/FRA/20230719?inline",
+      "date": "19/07/2023",
+      "lang": null,
+      "fmt": "PDF"
+    }
+  ],
+  "prospectus_url": "https://www.amundi.fr/dl/doc/prospectus/LU1386074709/FRA/FRA/20250601?inline",
+  "api_endpoints": [
+    "https://www.amundi.fr/product-services/i18n/translations/v1/list?format=json&locale=fr-FR&partnerId=752&withoutParam=true&placeholderCharacters[]={&placeholderCharacters[]=}&domain=productSheetFront,fundsData,commentary",
+    "https://www.amundi.fr/product-services/psa/productsheet/v9/fr_FR/752?isin=LU1386074709&src=fdr",
+    "https://www.amundi.fr/product-services/fdr/share/v1/partner/752/isin/LU1386074709?version=1.38.1",
+    "https://www.amundi.fr/product-services/stp/api/factsheets?filters%5BsubFundId%5D%5B%24eqi%5D=PF50085&filters%5BpartnerId%5D%5B%24eqi%5D=752&locale=fr_FR&populate=deep",
+    "https://www.amundi.fr/product-services/fdr/share/v3/full/LU1386074709",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=48363&docTypes=WebsiteSfdrDisclosure,WebsiteSfdrDisclosureSummary,PreContractualDocument,SfdrPeriodicAnnex&fallbackLanguage=ENG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=48363&docTypes=MonthlyFactsheet,KIDPRIIPs,DailyHoldings,AIFMG&tempLink=0",
+    "https://www.amundi.fr/product-services/product-documents/document/v1/search/public/documents?partnerId=752&shareCodes=48363&docTypes=AnnualReport,ESGAnnualReport,FinalTerms,FundFactsheet,MonthlyFactsheet,PeriodicReport,Prospectus,Regulation,SalesRetailBrochure,SRITransparencyCode,LabelReport,KIDPRIIPs,LEC29,FundTeaser,WeeklyReporting,FundHoldings,Snapshot,InformationNotice,SupplementProspectus,AnnualImpactReport,QuarterlyFactsheet,ClimateReport,DividendComposition,DailyHoldings,AIFMG,SimplifiedAnnualReport,SupervisoryBoardMinutes,Status&fallbackLanguage=ENG&tempLink=0"
+  ],
+  "error": null,
+  "_nav_file": "out_amundi\\nav\\LU1386074709_nav.csv"
+}
