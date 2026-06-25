@@ -108,7 +108,8 @@ dit aussi *quand NE PAS* l'utiliser.
 |---|---|
 | `rag_search(query, top_k, source)` | Recherche sémantique dans le corpus PDF (→ §6). `source` restreint à un document (ISIN). |
 | `list_documents()` | Liste les fonds/documents indexés (1ʳᵉ étape d'une comparaison). |
-| `fund_summary(isin, fields)` | Faits d'un fonds **Amundi** lus dans `summary.json` (structuré, exact) — remplace `rag_search` pour ce dataset (→ §7). |
+| `fund_summary(isin, fields)` | Faits d'un fonds **Amundi** lus dans `summary.json` (SFDR, SRI, benchmark, frais, gérant… — structuré, exact) — remplace `rag_search` pour ce dataset (→ §7). |
+| `fund_stats(isin, rf)` | **Profil risque/rendement complet** d'un fonds Amundi calculé sur son historique NAV : rendement annualisé, volatilité, Sharpe/Sortino/STARR/Martin, max drawdown, CVaR (→ §7). |
 | `read_file(path)` | Lit un fichier déjà connu (workspace ou documents). |
 | `write_file(path, content)` | Écrit le livrable — **confiné à `workspace/`** ; recopie seulement, aucun calcul. |
 | `calculator(expression)` | Évalue une expression arithmétique (`eval` neutralisé par liste blanche de caractères). Obligatoire pour tout calcul. |

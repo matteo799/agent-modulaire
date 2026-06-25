@@ -83,6 +83,17 @@ def summary_text(isin: str, fields: str = "") -> str:
     for k, v in (d.get("characteristics") or {}).items():
         if keep(k):
             lines.append(f"{k} : {v}")
+    # Frais (bloc `costs`) — central pour un gérant.
+    costs = d.get("costs") or {}
+    cost_labels = [
+        ("Frais d'entrée", "entry_pct"), ("Frais de sortie", "exit_pct"),
+        ("Frais courants", "ongoing_pct"), ("Coûts de transaction", "transaction_pct"),
+        ("Commission de surperformance", "performance_pct"),
+    ]
+    for lbl, key in cost_labels:
+        if costs.get(key) is not None and keep(lbl):
+            lines.append(f"{lbl} : {costs[key]} %")
+    # Performance YTD (depuis asset_allocation).
     for item in d.get("asset_allocation") or []:
         lbl = item.get("label", "")
         if "perf" in lbl.lower() and keep(lbl):

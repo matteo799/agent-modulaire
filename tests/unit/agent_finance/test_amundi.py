@@ -64,3 +64,16 @@ def test_fund_summary_reads_json(amundi_tmp):
 
 def test_fund_summary_missing(amundi_tmp):
     assert "aucune fiche" in TOOLS["fund_summary"]["function"]("NOPE0000000").lower()
+
+
+def test_fund_stats_panel(amundi_tmp):
+    _write_fund(amundi_tmp, "STATS0000001",
+                navs=[(f"{i:02d}/01/2020", 100 + (i % 3)) for i in range(1, 20)])
+    out = TOOLS["fund_stats"]["function"]("STATS0000001", rf=2)
+    assert "profil risque/rendement" in out.lower()
+    for label in ("Volatilité", "Sharpe", "Sortino", "Max drawdown"):
+        assert label in out
+
+
+def test_fund_stats_guard_no_nav(amundi_tmp):
+    assert "aucun historique" in TOOLS["fund_stats"]["function"]("ABSENT0000").lower()
