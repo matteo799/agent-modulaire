@@ -106,12 +106,16 @@ dit aussi *quand NE PAS* l'utiliser.
 
 | Outil | Rôle |
 |---|---|
-| `rag_search(query, top_k, source)` | Recherche sémantique dans le corpus (→ §7). `source` restreint à un document (ISIN). |
+| `rag_search(query, top_k, source)` | Recherche sémantique dans le corpus PDF (→ §6). `source` restreint à un document (ISIN). |
 | `list_documents()` | Liste les fonds/documents indexés (1ʳᵉ étape d'une comparaison). |
+| `fund_summary(isin, fields)` | Faits d'un fonds **Amundi** lus dans `summary.json` (structuré, exact) — remplace `rag_search` pour ce dataset (→ §7). |
 | `read_file(path)` | Lit un fichier déjà connu (workspace ou documents). |
 | `write_file(path, content)` | Écrit le livrable — **confiné à `workspace/`** ; recopie seulement, aucun calcul. |
 | `calculator(expression)` | Évalue une expression arithmétique (`eval` neutralisé par liste blanche de caractères). Obligatoire pour tout calcul. |
-| `metric_<clé>` ×6 | Outils métriques *rating fond* (→ §8), générés depuis le catalogue. |
+| `metric_<clé>` ×6 | Outils métriques *rating fond* (→ §7), générés depuis le catalogue. |
+
+L'agent **choisit ces outils en autonomie** d'après leur description : une question factuelle sur
+un fonds Amundi → `fund_summary` ; un ratio → `metric_*` ; hors Amundi → `rag_search`.
 
 **Convention de robustesse** : les outils **renvoient leurs erreurs en texte** (« Erreur : … »)
 au lieu de lever — une erreur devient une observation que la boucle peut lire et corriger.
@@ -166,11 +170,12 @@ outil**. Trois modules :
 | `metrics.py` | Calcul **pur** (sans LLM/I-O) : Sharpe/Sortino/STARR/Martin (forme scalaire + depuis série) et briques (vol annualisée, downside deviation, CVaR, Ulcer, max drawdown). |
 | `metric_catalog.py` | **Source unique de vérité** : par métrique → formule, pénalise-hausse, tendance, **données requises**, quand l'utiliser, avantages/inconvénients + branchement de calcul. Génère aussi les descriptions d'outils. |
 | `select.py` | Mappe l'intention → métrique ; **demande une clarification** quand deux se valent (`ask_fn`). |
+| `amundi.py` | Accès au **dataset Amundi structuré** (`documents/amundi/<ISIN>/`) : `nav.csv` → série de rendements (vrai calcul des métriques) ; `summary.json` → faits (outil `fund_summary`). |
 
-**Comportement d'un outil `metric_*`** (`build_metric_tool`) : calcule si les entrées sont
-fournies (R/σ, ou une série de rendements) ; sinon tente de lire R/σ dans le document via
-`source` (ISIN) ; sinon **garde-fou honnête** — explique la métrique et nomme ce qui manque,
-**sans inventer de chiffre** (un KID/DICI ne contient pas de série de rendements). La famille
+**Comportement d'un outil `metric_*`** (`build_metric_tool`), dans l'ordre : (1) calcule si une
+série / des scalaires sont fournis ; (2) **si `source` est un ISIN Amundi → calcule le VRAI ratio
+sur son historique NAV** (`nav.csv`) ; (3) sinon tente de lire R/σ dans un KID via le RAG
+(best-effort) ; (4) sinon **garde-fou honnête** — explique sans inventer de chiffre. La famille
 « budget » (CVaR/drawdown sous contrainte) est **explicative seulement** (le vrai calcul exige
 un univers multi-fonds + matrice de rendements, hors périmètre).
 
