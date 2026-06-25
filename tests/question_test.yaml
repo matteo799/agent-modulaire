@@ -1,0 +1,209 @@
+version: "fonds-tools-v2.0"
+description: |
+  Jeu de questions « golden » v2 — conçu pour EXERCER TOUTE LA BOÎTE À OUTILS de
+  l'agent (pas seulement rag_search), et pour rendre l'évaluation MESURABLE.
+
+  Chaque item porte :
+  - category      : le type de capacité testée ;
+  - expected_tools: les outils DISTINCTIFS attendus dans la trace (sert à mesurer
+                    la « couverture d'outils » — write_file/rag_search ubiquitaires
+                    ne sont listés que quand ils sont le cœur du test) ;
+  - expected_answer : critère de justesse (à comparer au rapport, pas une chaîne
+                    exacte) ;
+  - tags.
+
+  Le harness `run_golden.py` mesure, par question : la couverture d'outils
+  (expected_tools ⊆ outils réellement appelés), la latence, et une estimation de
+  coût en tokens — puis agrège un tableau par catégorie.
+
+  Convention d'id : v2-<nn>-<slug>. Les ISIN cités existent dans documents/finance/.
+
+items:
+# ── Lookup simple (rag_search) ────────────────────────────────────────────
+  - id: v2-01-identite
+    category: lookup
+    question: "Quelles sont les caractéristiques générales du fonds : dénomination, forme juridique et durée de vie ?"
+    expected_tools: [rag_search]
+    expected_answer: |
+      Nom du fonds, forme juridique (FCP, SICAV, SCPI, FIA…), durée d'existence
+      prévue, telles qu'indiquées dans le document.
+    tags: [identite, rag]
+
+  - id: v2-02-frais-courants
+    category: lookup
+    question: "Quels sont les frais courants annuels du fonds ?"
+    expected_tools: [rag_search]
+    expected_answer: |
+      Un pourcentage de frais courants (ongoing charges) tiré du document ;
+      « Néant » accepté si le document l'indique. Pas de valeur inventée.
+    tags: [frais, rag]
+
+  - id: v2-03-sri
+    category: lookup
+    question: "Quel est l'indicateur synthétique de risque (SRI) du fonds, sur une échelle de 1 à 7 ?"
+    expected_tools: [rag_search]
+    expected_answer: |
+      Le niveau SRI (ou SRRI) sur 7 tel qu'indiqué ; refus si absent du document.
+    tags: [risque, sri, rag]
+
+  - id: v2-04-sfdr
+    category: lookup
+    question: "Sous quel article du règlement SFDR le fonds est-il classé (6, 8 ou 9) ?"
+    expected_tools: [rag_search]
+    expected_answer: |
+      L'article SFDR (6/8/9) si le document le mentionne ; sinon refus explicite.
+    tags: [esg, sfdr, rag]
+
+# ── Comparaison multi-fonds (list_documents + rag_search + calculator) ─────
+  - id: v2-05-compare-frais
+    category: comparaison
+    question: "Compare les frais courants de deux fonds du corpus et donne l'écart entre les deux."
+    expected_tools: [list_documents, calculator]
+    expected_answer: |
+      Identifie deux fonds (via list_documents), donne les frais courants de
+      CHACUN, puis l'écart calculé via calculator (pas de soustraction « de tête »).
+    tags: [comparaison, frais, calculator, multi-fonds]
+
+  - id: v2-06-compare-sri
+    category: comparaison
+    question: "Donne le SRI de deux fonds du corpus, puis calcule l'écart numérique exact de niveaux de risque entre les deux (différence des deux SRI)."
+    expected_tools: [list_documents, calculator]
+    expected_answer: |
+      Le SRI de deux fonds, la désignation du plus risqué, et l'écart de niveaux
+      obtenu par calculator (pas de soustraction « de tête », même si l'écart est petit).
+    tags: [comparaison, risque, calculator, multi-fonds]
+
+# ── Calcul dérivé (rag_search + calculator) ───────────────────────────────
+  - id: v2-07-cout-pct
+    category: calcul
+    question: "Pour un fonds du corpus, quels sont les coûts totaux à 1 an, et combien représentent-ils en pourcentage d'un investissement de 1000 € ?"
+    expected_tools: [calculator]
+    expected_answer: |
+      Les coûts totaux à 1 an tirés du document, puis le pourcentage de 1000 €
+      calculé via calculator. Refus si le coût n'est pas dans le document.
+    tags: [couts, calculator, pourcentage]
+
+# ── Métriques : garde-fou honnête sur un KID (metric_*) ───────────────────
+  - id: v2-08-sharpe-isin
+    category: metrique-gardefou
+    question: "Quel est le ratio de Sharpe du fonds FR0010544791 ?"
+    expected_tools: [metric_sharpe]
+    expected_answer: |
+      L'outil metric_sharpe explique que le KID ne fournit pas la volatilité σ
+      (ni une série de rendements) → calcul IMPOSSIBLE, AUCUNE valeur inventée,
+      caractéristiques de la métrique rappelées.
+    tags: [metrique, sharpe, gardefou, no-hallucination]
+
+  - id: v2-09-sortino-isin
+    category: metrique-gardefou
+    question: "Donne-moi le ratio de Sortino du fonds FR0010544791."
+    expected_tools: [metric_sortino]
+    expected_answer: |
+      metric_sortino indique qu'une série de rendements est requise, absente d'un
+      KID → pas de calcul, pas de chiffre inventé.
+    tags: [metrique, sortino, gardefou, no-hallucination]
+
+# ── Métriques : calcul réel quand les entrées sont fournies ───────────────
+  - id: v2-10-sortino-serie
+    category: metrique-calcul
+    question: "Voici les rendements mensuels d'un fonds : 0.02, -0.03, 0.015, -0.01, 0.025, -0.005, 0.01, -0.02. Calcule son ratio de Sortino avec un taux sans risque de 2 %."
+    expected_tools: [metric_sortino]
+    expected_answer: |
+      metric_sortino est appelé avec la série de rendements et rf=2 % ; un ratio
+      numérique est renvoyé (calcul réel, pas un garde-fou).
+    tags: [metrique, sortino, calcul, serie]
+
+  - id: v2-11-sharpe-scalars
+    category: metrique-calcul
+    question: "Un fonds affiche une performance annualisée de 8 % et une volatilité de 12 %. Quel est son ratio de Sharpe pour un taux sans risque de 2 % ?"
+    expected_tools: [metric_sharpe]
+    expected_answer: |
+      metric_sharpe calcule (0.08 − 0.02) / 0.12 ≈ 0.5 à partir des entrées
+      fournies (R, σ, rf).
+    tags: [metrique, sharpe, calcul, scalaires]
+
+# ── Métriques : sélection par caractéristiques + clarification ────────────
+  - id: v2-12-best-ratio-ambigu
+    category: metrique-selection
+    question: "Quelle est la meilleure métrique rendement/risque pour évaluer ce fonds ?"
+    expected_tools: []
+    expected_answer: |
+      La sélection détecte une AMBIGUÏTÉ (Sharpe vs Sortino) et pose une question
+      de clarification au lieu de trancher arbitrairement.
+    tags: [metrique, selection, clarification, ambigu]
+
+  - id: v2-13-downside-intent
+    category: metrique-selection
+    question: "Je veux une métrique qui ne pénalise pas la hausse : je crains surtout les baisses. Laquelle ?"
+    expected_tools: []
+    expected_answer: |
+      La sélection retient Sortino SANS demander de clarification, en justifiant
+      par le risque de baisse.
+    tags: [metrique, selection, sortino, intention]
+
+  - id: v2-14-tail-risk
+    category: metrique-selection
+    question: "Je veux surtout me protéger contre les pertes extrêmes / les queues de distribution. Quelle métrique ?"
+    expected_tools: []
+    expected_answer: |
+      La sélection oriente vers STARR (rendement / CVaR), métrique de risque de queue.
+    tags: [metrique, selection, starr, queue]
+
+  - id: v2-15-regularite
+    category: metrique-selection
+    question: "Je cherche un fonds régulier, qui minimise le temps passé sous l'eau (drawdowns). Quelle métrique ?"
+    expected_tools: []
+    expected_answer: |
+      La sélection oriente vers Martin (rendement / Ulcer), métrique de régularité
+      des drawdowns.
+    tags: [metrique, selection, martin, drawdown]
+
+# ── Famille budget : explicatif seulement (pas d'optimiseur) ──────────────
+  - id: v2-16-budget-cvar
+    category: metrique-budget
+    question: "Explique l'objectif « rendement maximal sous budget de CVaR » et dans quel cas l'utiliser."
+    expected_tools: [metric_rdt_max_cvar]
+    expected_answer: |
+      Explication de l'objectif (maximiser R sous CVaR ≤ budget fixé), tendance
+      offensive ; mention que le calcul réel nécessite un univers multi-fonds +
+      rendements (non disponible).
+    tags: [metrique, budget, cvar, explicatif]
+
+  - id: v2-17-budget-drawdown
+    category: metrique-budget
+    question: "À quoi sert l'objectif « rendement maximal sous budget de drawdown » et quelles sont ses limites ?"
+    expected_tools: [metric_rdt_max_drawdown]
+    expected_answer: |
+      Explication (maximiser R sous |MaxDD| ≤ budget), contrainte parlante pour
+      un client, limites (non convexe, estimateur fragile) ; calcul réel non
+      disponible.
+    tags: [metrique, budget, drawdown, explicatif]
+
+# ── Rejet hors-corpus (anti-hallucination) ────────────────────────────────
+  - id: v2-18-hors-corpus-geo
+    category: hors-corpus
+    question: "Quelle est la capitale de l'Australie ?"
+    expected_tools: [rag_search]
+    expected_answer: |
+      Refus : les documents fournis ne permettent pas de répondre. AUCUNE réponse
+      depuis les connaissances générales du modèle.
+    tags: [hors-corpus, refus, no-hallucination]
+
+  - id: v2-19-hors-corpus-meteo
+    category: hors-corpus
+    question: "Quel temps fera-t-il demain à Paris ?"
+    expected_tools: [rag_search]
+    expected_answer: |
+      Refus explicite (hors corpus), pas de réponse inventée.
+    tags: [hors-corpus, refus, no-hallucination]
+
+# ── Tâche multi-étapes avec relecture de fichier (read_file) ───────────────
+  - id: v2-20-note-relue
+    category: multi-etapes
+    question: "Établis la liste des fonds disponibles dans le corpus, écris-la dans un fichier de travail, puis relis ce fichier et indique combien de fonds il contient."
+    expected_tools: [list_documents, write_file, read_file]
+    expected_answer: |
+      L'agent liste les fonds (list_documents), écrit la liste dans un fichier
+      (write_file), relit ce fichier (read_file) et donne le décompte. Teste la
+      mémoire sur disque + la relecture d'un livrable intermédiaire.
+    tags: [multi-etapes, read_file, write_file, memoire]

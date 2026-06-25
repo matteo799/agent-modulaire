@@ -28,6 +28,30 @@ _RAG_ENGINE_ROOT = Path(__file__).resolve().parent.parent / "rag_engine"
 _AGENT_RETRIES = 2
 _BACKOFF_S = 1.5
 
+# Compteur d'usage léger (pour l'évaluation : tokens ≈ via count_tokens du client).
+# Approximation assumée — sert à comparer le coût relatif entre questions/stacks,
+# pas à facturer. reset_usage() avant une requête, get_usage() après.
+_usage = {"calls": 0, "in_tokens": 0, "out_tokens": 0}
+
+
+def reset_usage() -> None:
+    _usage.update(calls=0, in_tokens=0, out_tokens=0)
+
+
+def get_usage() -> dict:
+    return dict(_usage)
+
+
+def _tally(prompt: str, response: str) -> None:
+    """Ajoute l'estimation de tokens d'un aller-retour au compteur (best-effort)."""
+    try:
+        client = _client()
+        _usage["calls"] += 1
+        _usage["in_tokens"] += client.count_tokens(prompt)
+        _usage["out_tokens"] += client.count_tokens(response)
+    except Exception:  # le comptage ne doit jamais casser une requête
+        pass
+
 
 class LLMUnavailable(RuntimeError):
     """Le service LLM est injoignable après retries (réseau / timeout / 5xx).
@@ -64,7 +88,9 @@ def chat(prompt: str, system: str | None = None, json_mode: bool = False) -> str
     last_exc: Exception | None = None
     for attempt in range(_AGENT_RETRIES + 1):
         try:
-            return _client().generate(text)
+            response = _client().generate(text)
+            _tally(text, response)
+            return response
         except httpx.HTTPError as exc:  # transport + statut HTTP (5xx via raise_for_status)
             last_exc = exc
             if attempt < _AGENT_RETRIES:

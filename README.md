@@ -112,6 +112,34 @@ python tests/run_golden.py
 python -m tests.rag_eval.run --config tests/eval_finance.yaml
 ```
 
+### Évaluation — couverture d'outils & ablation modèle
+
+`tests/question_test.yaml` exerce **toute la boîte à outils** (20 questions, 9 catégories) ;
+`run_golden.py` mesure automatiquement, par question, la **couverture d'outils**
+(`expected_tools ⊆ outils réellement appelés`), la latence et les tokens, agrégés par
+catégorie + une matrice des outils exercés. Dernière passe (19 questions, set v2.0) :
+
+| Modèle | Couverture d'outils | Outils exercés | Sélection métrique | Garde-fous |
+|---|---|---|---|---|
+| **Claude Opus 4.8** | **14/15** | 10/11 | 5/5 ✓ | ✓ |
+| Claude Haiku 4.5 | 12/15 | 10/11 | 5/5 ✓ | ✓ |
+
+**Lecture :**
+- **Routage arithmétique** — Opus envoie le calcul vers `calculator` sur 14/15 questions ;
+  Haiku le néglige sur les 3 tâches multi-étapes (comparaison + calcul) → 12/15. Signal de
+  capacité net : le petit modèle sous-utilise l'outil de calcul.
+- **Identique sur les deux modèles** — sélection de métrique par l'intention
+  (baisse→Sortino, queue→STARR, régularité→Martin, ambigu→clarification), garde-fou honnête
+  (Sharpe/Sortino sur un KID = pas de chiffre inventé), refus hors-corpus.
+- **Latence/tokens** — la passe Haiku a subi des coupures passerelle (une question ~60 min) :
+  le temps mural n'est **pas** une comparaison de vitesse fiable ici, et le harness résilient a
+  tout de même terminé. Détail complet : `tests/golden_report_<modèle>.md`.
+
+```bash
+python tests/run_golden.py                                          # modèle par défaut (Opus)
+RAG__LLM__OPENAI__MODEL=claude-haiku-4-5 python tests/run_golden.py # ablation Haiku
+```
+
 ---
 
 ## Documentation

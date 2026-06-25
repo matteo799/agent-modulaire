@@ -72,21 +72,31 @@ def synthesize(user_query: str, memory: list) -> str:
         )
 
 
-def answer_query(user_query: str, verbose: bool = True, ask_fn=metric_select.stdin_ask) -> str:
+def answer_query(
+    user_query: str,
+    verbose: bool = True,
+    ask_fn=metric_select.stdin_ask,
+    return_trace: bool = False,
+):
     """Pipeline complet : (sélection métrique) → planification → boucle → synthèse.
 
     Si la question concerne une métrique de risque/rendement, on résout d'abord
     LAQUELLE (en demandant une clarification quand deux se valent), puis on
     injecte ce choix dans la planification. `ask_fn` est injectable : interactif
     par défaut (stdin), non bloquant pour les démos/éval (`select.auto_ask`).
+
+    `return_trace=True` → renvoie `(réponse, trace)` où `trace` décrit ce que
+    l'agent a réellement fait (outils appelés, métrique retenue, nb d'étapes) —
+    utilisé par l'évaluation pour mesurer la couverture d'outils.
     """
-    metric, rationale = "", ""
+    metric, rationale, asked = "", "", False
     if metric_select.looks_like_metric_query(user_query):
         if verbose:
             print("\n=== 0. Sélection de la métrique ===")
         try:
-            choice = metric_select.select_metric(user_query, ask_fn=ask_fn)
+            choice = metric_select.select_metric(user_query, ask_fn=_tracking_ask(ask_fn))
             metric, rationale = choice["metric"], choice["rationale"]
+            asked = _CLARIFY_FLAG["asked"]
             if verbose:
                 print(f"  Métrique retenue : {metric} — {rationale}")
         except LLMUnavailable as exc:
@@ -99,6 +109,8 @@ def answer_query(user_query: str, verbose: bool = True, ask_fn=metric_select.std
     try:
         plan = make_plan(user_query, metric=metric, rationale=rationale)
     except LLMUnavailable:
+        if return_trace:
+            return LLM_DOWN_MESSAGE, {"tools": [], "metric": None, "n_steps": 0, "error": "llm_down"}
         return LLM_DOWN_MESSAGE
     if verbose:
         for i, step in enumerate(plan, 1):
@@ -107,7 +119,32 @@ def answer_query(user_query: str, verbose: bool = True, ask_fn=metric_select.std
     memory = run(user_query, plan)
     if verbose:
         print("\n=== 3. Synthèse finale ===")
-    return synthesize(user_query, memory)
+    answer = synthesize(user_query, memory)
+    if return_trace:
+        trace = {
+            "tools": [m["tool"] for m in memory],
+            "metric": metric or None,
+            "clarification_asked": asked,
+            "n_steps": len(memory),
+        }
+        return answer, trace
+    return answer
+
+
+# Drapeau de clarification : permet à la trace de savoir si l'agent a demandé une
+# clarification (sans changer la signature publique de `ask_fn`).
+_CLARIFY_FLAG = {"asked": False}
+
+
+def _tracking_ask(inner):
+    """Enveloppe un `ask_fn` pour mémoriser qu'une clarification a eu lieu."""
+    _CLARIFY_FLAG["asked"] = False
+
+    def _wrapped(question, options):
+        _CLARIFY_FLAG["asked"] = True
+        return inner(question, options)
+
+    return _wrapped
 
 
 def main():
