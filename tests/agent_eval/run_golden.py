@@ -13,7 +13,8 @@ Usage :
 
 Tout tourne dans UN seul processus : l'index RAG (embedding coûteux) n'est construit
 qu'une fois et réutilisé. Les rapports sont écrits dans tests/agent_eval/reports/,
-auto-étiquetés par modèle (golden_report_<modèle>.md).
+étiquetés par jeu de questions + modèle (golden_report_<set>_<modèle>.md). Un nom
+court (ex. `demo_gerant.yaml`) est résolu dans tests/agent_eval/.
 
 Métriques AUTOMATIQUES (en tête du rapport) : couverture d'outils
 (expected_tools ⊆ outils appelés), latence et tokens par question, agrégés par
@@ -51,21 +52,24 @@ def _model_slug() -> str:
 
 
 def main():
-    golden_path = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_GOLDEN
+    arg1 = sys.argv[1] if len(sys.argv) > 1 else None
+    golden_path = Path(arg1) if arg1 else DEFAULT_GOLDEN
+    if arg1 and not golden_path.exists():  # nom court → relatif au dossier agent_eval/
+        golden_path = HERE / arg1
     arg2 = sys.argv[2] if len(sys.argv) > 2 else None
 
     data = yaml.safe_load(golden_path.read_text(encoding="utf-8"))
     items = data["items"]
-    # Rapport auto-étiqueté par modèle → comparaisons multi-modèles sans écrasement.
+    # Rapport étiqueté par JEU DE QUESTIONS + modèle → aucun écrasement entre sets/modèles.
     REPORTS_DIR.mkdir(exist_ok=True)
     model = _model_slug()
-    report_path = REPORTS_DIR / f"golden_report_{model}.md"
+    report_path = REPORTS_DIR / f"golden_report_{golden_path.stem}_{model}.md"
     if arg2 and arg2.isdigit():
         items = items[:int(arg2)]
     elif arg2:
         ids = [t.strip() for t in arg2.split(",") if t.strip()]
         items = [it for it in items if any(it["id"].startswith(t) for t in ids)]
-        report_path = report_path.with_name(f"golden_report_{model}_rerun.md")
+        report_path = report_path.with_name(f"golden_report_{golden_path.stem}_{model}_rerun.md")
 
     print(f"Golden : {golden_path.name} ({data.get('version', '?')}) — "
           f"{len(items)} question(s)\n")
