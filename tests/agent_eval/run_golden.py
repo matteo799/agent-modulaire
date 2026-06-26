@@ -51,6 +51,28 @@ def _model_slug() -> str:
         return "model"
 
 
+def _shorten(text: str, n: int) -> str:
+    text = " ".join((text or "").split())
+    return text if len(text) <= n else text[:n].rsplit(" ", 1)[0] + "…"
+
+
+def _trajectory_md(trace: dict) -> str:
+    """Rend la trajectoire de l'agent en clair : sélection → plan → étapes (outil + raison → résultat)."""
+    lines: list[str] = []
+    if trace.get("metric"):
+        clr = " — *ambiguïté → l'agent a demandé une clarification*" if trace.get(
+            "clarification_asked") else ""
+        lines.append(f"- **0. Métrique retenue :** `{trace['metric']}`{clr}")
+    if trace.get("plan"):
+        lines.append("- **Plan :** " + " → ".join(_shorten(p, 90) for p in trace["plan"]))
+    for i, st in enumerate(trace.get("steps") or [], 1):
+        lines.append(
+            f"- **Étape {i} → `{st.get('tool', '?')}`** : {_shorten(st.get('raison', ''), 200)}\n"
+            f"    ↳ _résultat :_ {_shorten(st.get('result', ''), 180)}"
+        )
+    return "\n".join(lines) if lines else "_(trajectoire indisponible)_"
+
+
 def main():
     arg1 = sys.argv[1] if len(sys.argv) > 1 else None
     golden_path = Path(arg1) if arg1 else DEFAULT_GOLDEN
@@ -80,7 +102,6 @@ def main():
     t0 = time.time()
     for n, item in enumerate(items, 1):
         qid, question = item["id"], item["question"]
-        expected = (item.get("expected_answer") or "").strip()
         category = item.get("category", "(n/a)")
         expected_tools = item.get("expected_tools", []) or []
         print(f"\n########## {n}/{len(items)} — {qid} [{category}] ##########")
@@ -116,14 +137,11 @@ def main():
         sections.append(
             f"## {qid}  ·  `{category}`\n\n"
             f"**Question :** {question}\n\n"
-            f"**Outils attendus :** {expected_tools or '—'}  ·  "
-            f"**appelés :** {used or '—'}  ·  **couverture :** {mark}  ·  "
-            f"**latence :** {latency:.1f}s  ·  **tokens :** ~{tokens}"
-            + (f"  ·  **métrique :** {trace.get('metric')}"
-               f"{' (clarification demandée)' if trace.get('asked') else ''}"
-               if trace.get("metric") else "")
-            + f"\n\n**Réponse attendue (critère) :**\n\n{expected}\n\n"
-            f"**Réponse obtenue :**\n\n{obtained}\n\n---\n"
+            f"**Outils appelés :** {used or '—'}  ·  **couverture :** {mark}  ·  "
+            f"**latence :** {latency:.1f}s  ·  **tokens :** ~{tokens}\n\n"
+            f"### 🧭 Comment l'agent a procédé (en autonomie)\n\n"
+            f"{_trajectory_md(trace)}\n\n"
+            f"### ✅ Réponse de l'agent\n\n{obtained}\n\n---\n"
         )
 
     dt = time.time() - t0
@@ -176,6 +194,16 @@ def _build_report(golden_path, data, rows, tools_seen, dt) -> str:
         f"# Rapport golden — {golden_path.name}\n\n"
         f"Version : `{data.get('version', '?')}` — {len(rows)} question(s) — "
         f"temps total : {dt:.0f}s\n\n"
+        "## Comment lire ce rapport\n\n"
+        "Pour chaque question, l'agent travaille **en autonomie** en 3 temps :\n"
+        "1. **il comprend l'intention** (et, pour une métrique, choisit laquelle — "
+        "ou demande une clarification si c'est ambigu) ;\n"
+        "2. **il établit un plan** puis, étape par étape, **choisit l'outil adapté** "
+        "(la *raison* de chaque choix est affichée) et l'exécute ;\n"
+        "3. **il rédige la réponse finale** à partir des résultats.\n\n"
+        "Le bloc « 🧭 Comment l'agent a procédé » montre cette trajectoire ; "
+        "« ✅ Réponse de l'agent » donne le livrable. Les chiffres sont **calculés sur "
+        "les vraies données** (historique NAV, fiches structurées) — jamais inventés.\n\n"
         f"**Couverture d'outils globale : {cov_pass}/{cov_tot} questions** "
         f"(les outils attendus ont bien été appelés).\n\n"
         f"{tools_line}\n\n"

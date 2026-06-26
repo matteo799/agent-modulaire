@@ -135,7 +135,13 @@ def run(user_query: str, plan: list[str]) -> list[dict]:
                 break
             feedback = verdict["feedback"]
             print(f"    Réflexion : insuffisant — {feedback}")
-        entry = {"step": step, "tool": choice.get("tool", "?"), "result": result}
+        entry = {
+            "step": step,
+            "tool": choice.get("tool", "?"),
+            "result": result,
+            "raison": choice.get("raison", ""),
+            "args": choice.get("args") or {},
+        }
         # On garde le contenu réellement écrit (write_file ne renvoie qu'une
         # confirmation) pour que la synthèse finale s'appuie sur le livrable.
         if entry["tool"] == "write_file" and not result.startswith("Erreur"):
