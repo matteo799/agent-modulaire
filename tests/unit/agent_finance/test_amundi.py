@@ -107,3 +107,26 @@ def test_screen_funds_ranks_and_filters(amundi_tmp):
     out = TOOLS["screen_funds"]["function"](sort_by="rendement", top=2, asset_class="action", sfdr="8")
     assert "Top" in out
     assert out.index("AAAA00000001") < out.index("BBBB00000001")  # meilleur rendement en tête
+
+
+def test_has_anomaly():
+    assert amundi.has_anomaly([0.01, 0.6, -0.02]) is True  # +60 % en un jour = aberrant
+    assert amundi.has_anomaly([0.01, -0.02, 0.03]) is False
+
+
+def test_screen_excludes_corrupted_funds(amundi_tmp):
+    from datetime import date, timedelta
+    _daily(amundi_tmp, "GOOD00000001", 300, 0.0005)
+    # Fonds corrompu : la NAV décuple en un jour → variation > 50 %.
+    d, nav, rows, d0 = amundi_tmp / "BADX00000001", 100.0, ["date;nav"], date(2023, 1, 1)
+    d.mkdir()
+    for i in range(300):
+        nav = nav * 10 if i == 150 else nav * 1.0005
+        rows.append(f"{(d0 + timedelta(days=i)).strftime('%d/%m/%Y')};{nav:.4f}")
+    (d / "nav.csv").write_text("\n".join(rows), encoding="utf-8")
+    (d / "summary.json").write_text(
+        json.dumps({"isin": "BADX00000001", "name": "Corrompu", "sfdr": "Art. 8",
+                    "characteristics": {"Classe d'actifs": "action"}}), encoding="utf-8")
+    out = TOOLS["screen_funds"]["function"](sort_by="rendement", top=5, asset_class="action", sfdr="8")
+    assert "GOOD00000001" in out
+    assert "BADX00000001" not in out  # exclu : NAV aberrante

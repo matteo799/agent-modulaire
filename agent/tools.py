@@ -202,7 +202,13 @@ def fund_stats(isin: str = "", rf=None) -> str:
         r = amundi.load_returns(isin)
         rf_dec = _to_decimal(rf) or 0.0
         ann_r, sigma = metrics.annualized_return(r), metrics.annualized_vol(r)
-        return "\n".join([
+        warn = ""
+        if amundi.has_anomaly(r):
+            warn = (
+                f"⚠️ Historique NAV anormal pour {isin} (variation quotidienne > 50 % détectée — "
+                "données probablement corrompues). Profil ci-dessous NON FIABLE.\n"
+            )
+        return warn + "\n".join([
             f"Fonds {isin} — profil risque/rendement "
             f"(sur {len(r)} rendements quotidiens, rf={rf_dec:.2%}) :",
             f"  • Rendement annualisé : {ann_r:.2%}",
