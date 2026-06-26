@@ -154,7 +154,8 @@ subordonnés : `docs/` pour la conception, `tests/README.md` pour les tests, et
 | **`docs/CHOIX_DE_CONCEPTION.md`** | Le *pourquoi* : justification de chaque choix depuis la naissance du projet. |
 | **`docs/GUARDRAILS.md`** | Récapitulatif des garde-fous (rejet hors-corpus, calcul honnête, robustesse…). |
 | `docs/metriques_optimisation_gold.md` | Définitions de référence des 6 métriques d'optimisation. |
-| `docs/demos/` | Sorties de démonstration rejouables (30 questions, comparaison, multi-tâches). |
+| **`docs/demos/demo_Amundi.md`** | **Démo phare** : l'agent autonome sur 24 questions d'un gérant (dataset Amundi) — trajectoire détaillée par question. |
+| `docs/demos/` | Autres sorties de démonstration rejouables (30 questions, comparaison, multi-tâches). |
 | `tests/README.md` | Carte des tests : `unit/` · `agent_eval/` · `rag_eval/`. |
 | `rag_engine/README.md` | Le moteur RAG (sous-package) : ingestion, stack de récupération, éval. |
 
