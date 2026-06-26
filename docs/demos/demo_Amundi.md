@@ -4,6 +4,34 @@ _Agent autonome sur **24 questions** d'un gérant de fonds, dataset **Amundi** (
 
 Version : `demo-gerant-v1.0` — 24 question(s) — temps total : 3658s
 
+---
+
+## Résumé exécutif
+
+**Ce que c'est.** Un agent IA **autonome** qui répond aux questions d'un gérant de fonds en
+choisissant lui-même le bon outil pour chaque tâche, et en calculant ses chiffres sur les
+**vraies données** Amundi (474 fonds : historique NAV + fiche structurée par ISIN).
+
+**Ce qu'il couvre — tout le workflow d'un gérant**, sur 24 questions réelles :
+
+| Besoin du gérant | Démontré par |
+|---|---|
+| **Due diligence factuelle** — SFDR, SRI, benchmark, frais, gérant… | fiche structurée (`fund_summary`) |
+| **Profil risque/rendement** — Sharpe, Sortino, STARR, Martin, volatilité, max drawdown, CVaR | calculé sur l'historique NAV (`fund_stats`) |
+| **Performance par période** — YTD, 1 / 3 / 5 ans | `fund_performance` |
+| **Palmarès / screening** — « top 5 actions Art. 8 par Sortino » | classement sur les 474 fonds (`screen_funds`) |
+| **Choix de la métrique selon l'intention client** — baisse → Sortino, queue → STARR, régularité → Martin ; ambigu → **demande une clarification** | sélection autonome |
+| **Comparaison & recommandation d'adéquation** (défensif, trésorerie…) | combinaison d'outils |
+
+**Ce que la démo prouve.**
+- **Autonomie** : l'agent **route seul** vers le bon outil (couverture d'outils **20/21**) — rien n'est câblé en dur ; sa *raison* est affichée à chaque étape.
+- **Vrais chiffres** : tout est calculé sur le NAV/les fiches — ex. screening top 5 par Sortino, performance +9,2 % sur 1 an, etc.
+- **Zéro hallucination** : face à une donnée absente, l'agent **dit « je ne sais pas »**. Exemple marquant (g24) : « de combien a-t-il battu son indice ? » → il donne la perf du fonds (**+2,29 %**), constate qu'il n'a pas la série de l'indice → **« écart non calculable »**, sans inventer.
+
+**Honnêteté.** Cette éval a elle-même **détecté et corrigé** des défauts (unités de taux, un fonds à NAV corrompue qui faussait un palmarès) — un système qui attrape ses propres erreurs inspire plus confiance qu'un score parfait.
+
+---
+
 ## Comment lire ce rapport
 
 Pour chaque question, l'agent travaille **en autonomie** en 3 temps :
