@@ -146,7 +146,7 @@ RAG__LLM__OPENAI__MODEL=claude-haiku-4-5 python tests/agent_eval/run_golden.py #
 
 **Ce `README.md` est le point d'entrée unique du projet.** Les autres documents sont
 subordonnés : les docs de conception à la racine (`architecture.md`, `CHOIX_DE_CONCEPTION.md`,
-`GUARDRAILS.md`), `docs/demos/` pour les démos, `tests/README.md` pour les tests, et
+`GUARDRAILS.md`), `demos/` pour les démos, `tests/README.md` pour les tests, et
 `rag_engine/README.md` pour le moteur en tant que sous-package réutilisable.
 
 | Fichier | Contenu |
@@ -155,8 +155,8 @@ subordonnés : les docs de conception à la racine (`architecture.md`, `CHOIX_DE
 | **`CHOIX_DE_CONCEPTION.md`** | Le *pourquoi* : justification de chaque choix depuis la naissance du projet. |
 | **`GUARDRAILS.md`** | Récapitulatif des garde-fous (rejet hors-corpus, calcul honnête, robustesse…). |
 | `metriques_optimisation_gold.md` | Définitions de référence des 6 métriques d'optimisation. |
-| **`docs/demos/demo_Amundi.md`** | **Démo phare** : l'agent autonome sur 24 questions d'un gérant (dataset Amundi) — trajectoire détaillée par question. |
-| `docs/demos/` | Autres sorties de démonstration rejouables (30 questions, comparaison, multi-tâches). |
+| **`demos/demo_Amundi.md`** | **Démo phare** : l'agent autonome sur 24 questions d'un gérant (dataset Amundi) — trajectoire détaillée par question. |
+| `demos/` | Autres sorties de démonstration rejouables (30 questions, comparaison, multi-tâches). |
 | `tests/README.md` | Carte des tests : `unit/` · `agent_eval/` · `rag_eval/`. |
 | `rag_engine/README.md` | Le moteur RAG (sous-package) : ingestion, stack de récupération, éval. |
 
