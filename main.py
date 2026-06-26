@@ -126,6 +126,17 @@ def answer_query(
             "metric": metric or None,
             "clarification_asked": asked,
             "n_steps": len(memory),
+            "plan": plan,
+            "steps": [
+                {
+                    "step": m["step"],
+                    "tool": m["tool"],
+                    "raison": m.get("raison", ""),
+                    "args": m.get("args", {}),
+                    "result": m["result"],
+                }
+                for m in memory
+            ],
         }
         return answer, trace
     return answer
