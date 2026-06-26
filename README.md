@@ -37,7 +37,7 @@ réutilisable traité comme une brique.
 | `documents/<dataset>/` | Corpus source, **un dossier par dataset**. `finance/` & `droit/` : PDF (KID/prospectus, cours). `amundi/` : **un sous-dossier par ISIN** avec `nav.csv` (historique NAV) + `summary.json` (résumé structuré, remplace le RAG). |
 | `workspace/` | Mémoire de l'agent (régénérée à chaque run) : `plan.md`, `notes.md`, `rapport.md`. |
 | `tests/` | Trois zones : `unit/` (pytest, rapide), `agent_eval/` (éval de l'agent), `rag_eval/` (éval du moteur) — voir `tests/README.md`. |
-| `docs/architecture.md` · `docs/CHOIX_DE_CONCEPTION.md` · `docs/GUARDRAILS.md` | Documentation (voir plus bas). |
+| `architecture.md` · `CHOIX_DE_CONCEPTION.md` · `GUARDRAILS.md` | Documentation (voir plus bas). |
 
 ---
 
@@ -82,7 +82,7 @@ le LLM). Les variables d'env `RAG__SECTION__KEY` priment sur la config.
 
 ## Métriques *rating fond*
 
-Chaque métrique de `docs/metriques_optimisation_gold.md` est exposée comme **un outil**
+Chaque métrique de `metriques_optimisation_gold.md` est exposée comme **un outil**
 (`metric_sharpe`, `metric_sortino`, …). Comportement :
 
 - **Calcul best-effort** : calcule si on fournit les entrées (R/σ, ou une série de
@@ -92,7 +92,7 @@ Chaque métrique de `docs/metriques_optimisation_gold.md` est exposée comme **u
 - **Sélection par caractéristiques** : le planner choisit le bon ratio selon l'intention
   (Sharpe vs Sortino…) et **demande une clarification** quand deux se valent.
 
-Détails et règles : `docs/GUARDRAILS.md` et `docs/architecture.md` §7.
+Détails et règles : `GUARDRAILS.md` et `architecture.md` §7.
 
 ---
 
@@ -145,15 +145,16 @@ RAG__LLM__OPENAI__MODEL=claude-haiku-4-5 python tests/agent_eval/run_golden.py #
 ## Documentation
 
 **Ce `README.md` est le point d'entrée unique du projet.** Les autres documents sont
-subordonnés : `docs/` pour la conception, `tests/README.md` pour les tests, et
+subordonnés : les docs de conception à la racine (`architecture.md`, `CHOIX_DE_CONCEPTION.md`,
+`GUARDRAILS.md`), `docs/demos/` pour les démos, `tests/README.md` pour les tests, et
 `rag_engine/README.md` pour le moteur en tant que sous-package réutilisable.
 
 | Fichier | Contenu |
 |---|---|
-| **`docs/architecture.md`** | Ce qu'est le système et comment il marche, composant par composant. |
-| **`docs/CHOIX_DE_CONCEPTION.md`** | Le *pourquoi* : justification de chaque choix depuis la naissance du projet. |
-| **`docs/GUARDRAILS.md`** | Récapitulatif des garde-fous (rejet hors-corpus, calcul honnête, robustesse…). |
-| `docs/metriques_optimisation_gold.md` | Définitions de référence des 6 métriques d'optimisation. |
+| **`architecture.md`** | Ce qu'est le système et comment il marche, composant par composant. |
+| **`CHOIX_DE_CONCEPTION.md`** | Le *pourquoi* : justification de chaque choix depuis la naissance du projet. |
+| **`GUARDRAILS.md`** | Récapitulatif des garde-fous (rejet hors-corpus, calcul honnête, robustesse…). |
+| `metriques_optimisation_gold.md` | Définitions de référence des 6 métriques d'optimisation. |
 | **`docs/demos/demo_Amundi.md`** | **Démo phare** : l'agent autonome sur 24 questions d'un gérant (dataset Amundi) — trajectoire détaillée par question. |
 | `docs/demos/` | Autres sorties de démonstration rejouables (30 questions, comparaison, multi-tâches). |
 | `tests/README.md` | Carte des tests : `unit/` · `agent_eval/` · `rag_eval/`. |
@@ -163,7 +164,7 @@ subordonnés : `docs/` pour la conception, `tests/README.md` pour les tests, et
 
 ## Statut & limites
 
-Projet de démonstration, limites assumées (détaillées dans `docs/CHOIX_DE_CONCEPTION.md` §10) :
+Projet de démonstration, limites assumées (détaillées dans `CHOIX_DE_CONCEPTION.md` §10) :
 plan figé (pas de re-planification globale), ingestion manuelle hors agent, calcul
 multi-étapes fiabilisé mais non verrouillé, **pas plus d'information que le corpus**
 (les ratios exigeant une série de rendements ne se calculent que si on la fournit).

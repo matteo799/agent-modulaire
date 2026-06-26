@@ -1,6 +1,6 @@
 """Calcul PUR des métriques d'optimisation — aucun LLM, aucun I/O.
 
-Conventions (cf. `docs/metriques_optimisation_gold.md`) :
+Conventions (cf. `metriques_optimisation_gold.md`) :
 
 - `R`, `rf`, `sigma` sont **annualisés** et exprimés en **décimal** (0.08 = 8 %).
 - `returns` = série de rendements **par période** (décimal), ex. journaliers.
