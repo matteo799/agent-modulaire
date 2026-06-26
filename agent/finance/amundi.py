@@ -54,12 +54,22 @@ def load_navs(isin: str) -> list[tuple[datetime, float]]:
     return rows
 
 
+# Au-delà de cette variation quotidienne (±50 %), la donnée est aberrante (NAV cassée,
+# split non ajusté, point corrompu) : un vrai fonds ne bouge pas de 50 % en un jour.
+ANOMALY_THRESHOLD = 0.5
+
+
 def load_returns(isin: str) -> list[float]:
     """Série de rendements quotidiens = variation relative de la NAV d'un jour à l'autre."""
     navs = [v for _, v in load_navs(isin)]
     if len(navs) < 2:
         raise ValueError(f"historique NAV insuffisant pour {isin} ({len(navs)} point(s))")
     return [navs[i] / navs[i - 1] - 1 for i in range(1, len(navs)) if navs[i - 1] != 0]
+
+
+def has_anomaly(returns: list[float]) -> bool:
+    """Vrai si la série contient une variation quotidienne aberrante (> ANOMALY_THRESHOLD)."""
+    return any(abs(r) > ANOMALY_THRESHOLD for r in returns)
 
 
 def load_summary(isin: str) -> dict:
@@ -197,7 +207,7 @@ def screen(sort_by: str = "sharpe", top: int = 5, asset_class: str = "",
             continue
         try:
             series = load_returns(d.name)
-            if len(series) < 250:  # < ~1 an d'historique → ratios non fiables, écartés
+            if len(series) < 250 or has_anomaly(series):  # historique court ou NAV corrompue → écarté
                 continue
             value = compute(series, rf)
         except (ValueError, ZeroDivisionError):
