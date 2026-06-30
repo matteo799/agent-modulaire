@@ -169,3 +169,66 @@ def martin_from_returns(
 ) -> float:
     R = annualized_return(returns, periods_per_year)
     return martin(R, ulcer_index(returns), rf)
+
+
+# ── Risque de queue & forme de la distribution ────────────────────────────
+
+
+def var_historical(returns: list[float], alpha: float = 0.05) -> float:
+    """Value-at-Risk historique **par période** au seuil `alpha` (magnitude positive).
+
+    VaR 95 % → alpha=0.05 ; VaR 99 % → alpha=0.01. C'est le quantile `alpha` des
+    rendements : la perte qui n'est dépassée que dans `alpha` des cas. Contrairement
+    à la CVaR (moyenne de la queue), la VaR est le SEUIL d'entrée de la queue.
+    """
+    if not 0 < alpha < 1:
+        raise ValueError("alpha doit être dans ]0, 1[")
+    series = sorted(_check_series(returns))
+    idx = max(0, math.ceil(len(series) * alpha) - 1)
+    return -series[idx]
+
+
+def skewness(returns: list[float]) -> float:
+    """Asymétrie (skewness) de la distribution des rendements.
+
+    < 0 : queue gauche plus épaisse (pertes extrêmes plus probables que les gains
+    extrêmes symétriques) — le signal qu'un gérant prudent surveille.
+    """
+    series = _check_series(returns)
+    n = len(series)
+    if n < 3:
+        raise ValueError("au moins 3 points requis pour la skewness")
+    m = fmean(series)
+    sd = pstdev(series)
+    if sd == 0:
+        raise ValueError("écart-type nul : skewness indéfinie")
+    return fmean([((r - m) / sd) ** 3 for r in series])
+
+
+def kurtosis_excess(returns: list[float]) -> float:
+    """Kurtosis EXCÉDENTAIRE (0 = loi normale). > 0 : queues épaisses (leptokurtique),
+    donc plus d'événements extrêmes que ne le prédit une loi normale."""
+    series = _check_series(returns)
+    n = len(series)
+    if n < 4:
+        raise ValueError("au moins 4 points requis pour la kurtosis")
+    m = fmean(series)
+    sd = pstdev(series)
+    if sd == 0:
+        raise ValueError("écart-type nul : kurtosis indéfinie")
+    return fmean([((r - m) / sd) ** 4 for r in series]) - 3.0
+
+
+def correlation(a: list[float], b: list[float]) -> float:
+    """Corrélation de Pearson entre deux séries de rendements (mêmes longueurs)."""
+    x, y = _check_series(a), _check_series(b)
+    if len(x) != len(y):
+        raise ValueError(f"séries de longueurs différentes ({len(x)} vs {len(y)})")
+    if len(x) < 2:
+        raise ValueError("au moins 2 points requis pour une corrélation")
+    mx, my = fmean(x), fmean(y)
+    cov = fmean([(xi - mx) * (yi - my) for xi, yi in zip(x, y, strict=True)])
+    sx, sy = pstdev(x), pstdev(y)
+    if sx == 0 or sy == 0:
+        raise ValueError("série constante : corrélation indéfinie")
+    return cov / (sx * sy)

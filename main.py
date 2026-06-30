@@ -40,17 +40,56 @@ uniquement sur ces résultats.
 """
 
 
+def _has_structured_result(memory: list) -> bool:
+    """Vrai si un outil NON-RAG a produit un résultat exploitable (ni vide, ni erreur).
+
+    Sert à ne pas appliquer le refus hors-sujet quand des données structurées
+    (fiches, métriques, screening…) répondent déjà à la question."""
+    for m in memory:
+        if m.get("tool") in ("rag_search", "write_file"):
+            continue
+        r = str(m.get("result", "")).strip()
+        if not r:
+            continue
+        low = r.lower()
+        if low.startswith("erreur") or "impossible" in low or "aucune fiche" in low:
+            continue
+        return True
+    return False
+
+
 def synthesize(user_query: str, memory: list) -> str:
     """Rédige la réponse finale. Si l'agent a écrit un livrable, la synthèse le
     reformule SANS voir la mémoire : privée des chunks RAG, elle ne peut pas
     réintroduire d'éléments absents du livrable (source unique de vérité).
     Sinon, repli sur la mémoire."""
+    # Désambiguïsation de fonds (déterministe) : si find_fund a renvoyé PLUSIEURS
+    # parts pour un même nom, on ne laisse PAS l'agent en choisir une au hasard —
+    # on renvoie la liste et on demande à l'utilisateur de préciser (UX chat : il
+    # répondra avec l'ISIN ou la part voulue). Garantie par le code, pas par le prompt.
+    ambiguous = next(
+        (m["result"] for m in memory
+         if m.get("tool") == "find_fund" and "Plusieurs fonds correspondent" in str(m.get("result", ""))),
+        None,
+    )
+    if ambiguous:
+        return (
+            ambiguous
+            + "\n\nMerci de préciser la part souhaitée (par son ISIN ou son libellé) "
+            "pour que je puisse répondre précisément."
+        )
+
     # Garde-fou hors-sujet (déterministe) : si l'agent a cherché dans les
     # documents et que TOUTES les recherches sont revenues sans passage
     # pertinent, on refuse — sans quoi le LLM répond depuis ses connaissances
     # générales (hallucination hors corpus), comme observé sur le golden.
+    # MAIS le refus ne vaut que si le RAG était la SEULE source : si un outil
+    # structuré (fund_summary, metric_*, screen_funds…) a produit de vraies
+    # données, la réponse est ancrée — on ne doit pas la jeter à cause d'un
+    # rag_search vide (cas d'un fonds Amundi absent du corpus finance).
     rag_results = [m["result"] for m in memory if m.get("tool") == "rag_search"]
-    if rag_results and all("Aucun passage pertinent" in r for r in rag_results):
+    all_rag_empty = rag_results and all("Aucun passage pertinent" in r for r in rag_results)
+    if all_rag_empty and not _has_structured_result(memory):
         return "Les documents fournis ne permettent pas de répondre à cette question."
 
     deliverable = last_deliverable(memory)

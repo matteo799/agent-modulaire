@@ -1,4 +1,4 @@
-version: "demo-gerant-v1.0"
+version: "demo-gerant-v1.2"
 description: |
   Démo « du point de vue d'un GÉRANT DE FONDS » — sur de vrais ISIN du dataset
   Amundi (documents/amundi/). Conçue pour VENDRE *rating fund* : elle déroule le
@@ -11,7 +11,18 @@ description: |
     • comparaison de fonds, recommandation d'adéquation
     • garde-fous & anti-hallucination (fonds sans historique, ISIN inexistant,
       champ absent type note Morningstar, surperformance non calculable)
-    24 questions au total.
+    • recherche d'un fonds par son NOM (find_fund) + désambiguïsation des parts
+    • valeur d'un investissement dans le temps (invested_value)
+    • comparaison multi-critères en un appel (compare_funds)
+    • analyse temporelle : rendements calendaires, période datée (Covid, 2022),
+      stats mensuelles, temps sous l'eau, Sharpe glissant (fund_calendar/period/
+      monthly/underwater/rolling_sharpe)
+    • risque fin : VaR 95/99, skewness, kurtosis (fund_tail_risk) ; corrélation
+      multi-fonds (funds_correlation) ; audit de la série NAV (fund_nav_series) ;
+      impact des frais dans le temps (fees_projection)
+    • limites assumées (hors périmètre : alpha/tracking error vs indice, holdings/
+      secteur, ESG profond, duration crédit) — l'agent cadre et refuse d'inventer
+    40 questions au total.
 
   Casting (réel, varié) :
     FR0011223569  actions micro-caps eurozone  (Art 6, SRI 3 — offensif, vol élevée)
@@ -238,3 +249,158 @@ items:
       dire honnêtement (et peut donner la performance du fonds), SANS fabriquer un
       écart de surperformance.
     tags: [anti-hallucination, benchmark, non-calculable]
+
+# ── K. Recherche par nom, valeur investie, comparaison (outils v1.1) ───────
+  - id: g25-recherche-par-nom
+    category: recherche
+    question: "Parle-moi du fonds Amundi Actions France Responsable."
+    expected_tools: [find_fund]
+    expected_answer: |
+      Le client désigne le fonds par son NOM (pas un ISIN) → l'agent doit d'abord
+      résoudre l'ISIN via find_fund. Ce nom couvre PLUSIEURS parts → l'agent doit
+      lister les parts (ISIN + libellé) et demander laquelle, SANS en choisir une
+      au hasard ni inventer un ISIN.
+    tags: [find_fund, resolution-nom, desambiguisation]
+
+  - id: g26-valeur-investie
+    category: simulation
+    question: "Combien valent aujourd'hui 10 000 € investis il y a 3 ans dans le fonds FR0011223569 ?"
+    expected_tools: [invested_value]
+    expected_answer: |
+      Valeur actuelle de 10 000 € placés il y a 3 ans, calculée sur l'historique
+      NAV : montant final, plus/moins-value et rendement (cumulé + annualisé). Le
+      montant ne doit PAS être déformé (10 000 reste 10 000, pas 100).
+    tags: [invested_value, simulation, nav]
+
+  - id: g27-comparaison-complete
+    category: comparaison
+    question: "Compare les fonds FR0011223569 et LU1882473009 : rendement, volatilité, Sharpe, Sortino, max drawdown et frais courants."
+    expected_tools: [compare_funds]
+    expected_answer: |
+      Un tableau côte à côte des deux fonds (rendement annualisé, volatilité,
+      Sharpe, Sortino, max drawdown, frais courants), calculé sur la NAV + lu dans
+      les fiches, en un seul appel compare_funds.
+    tags: [compare_funds, comparaison, multi-fonds]
+
+# ── L. Analyse temporelle, risque fin, frais (outils v1.2) ────────────────
+  - id: g28-correlation
+    category: correlation
+    question: "Quelle est la corrélation entre le fonds actions FR0011223569 et le fonds monétaire LU0568620214 ?"
+    expected_tools: [funds_correlation]
+    expected_answer: |
+      Corrélation des rendements quotidiens sur les dates communes. Attendu : très
+      faible (actions vs monétaire ≈ 0) → bonne diversification.
+    tags: [correlation, diversification, multi-fonds]
+
+  - id: g29-rendements-calendaires
+    category: temporel
+    question: "Donne-moi les rendements année par année (calendaires) du fonds FR0011223569."
+    expected_tools: [fund_calendar]
+    expected_answer: |
+      Un rendement par année civile (2016, 2017… 2026), calculé sur la NAV — pas
+      seulement la performance sur l'historique complet.
+    tags: [calendaire, temporel, nav]
+
+  - id: g30-regime-marche
+    category: temporel
+    question: "Comment le fonds FR0011223569 s'est-il comporté en 2022 (hausse des taux) et pendant le krach Covid (19 février → 23 mars 2020) ?"
+    expected_tools: [fund_period]
+    expected_answer: |
+      Deux rendements de période datée : l'année 2022 entière et la fenêtre Covid
+      (fév→mars 2020), calculés sur la NAV. Met en évidence le comportement en
+      régime de stress.
+    tags: [periode, regime, stress, nav]
+
+  - id: g31-stats-mensuelles
+    category: temporel
+    question: "Quel est le meilleur et le pire mois du fonds FR0011223569, et son pourcentage de mois positifs ?"
+    expected_tools: [fund_monthly]
+    expected_answer: |
+      Meilleur mois, pire mois, % de mois positifs et mois moyen, depuis les
+      rendements mensuels reconstruits sur la NAV.
+    tags: [mensuel, regularite, nav]
+
+  - id: g32-temps-sous-leau
+    category: temporel
+    question: "Combien de temps le fonds FR0011223569 a-t-il mis à récupérer son drawdown maximal (temps sous l'eau) ?"
+    expected_tools: [fund_underwater]
+    expected_answer: |
+      Max drawdown + durée de la plus longue phase sous l'eau (en jours) et si le
+      fonds a récupéré son plus-haut — calculé sur la NAV.
+    tags: [drawdown, temps-sous-leau, nav]
+
+  - id: g33-sharpe-glissant
+    category: profil
+    question: "Le ratio de Sharpe du fonds FR0011223569 est-il stable ou erratique ? Donne le Sharpe glissant sur 12 mois."
+    expected_tools: [fund_rolling_sharpe]
+    expected_answer: |
+      Sharpe glissant (fenêtre ~252 j) : moyenne, écart-type (= stabilité), min/max
+      et dernière valeur. Un écart-type élevé = Sharpe erratique.
+    tags: [sharpe-glissant, stabilite, nav]
+
+  - id: g34-risque-queue
+    category: profil
+    question: "Quels sont la VaR à 95 % et à 99 %, la skewness et la kurtosis des rendements du fonds FR0011223569 ?"
+    expected_tools: [fund_tail_risk]
+    expected_answer: |
+      VaR 95 % et 99 % (quantiles de perte), CVaR 5 %, skewness (asymétrie, < 0 =
+      queue gauche épaisse) et kurtosis excédentaire (> 0 = queues épaisses).
+    tags: [var, skewness, kurtosis, risque-queue]
+
+  - id: g35-audit-nav
+    category: audit
+    question: "Montre-moi la série NAV exacte utilisée pour le fonds FR0011223569 : combien de points, sur quelle plage, et un échantillon."
+    expected_tools: [fund_nav_series]
+    expected_answer: |
+      Données NAV brutes : nombre de points, plage de dates, NAV min/max et un
+      échantillon (premières/dernières valeurs) — auditabilité de la source.
+    tags: [audit, nav, transparence]
+
+  - id: g36-impact-frais
+    category: frais
+    question: "Quel est l'impact des frais courants du fonds FR0011223569 sur 10 ans pour un placement de 100 000 € ?"
+    expected_tools: [fees_projection]
+    expected_answer: |
+      Coût cumulé des frais courants sur 10 ans (frais récurrents seuls, hors
+      performance et hors frais d'entrée) en euros et en % du capital.
+    tags: [frais, projection, cout-reel]
+
+# ── M. Limites assumées : hors périmètre (NAV + faits seulement) ──────────
+  - id: g37-alpha-tracking-error
+    category: hors-perimetre
+    question: "Quel est l'alpha et la tracking error du fonds LU1882473009 par rapport à son indice de référence sur 1 an ?"
+    expected_tools: []
+    expected_answer: |
+      HORS PÉRIMÈTRE : on connaît le NOM de l'indice mais PAS sa série de
+      rendements → alpha, tracking error, bêta, information ratio NE sont PAS
+      calculables. L'agent doit le dire clairement, SANS inventer de chiffre.
+    tags: [hors-perimetre, benchmark, anti-hallucination]
+
+  - id: g38-composition-holdings
+    category: hors-perimetre
+    question: "Quelles sont les 10 principales positions (titres en portefeuille) du fonds FR0011223569 et sa répartition sectorielle ?"
+    expected_tools: []
+    expected_answer: |
+      HORS PÉRIMÈTRE : le dataset contient la NAV et des faits structurés, PAS les
+      positions/holdings ni la ventilation sectorielle. L'agent doit cadrer son
+      périmètre (analyse quantitative de performance, pas analyse de portefeuille).
+    tags: [hors-perimetre, holdings, composition]
+
+  - id: g39-esg-profond
+    category: hors-perimetre
+    question: "Quel est le pourcentage d'investissement durable, l'alignement taxonomie et l'intensité carbone du fonds FR0011585629 (Article 8) ?"
+    expected_tools: []
+    expected_answer: |
+      HORS PÉRIMÈTRE : la fiche donne la classification SFDR (Art. 8) mais PAS le
+      détail ESG (taxonomie, PAI, intensité carbone, exclusions). L'agent doit le
+      dire, sans fabriquer de pourcentages.
+    tags: [hors-perimetre, esg, sfdr]
+
+  - id: g40-duration-credit
+    category: hors-perimetre
+    question: "Quelle est la duration et la qualité de crédit moyenne du fonds obligataire LU1882473009 ?"
+    expected_tools: []
+    expected_answer: |
+      HORS PÉRIMÈTRE : duration, sensibilité et notation crédit moyenne ne figurent
+      pas dans les données (NAV + faits généraux). L'agent doit le dire honnêtement.
+    tags: [hors-perimetre, obligataire, duration]

@@ -137,6 +137,12 @@ def list_sources() -> str:
     return "Documents disponibles :\n" + "\n".join(f"- {s}" for s in sources)
 
 
+def count_sources() -> int:
+    """Nombre de documents distincts indexés dans le corpus actif (compté côté code)."""
+    retriever, settings = _bootstrap()
+    return len(_distinct_sources(retriever, settings))
+
+
 def _find_vector_store(retriever: Any) -> Any:
     """Descend la chaîne `_inner` du retriever jusqu'au VectorStore sous-jacent."""
     node = retriever

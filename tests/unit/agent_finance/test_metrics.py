@@ -81,3 +81,31 @@ def test_from_returns_guard_on_constant_series():
 def test_empty_series_raises():
     with pytest.raises(ValueError):
         m.annualized_return([])
+
+
+def test_var_historical_quantile():
+    # 100 points -10%..+89% ; VaR 5% = 5e pire (index 4) en magnitude positive.
+    r = [(-10 + i) / 100 for i in range(100)]  # -0.10, -0.09, …, 0.89
+    assert m.var_historical(r, 0.05) == pytest.approx(0.06)  # 5e valeur = -0.06
+    assert m.var_historical(r, 0.01) == pytest.approx(0.10)  # pire = -0.10
+
+
+def test_skewness_sign():
+    # queue gauche (une grosse perte) → skewness négative
+    assert m.skewness([0.01, 0.01, 0.01, 0.01, -0.2]) < 0
+
+
+def test_kurtosis_excess_fat_tail_positive():
+    # distribution à queues épaisses → kurtosis excédentaire > 0
+    assert m.kurtosis_excess([0.0, 0.0, 0.0, 0.0, 0.0, 0.5, -0.5]) > 0
+
+
+def test_correlation_perfect_and_inverse():
+    a = [0.01, -0.02, 0.03, -0.01]
+    assert m.correlation(a, a) == pytest.approx(1.0)
+    assert m.correlation(a, [-x for x in a]) == pytest.approx(-1.0)
+
+
+def test_correlation_length_mismatch_raises():
+    with pytest.raises(ValueError):
+        m.correlation([0.01, 0.02], [0.01])

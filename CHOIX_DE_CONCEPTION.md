@@ -227,7 +227,45 @@ la fiabilité — bon échange sur un petit modèle, à reconsidérer avec un mo
 
 ---
 
-## 10. Limites assumées : pourquoi ces simplifications sont volontaires
+## 10. Multi-dataset & interface : un registre unique, un routage par description
+
+L'agent sert plusieurs corpus **hétérogènes** (RAG en texte libre ; dataset Amundi
+*structuré* à NAV) et expose une interface de chat (Streamlit). Deux problèmes en
+découlent : *de quel dataset* parle l'utilisateur, et *vers quels outils* router.
+
+- **Registre de datasets (`agent/datasets.py`) — une seule source de vérité.** Chaque
+  dataset s'y déclare en un objet (`key`, `label`, `description`, `unit`, et une fonction
+  `count`). Tous les consommateurs — le comptage `count_funds`, le sélecteur Streamlit, la
+  directive de contexte envoyée à l'agent — **itèrent sur le registre** ; aucun ne code un
+  dataset en dur. **Ajouter un dataset = un seul `register(Dataset(...))`**, rien d'autre à
+  toucher. **Écarté : le routage `if dataset == "amundi" … elif …`** — il oblige à éditer
+  plusieurs fichiers par ajout et ne tient pas à l'échelle (le « cas à 100 datasets »).
+- **Routage par *capacité*, pas par énumération des voisins.** Une description d'outil
+  décrit **sa propre nature** (texte libre → réponse qualitative ; données structurées →
+  faits exacts / calcul / comptage), **jamais les datasets ou outils voisins**. Une
+  description du type « ne couvre pas Amundi, utiliser `fund_summary`… » crée une **dette en
+  O(n²)** : chaque nouveau dataset forcerait à rééditer les descriptions de tous les autres.
+  En décrivant la capacité, le routage **émerge** du matching nature-de-la-question /
+  nature-de-l'outil — prolongement direct du §4 (« le catalogue est la seule info du LLM »).
+- **Pas d'isolation dure des outils par dataset.** On a écarté le verrou (n'exposer au
+  planner que les outils du dataset choisi) pour la même raison qu'au §9-cas 3 : trop de
+  souplesse perdue. À la place, une **directive légère** préfixe la question pour déclarer
+  *seulement* le dataset concerné — information que l'agent ne peut pas deviner (« combien de
+  fonds » est ambigu) — sans dicter les outils. Le choix d'outil reste porté par les
+  descriptions.
+- **`count_funds` : le code compte, pas le LLM.** Né d'une erreur réelle observée — l'agent
+  annonçait « 90 fonds » en « comptant » une liste de 79 (les LLM comptent mal). L'outil
+  renvoie un `len()` exact : application directe du §9 (garantie structurelle plutôt que
+  consigne de prompt).
+- **Interface Streamlit : réutilisation, pas de duplication.** Le chat appelle le pipeline
+  existant (`answer_query`) tel quel — `verbose=False`, et `ask_fn` **non bloquant** car le
+  web n'a pas de `stdin` pour les clarifications de métrique. La **trace** (plan, outils,
+  métrique) est affichée pour rendre le travail de l'agent inspectable, et chaque échange est
+  journalisé en JSONL — observabilité sans surcoût, dans l'esprit de `notes.md` (§5).
+
+---
+
+## 11. Limites assumées : pourquoi ces simplifications sont volontaires
 
 - **Plan figé** : pas de re-planification globale — on a préféré borner et auditer plutôt que la
   souplesse d'un ReAct qui dérive (§0).
