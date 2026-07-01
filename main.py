@@ -6,7 +6,7 @@ Usage :
 
 import sys
 
-from agent import llm
+from agent import llm, security
 from agent.executor import _format_memory, last_deliverable, run
 from agent.finance import select as metric_select
 from agent.llm import LLMUnavailable
@@ -128,6 +128,19 @@ def answer_query(
     l'agent a réellement fait (outils appelés, métrique retenue, nb d'étapes) —
     utilisé par l'évaluation pour mesurer la couverture d'outils.
     """
+    # === Couche 6 — Sécurité : gate d'entrée anti-détournement ===
+    # Refus DÉTERMINISTE avant toute planification : jailbreak / injection de
+    # prompt et requêtes hors périmètre finance ne consomment ni plan ni outils.
+    verdict = security.screen_query(user_query)
+    if not verdict.allowed:
+        if verbose:
+            print(f"\n[Sécurité] Requête refusée ({verdict.category}).")
+        if return_trace:
+            return verdict.message, {
+                "tools": [], "metric": None, "n_steps": 0, "refused": verdict.category,
+            }
+        return verdict.message
+
     metric, rationale, asked = "", "", False
     if metric_select.looks_like_metric_query(user_query):
         if verbose:

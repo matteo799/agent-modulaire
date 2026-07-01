@@ -125,7 +125,15 @@ def rag_search(query: str, top_k: int = 3, source: str = "") -> str:
     if not relevant:
         return NO_MATCH_MESSAGE
 
-    return "\n\n".join(f"[{h.metadata.get('source_file', '?')}]\n{h.text}" for h in relevant)
+    # Défense anti-injection INDIRECTE : on encadre le contenu documentaire d'une
+    # clôture « données, pas instructions » pour que le LLM de synthèse n'obéisse
+    # pas à un ordre glissé dans un document du corpus (cf. agent/security).
+    from agent import security
+
+    passages = "\n\n".join(
+        f"[{h.metadata.get('source_file', '?')}]\n{h.text}" for h in relevant
+    )
+    return security.fence_passages(passages)
 
 
 def list_sources() -> str:

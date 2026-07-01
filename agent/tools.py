@@ -3,7 +3,7 @@
 import re
 from pathlib import Path
 
-from agent import datasets
+from agent import datasets, security
 from agent.finance import amundi, metric_catalog, metrics
 from agent.finance.metric_catalog import CATALOG, MetricSpec
 from agent.rag_adapter import list_sources, rag_search
@@ -13,30 +13,51 @@ DOCUMENTS_DIR = Path(__file__).resolve().parent.parent / "documents"
 
 
 def read_file(path: str) -> str:
-    """Lit un fichier depuis le workspace, les documents sources ou un chemin direct."""
-    name = path.removeprefix("workspace/").removeprefix("documents/")
-    for candidate in (WORKSPACE_DIR / name, DOCUMENTS_DIR / name, Path(path)):
-        if candidate.exists():
-            return candidate.read_text(encoding="utf-8")
+    """Lit un fichier, CONFINÉ au workspace et aux documents sources.
+
+    Sécurité (cf. `agent/security.confine`) : aucun chemin ne peut sortir de ces
+    deux dossiers — pas de `../` traversal, pas de lecture d'un secret hors zone
+    (`.env`, clés API) même si un nom de fichier est injecté par un document.
+    """
+    name = str(path or "").removeprefix("workspace/").removeprefix("documents/")
+    candidate = security.confine(name, WORKSPACE_DIR, DOCUMENTS_DIR)
+    if candidate is None:
+        return f"Erreur : accès refusé (hors zone autorisée) : {path}"
+    if candidate.exists() and candidate.is_file():
+        return candidate.read_text(encoding="utf-8")
     return f"Erreur : fichier introuvable : {path}"
 
 
 def write_file(path: str, content: str) -> str:
-    """Écrit un fichier dans le workspace de l'agent."""
-    path = path.removeprefix("workspace/")
-    target = WORKSPACE_DIR / path
+    """Écrit un fichier dans le workspace de l'agent (et NULLE PART ailleurs).
+
+    Sécurité (cf. `agent/security.confine`) : le chemin est confiné au workspace
+    — un `../` ou un chemin absolu ne peut pas écrire hors de cette zone.
+    """
+    name = str(path or "").removeprefix("workspace/")
+    target = security.confine(name, WORKSPACE_DIR)
+    if target is None:
+        return f"Erreur : écriture refusée (hors du workspace) : {path}"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(content, encoding="utf-8")
-    return f"Fichier écrit : workspace/{path} ({len(content)} caractères)"
+    rel = target.relative_to(WORKSPACE_DIR.resolve())
+    return f"Fichier écrit : workspace/{rel} ({len(content)} caractères)"
 
 
 def calculator(expression: str) -> str:
-    """Évalue une expression arithmétique simple."""
-    allowed = set("0123456789+-*/(). %")
-    if not set(expression) <= allowed:
-        return f"Erreur : expression non autorisée : {expression}"
+    """Évalue une expression arithmétique simple.
+
+    Sécurité : l'évaluation passe par un **AST en liste blanche**
+    (`security.safe_eval`), jamais par `eval`. Seuls nombres, `+ - * / %` et
+    parenthèses sont acceptés ; tout le reste (exponentiation, appels, noms…)
+    est rejeté par construction.
+    """
     try:
-        return str(eval(expression, {"__builtins__": {}}, {}))
+        return str(security.safe_eval(expression))
+    except security.UnsafeExpression as exc:
+        return f"Erreur : expression non autorisée ({exc})."
+    except SyntaxError:
+        return f"Erreur : expression invalide : {expression}"
     except Exception as exc:
         return f"Erreur de calcul : {exc}"
 

@@ -1,6 +1,6 @@
 """Étapes 3 à 6 : sélection d'outil, boucle agentique, mémoire de travail, réflexion."""
 
-from agent import llm
+from agent import llm, security
 from agent.llm import LLMUnavailable
 from agent.tools import TOOLS, WORKSPACE_DIR, tools_catalog, write_file
 
@@ -96,6 +96,11 @@ def execute_step(choice: dict) -> str:
     if name not in TOOLS:
         return f"Erreur : outil inconnu : {name}"
     args = choice.get("args") or {}
+    # Validation générique des arguments AVANT l'appel (cf. agent/security) :
+    # rejette tôt un args non-mapping ou une valeur démesurée.
+    guard = security.validate_args(args)
+    if guard:
+        return guard
     try:
         return str(TOOLS[name]["function"](**args))
     except TypeError as exc:
