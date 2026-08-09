@@ -10,6 +10,7 @@ choisir le modèle ; on peut surcharger ponctuellement via les variables d'env
 from __future__ import annotations
 
 import json
+import os
 import re
 import time
 from functools import lru_cache
@@ -61,6 +62,68 @@ class LLMUnavailable(RuntimeError):
     """
 
 
+class BudgetExceeded(LLMUnavailable):
+    """Le budget d'un run est épuisé (trop d'appels LLM, ou temps mural dépassé).
+
+    Sous-classe de `LLMUnavailable` À DESSEIN : tous les étages qui savent déjà
+    dégrader gracieusement une panne LLM (planner → message clair, executor →
+    étape en erreur puis arrêt, synthèse → repli sur le livrable brut) traitent
+    ainsi l'épuisement du budget SANS code supplémentaire. Ce n'est pas une
+    panne réseau : c'est un garde-fou de coût/boucle (kill-switch) qui garantit
+    qu'un plan aberrant ne consomme jamais sans borne.
+    """
+
+
+# ── Budget d'un run (kill-switch) ────────────────────────────────────────────
+# Borne DURE sur ce qu'un seul run peut consommer, indépendamment du plan produit
+# par le LLM. Surchargeable par l'appelant (start_run) ou par variable d'env
+# (AGENT_MAX_LLM_CALLS / AGENT_MAX_SECONDS). Vérifié dans chat() : comme TOUT
+# appel LLM (planner, choix d'outil, synthèse, classifieur sécurité) passe par
+# chat(), un seul point de contrôle couvre l'agent entier.
+DEFAULT_MAX_CALLS = 80
+DEFAULT_MAX_SECONDS = 1200.0
+
+_budget: dict = {"max_calls": DEFAULT_MAX_CALLS, "max_seconds": DEFAULT_MAX_SECONDS, "start": None}
+
+
+def _env_int(name: str, default: int) -> int:
+    try:
+        return int(os.environ[name])
+    except (KeyError, ValueError):
+        return default
+
+
+def start_run(max_calls: int | None = None, max_seconds: float | None = None) -> None:
+    """Ouvre un run : remet le compteur d'usage à zéro et arme le budget.
+
+    À appeler au début de chaque requête utilisateur. Sans budget armé (start
+    None), `chat()` ne borne rien — utile pour les tests unitaires isolés.
+    """
+    reset_usage()
+    _budget["max_calls"] = max_calls if max_calls is not None else _env_int(
+        "AGENT_MAX_LLM_CALLS", DEFAULT_MAX_CALLS
+    )
+    _budget["max_seconds"] = max_seconds if max_seconds is not None else float(
+        _env_int("AGENT_MAX_SECONDS", int(DEFAULT_MAX_SECONDS))
+    )
+    _budget["start"] = time.monotonic()
+
+
+def _check_budget() -> None:
+    """Lève `BudgetExceeded` si le run a dépassé sa borne d'appels ou de temps."""
+    start = _budget["start"]
+    if start is None:  # budget non armé (tests) → pas de plafond
+        return
+    if _usage["calls"] >= _budget["max_calls"]:
+        raise BudgetExceeded(
+            f"budget d'appels LLM atteint ({_budget['max_calls']}) — arrêt du run."
+        )
+    if time.monotonic() - start > _budget["max_seconds"]:
+        raise BudgetExceeded(
+            f"budget de temps atteint ({_budget['max_seconds']:.0f}s) — arrêt du run."
+        )
+
+
 @lru_cache(maxsize=1)
 def _client():
     """Construit (une fois) le client LLM depuis la config du moteur."""
@@ -84,6 +147,8 @@ def chat(prompt: str, system: str | None = None, json_mode: bool = False) -> str
     if json_mode:
         parts.append("Réponds UNIQUEMENT avec un objet JSON valide, sans aucun texte autour.")
     text = "\n\n".join(parts)
+
+    _check_budget()  # kill-switch : refuse un nouvel appel si le run a épuisé son budget
 
     last_exc: Exception | None = None
     for attempt in range(_AGENT_RETRIES + 1):

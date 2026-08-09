@@ -1,25 +1,52 @@
 # Mini Deep Agent
 
-Un agent minimal qui transforme un RAG classique en système **agentique** : le LLM
-planifie, choisit ses outils, exécute en boucle, garde une mémoire de travail sur disque
-et synthétise une réponse finale. Le RAG n'est plus le cœur du système — c'est **un outil
-parmi d'autres**.
+**Un agent d'analyse de fonds qui planifie, s'outille et — surtout — n'invente jamais un chiffre.**
 
-> **Cas d'usage principal — *rating fond*** : répondre à des questions sur des prospectus
-> de fonds (KID/DICI) et sur les **métriques d'optimisation** (Sharpe, Sortino, STARR,
-> Martin, budget CVaR/drawdown), avec un garde-fou strict : ne jamais inventer un chiffre
-> absent du corpus.
+[![CI](https://github.com/matteo799/agent-modulaire/actions/workflows/ci.yml/badge.svg)](https://github.com/matteo799/agent-modulaire/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
+![LLM](https://img.shields.io/badge/LLM-Claude%20Opus%204.8-D97757)
+![Sécurité](https://img.shields.io/badge/sécurité-OWASP%20LLM%20Top%2010-2E7D32)
+![Licence](https://img.shields.io/badge/licence-tous%20droits%20réservés-lightgrey)
 
+Un agent minimal, **écrit à la main sans framework agentique** (pas de LangChain, pas
+d'AutoGPT), qui transforme un RAG classique en système **agentique** : le LLM planifie,
+choisit ses outils, exécute en boucle, garde une mémoire de travail sur disque et synthétise
+une réponse finale sourcée. Le RAG n'est plus le cœur du système — c'est **un outil parmi 28**.
+
+> **Cas d'usage — *rating fond*** : répondre à des questions sur des prospectus de fonds
+> (KID/DICI) et sur les **métriques d'optimisation** (Sharpe, Sortino, STARR, Martin, budget
+> CVaR/drawdown), avec un garde-fou strict : **ne jamais inventer un chiffre absent du corpus.**
+
+## Comment ça marche
+
+```mermaid
+flowchart TD
+    Q([Question]) --> G{Gate sécurité<br/>jailbreak · périmètre}
+    G -->|hors périmètre| STOP([Refus déterministe])
+    G -->|ok| S[0 · Sélection de métrique<br/><i>clarification si ambigu</i>]
+    S --> P[1 · Planification<br/>→ liste d'étapes]
+    P --> L{{2 · Boucle agentique}}
+    L --> T[Choix d'un outil]
+    T --> RAG[rag_search]
+    T --> IO[read / write_file]
+    T --> CALC[calculator AST]
+    T --> MET[metric_*]
+    RAG & IO & CALC & MET --> R[Réflexion + mémoire<br/><i>workspace/</i>]
+    R -->|étape suivante| L
+    R -->|plan terminé| SYN([3 · Synthèse ancrée<br/>workspace/rapport.md])
+
+    classDef stop fill:#fde8e8,stroke:#c0392b,color:#7b241c;
+    classDef done fill:#e8f6ef,stroke:#1e8449,color:#145a32;
+    class STOP stop;
+    class SYN done;
 ```
-Question
-   │
-   ├─ 0. Sélection de métrique (si pertinent) ─ clarification éventuelle   agent/finance/
-   ├─ 1. Planification → liste d'étapes                                    agent/planner.py
-   ├─ 2. Boucle agentique : choix d'outil → exécution → réflexion → mémoire  agent/executor.py
-   │        outils : rag_search · list_documents · read_file · write_file ·
-   │                calculator · metric_*                                   agent/tools.py
-   └─ 3. Synthèse finale → workspace/rapport.md                            main.py
-```
+
+| Étape | Où |
+|---|---|
+| **0.** Sélection de métrique — clarification éventuelle | `agent/finance/` |
+| **1.** Planification → liste d'étapes | `agent/planner.py` |
+| **2.** Boucle : choix d'outil → exécution → réflexion → mémoire | `agent/executor.py` · `agent/tools.py` |
+| **3.** Synthèse finale ancrée sur le livrable | `main.py` |
 
 ---
 
@@ -30,7 +57,7 @@ réutilisable traité comme une brique.
 
 | Chemin | Rôle |
 |---|---|
-| `agent/` | L'agent : `llm.py` (accès LLM + résilience), `planner.py`, `tools.py`, `executor.py`, `rag_adapter.py` (adaptateur sur le moteur). |
+| `agent/` | L'agent : `llm.py` (accès LLM + résilience + budget), `planner.py`, `tools.py` (28 outils), `executor.py`, `rag_adapter.py` (adaptateur sur le moteur), `security.py` (anti-détournement), `audit.py` (piste d'audit). |
 | `agent/finance/` | Couche métriques *rating fond* : `metrics.py` (calcul pur), `metric_catalog.py`, `select.py` (sélection + clarification). |
 | `main.py` | Point d'entrée CLI + synthèse finale. |
 | `rag_engine/` | Moteur RAG modulaire (bge-m3 → parent-child → reranker + juge de pertinence LLM). **Sous-package autonome, avec son propre `README.md`** (ce README-ci reste le point d'entrée du projet). |
@@ -95,6 +122,24 @@ Chaque métrique de `metriques_optimisation_gold.md` est exposée comme **un out
 Détails et règles : `GUARDRAILS.md` et `architecture.md` §7.
 
 ---
+
+## Sécurité, gouvernance & observabilité
+
+Les briques attendues d'un agent en production, chacune **garantie par le code** (pas par une
+consigne de prompt) — détail complet et lieu d'application dans `GUARDRAILS.md` :
+
+- **Anti-détournement (couche 6, `agent/security.py`)** — gate d'entrée (motifs jailbreak +
+  classifieur de périmètre), confinement des lectures/écritures de fichiers, calculateur AST (pas
+  `eval`), neutralisation de l'injection indirecte (contenu documentaire = données), normalisation
+  anti-obfuscation. Aligné OWASP LLM Top 10.
+- **Ancrage / anti-hallucination** — le corpus est le plafond d'information : refus déterministe
+  hors-corpus, synthèse ancrée sur le livrable, métriques honnêtes (jamais de chiffre inventé).
+- **Budget de run (kill-switch)** — borne dure sur le nb d'appels LLM et le temps mural
+  (`AGENT_MAX_LLM_CALLS`, `AGENT_MAX_SECONDS`) : un plan aberrant ne consomme jamais sans plafond.
+- **Piste d'audit** — chaque run est journalisé (`logs/audit.jsonl` : requête, sécurité, plan,
+  chaque outil + args + résultat, usage, durée) pour tracer une décision et investiguer un
+  incident. Best-effort, désactivable `AGENT_AUDIT=0`.
+- **Résilience** — dégradation gracieuse par étage : un appel LLM qui échoue ne tue jamais le run.
 
 ## Tests & éval
 

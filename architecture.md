@@ -104,21 +104,25 @@ les descriptions et les injecte dans les prompts (planner & sélecteur). **La de
 seule information dont dispose le LLM pour choisir un outil et construire ses arguments** ; elle
 dit aussi *quand NE PAS* l'utiliser.
 
-| Outil | Rôle |
-|---|---|
-| `rag_search(query, top_k, source)` | Recherche sémantique dans le corpus PDF (→ §6). `source` restreint à un document (ISIN). |
-| `list_documents()` | Liste les fonds/documents indexés (1ʳᵉ étape d'une comparaison). |
-| `fund_summary(isin, fields)` | Faits d'un fonds **Amundi** lus dans `summary.json` (SFDR, SRI, benchmark, frais, gérant… — structuré, exact) — remplace `rag_search` pour ce dataset (→ §7). |
-| `fund_stats(isin, rf)` | **Profil risque/rendement complet** d'un fonds Amundi calculé sur son historique NAV : rendement annualisé, volatilité, Sharpe/Sortino/STARR/Martin, max drawdown, CVaR (→ §7). |
-| `fund_performance(isin, periods)` | **Performance par période** (YTD, 1 an, 3 ans, 5 ans, depuis création) — cumulée et annualisée, calculée sur la NAV. |
-| `screen_funds(sort_by, top, …)` | **Screening / palmarès** : classe les fonds Amundi par critère (Sharpe, Sortino, rendement…) avec filtres (classe d'actifs, SFDR, SRI) → top N. |
-| `read_file(path)` | Lit un fichier déjà connu (workspace ou documents). |
-| `write_file(path, content)` | Écrit le livrable — **confiné à `workspace/`** ; recopie seulement, aucun calcul. |
-| `calculator(expression)` | Évalue une expression arithmétique (`eval` neutralisé par liste blanche de caractères). Obligatoire pour tout calcul. |
-| `metric_<clé>` ×6 | Outils métriques *rating fond* (→ §7), générés depuis le catalogue. |
+**28 outils** (22 explicites + 6 `metric_*` générés depuis le catalogue), regroupés par
+famille. La source de vérité reste le dict `TOOLS` dans `agent/tools.py` (avec la
+description complète de chaque outil) ; ce tableau en donne la carte.
+
+| Famille | Outils | Rôle |
+|---|---|---|
+| **Corpus texte (RAG)** | `rag_search(query, top_k, source)` · `list_documents()` · `read_file(path)` | Recherche sémantique dans le corpus PDF (→ §6) ; lister les documents indexés ; relire un fichier déjà connu. `source` restreint `rag_search` à un document (ISIN). |
+| **Comptage** | `count_funds(dataset)` | **Nombre exact** d'éléments d'un dataset, compté par le code (jamais estimé « à l'œil »). |
+| **Résolution nom → ISIN** | `find_fund(name)` | Retrouve l'ISIN d'un fonds désigné par son **nom** (recherche floue) ; renvoie les candidats si ambigu. Préalable aux autres outils de fonds. |
+| **Faits structurés (Amundi)** | `fund_summary(isin, fields)` | Faits d'un fonds Amundi lus dans `summary.json` (SFDR, SRI, benchmark, frais, gérant… — exact) — remplace `rag_search` pour ce dataset (→ §7). |
+| **Profil risque/rendement sur NAV (Amundi)** | `fund_stats(isin, rf)` · `fund_performance(isin, periods)` · `fund_calendar` · `fund_period` · `fund_monthly` · `fund_underwater` · `fund_rolling_sharpe` · `fund_tail_risk` · `fund_nav_series` | Profil complet (Sharpe/Sortino/STARR/Martin, vol, max DD, CVaR) ; perf par période ; rendements calendaires / sur période datée / mensuels ; temps sous l'eau ; Sharpe glissant ; risque de queue (VaR/CVaR, skew/kurtosis) ; série NAV brute pour audit. Tous calculés sur l'historique NAV. |
+| **Multi-fonds** | `compare_funds(funds)` · `funds_correlation(funds)` · `screen_funds(sort_by, top, …)` | Comparaison côte à côte ; corrélation des rendements ; screening / palmarès (filtres classe d'actifs, SFDR, SRI) → top N. |
+| **Placement & frais** | `invested_value(fund, amount, period)` · `fees_projection(fund, amount, years)` | Valeur aujourd'hui d'une somme investie ; coût cumulé des frais courants dans le temps. |
+| **Métriques *rating fond*** | `metric_<clé>` ×6 (Sharpe, Sortino, STARR, Martin, budget CVaR/drawdown) | Outils métriques (→ §7), générés depuis le catalogue ; description portant les caractéristiques décisives (pénalise-hausse, tendance…). |
+| **Utilitaires** | `write_file(path, content)` · `calculator(expression)` | Écrit le livrable — **confiné à `workspace/`**, recopie seulement, aucun calcul. Évalue une expression arithmétique (AST en liste blanche, jamais `eval` — cf. `GUARDRAILS.md` §6.5) ; **obligatoire pour tout calcul**. |
 
 L'agent **choisit ces outils en autonomie** d'après leur description : une question factuelle sur
-un fonds Amundi → `fund_summary` ; un ratio → `metric_*` ; hors Amundi → `rag_search`.
+un fonds Amundi → `fund_summary` ; un ratio → `metric_*` ; un nom de fonds → `find_fund` d'abord ;
+hors Amundi → `rag_search`.
 
 **Convention de robustesse** : les outils **renvoient leurs erreurs en texte** (« Erreur : … »)
 au lieu de lever — une erreur devient une observation que la boucle peut lire et corriger.
@@ -197,6 +201,18 @@ options)` tranche — interactif (`stdin_ask`) en CLI, non bloquant (`auto_ask`)
   + exception `LLMUnavailable` (`agent/llm.py`) → **dégradation gracieuse par étage** (sélection
   ignorée / message clair / étape marquée en erreur / repli sur le livrable brut). Un appel LLM
   qui échoue ne tue jamais tout le run.
+- **Budget de run (kill-switch)** — `agent/llm.py` arme, à chaque requête (`start_run()`), une
+  borne DURE sur le nombre d'appels LLM et le temps mural (défauts `AGENT_MAX_LLM_CALLS=80`,
+  `AGENT_MAX_SECONDS=1200`, surchargables par env). `chat()` la vérifie AVANT chaque appel : au
+  dépassement, il lève `BudgetExceeded` — **sous-classe de `LLMUnavailable`**, donc traitée par
+  les mêmes replis gracieux (la boucle s'arrête proprement, la synthèse retombe sur le livrable).
+  Garantit qu'un plan aberrant ne consomme jamais sans borne. Voir `GUARDRAILS.md` §5.4.
+- **Observabilité / piste d'audit** — `agent/audit.py` journalise chaque run dans un JSONL
+  append-only (`logs/audit.jsonl`, hors git) : `run_id`, requête, verdict sécurité, métrique
+  retenue, plan, chaque étape (outil, args, aperçu du résultat, succès), clôture (statut, usage
+  tokens, durée). Best-effort — une erreur d'écriture ne casse jamais un run ; désactivable par
+  `AGENT_AUDIT=0`. C'est la trace **auditable** (traçabilité, investigation d'incident) que
+  `workspace/notes.md` (éphémère) ne fournit pas. Voir `GUARDRAILS.md` §5.5.
 
 ---
 

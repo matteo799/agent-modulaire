@@ -1,7 +1,7 @@
 """Étapes 3 à 6 : sélection d'outil, boucle agentique, mémoire de travail, réflexion."""
 
-from agent import llm, security
-from agent.llm import LLMUnavailable
+from agent import audit, llm, security
+from agent.llm import BudgetExceeded, LLMUnavailable
 from agent.tools import TOOLS, WORKSPACE_DIR, tools_catalog, write_file
 
 MAX_RETRIES = 1  # une réflexion + nouvelle tentative par étape
@@ -126,6 +126,18 @@ def run(user_query: str, plan: list[str]) -> list[dict]:
             # l'étape est marquée en erreur et la boucle passe à la suivante.
             try:
                 choice = choose_tool(user_query, step, memory, feedback)
+            except BudgetExceeded as exc:
+                # Kill-switch : budget du run épuisé → on ARRÊTE toute la boucle
+                # (inutile de tenter les étapes suivantes, chaque appel LLM
+                # relèverait aussitôt). Le peu déjà produit reste exploitable.
+                print(f"    [Budget] {exc}")
+                audit.event("budget_exceeded", step_index=i, detail=str(exc))
+                memory.append({
+                    "step": step, "tool": "?", "result": f"Erreur : {exc}",
+                    "raison": "", "args": {},
+                })
+                audit.step(i, step, "?", {}, str(exc), ok=False)
+                return memory
             except LLMUnavailable as exc:
                 choice = {"tool": "?", "args": {}}
                 result = f"Erreur : service LLM indisponible pour cette étape ({exc})."
@@ -153,6 +165,10 @@ def run(user_query: str, plan: list[str]) -> list[dict]:
             entry["content"] = (choice.get("args") or {}).get("content", "")
         memory.append(entry)
         write_file("notes.md", "# Mémoire de travail\n\n" + _format_memory(memory))
+        audit.step(
+            i, step, entry["tool"], entry["args"], result,
+            ok=not (not result.strip() or result.strip().startswith("Erreur")),
+        )
         print(f"    Résultat : {result[:200].replace(chr(10), ' ')}...")
     return memory
 

@@ -6,7 +6,7 @@ Usage :
 
 import sys
 
-from agent import llm, security
+from agent import audit, llm, security
 from agent.executor import _format_memory, last_deliverable, run
 from agent.finance import select as metric_select
 from agent.llm import LLMUnavailable
@@ -128,13 +128,22 @@ def answer_query(
     l'agent a réellement fait (outils appelés, métrique retenue, nb d'étapes) —
     utilisé par l'évaluation pour mesurer la couverture d'outils.
     """
+    # Ouverture du run : piste d'audit (run_id + journal) et budget (kill-switch).
+    # Toute requête est tracée et bornée à partir d'ici.
+    run_id = audit.start_run(user_query)
+    llm.start_run()
+    if verbose:
+        print(f"[run {run_id}]")
+
     # === Couche 6 — Sécurité : gate d'entrée anti-détournement ===
     # Refus DÉTERMINISTE avant toute planification : jailbreak / injection de
     # prompt et requêtes hors périmètre finance ne consomment ni plan ni outils.
     verdict = security.screen_query(user_query)
+    audit.event("security", allowed=verdict.allowed, category=verdict.category)
     if not verdict.allowed:
         if verbose:
             print(f"\n[Sécurité] Requête refusée ({verdict.category}).")
+        audit.end_run("refused", category=verdict.category)
         if return_trace:
             return verdict.message, {
                 "tools": [], "metric": None, "n_steps": 0, "refused": verdict.category,
@@ -149,6 +158,7 @@ def answer_query(
             choice = metric_select.select_metric(user_query, ask_fn=_tracking_ask(ask_fn))
             metric, rationale = choice["metric"], choice["rationale"]
             asked = _CLARIFY_FLAG["asked"]
+            audit.event("metric_selected", metric=metric, rationale=rationale, clarification_asked=asked)
             if verbose:
                 print(f"  Métrique retenue : {metric} — {rationale}")
         except LLMUnavailable as exc:
@@ -160,10 +170,15 @@ def answer_query(
         print("\n=== 1. Planification ===")
     try:
         plan = make_plan(user_query, metric=metric, rationale=rationale)
-    except LLMUnavailable:
+    except LLMUnavailable as exc:
+        # Couvre aussi BudgetExceeded (sous-classe) : budget épuisé dès la
+        # planification → arrêt propre, message clair, run clôturé.
+        status = "budget" if isinstance(exc, llm.BudgetExceeded) else "llm_down"
+        audit.end_run(status, stage="planning")
         if return_trace:
-            return LLM_DOWN_MESSAGE, {"tools": [], "metric": None, "n_steps": 0, "error": "llm_down"}
+            return LLM_DOWN_MESSAGE, {"tools": [], "metric": None, "n_steps": 0, "error": status}
         return LLM_DOWN_MESSAGE
+    audit.event("plan", steps=plan)
     if verbose:
         for i, step in enumerate(plan, 1):
             print(f"  {i}. {step}")
@@ -172,6 +187,7 @@ def answer_query(
     if verbose:
         print("\n=== 3. Synthèse finale ===")
     answer = synthesize(user_query, memory)
+    audit.end_run("ok", n_steps=len(memory), tools=[m["tool"] for m in memory], usage=llm.get_usage())
     if return_trace:
         trace = {
             "tools": [m["tool"] for m in memory],

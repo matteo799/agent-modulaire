@@ -1,3 +1,4 @@
+
 # Choix de conception — justifications
 
 *Ce document ne contient que **le pourquoi** : pour chaque partie du système, le

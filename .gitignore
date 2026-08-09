@@ -14,6 +14,9 @@ __pycache__/
 # Sorties jetables de l'agent (régénérées à chaque run)
 workspace/
 
+# Piste d'audit : journal JSONL des runs (données de fonds + requêtes) — non versionné
+logs/
+
 # Index RAG dérivés — régénérables via `python -m rag.ingestion.cli`.
 # Trop lourds pour git (> limite GitHub 100 Mo). Les sources restent dans documents/.
 rag_engine/data/qdrant/
