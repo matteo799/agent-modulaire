@@ -84,13 +84,14 @@ très différents**. C'est *ça*, l'agent modulaire.
 Chaque domaine est validé au niveau qui a du sens pour lui (récupération pour le droit,
 récupération **+** raisonnement outillé pour la finance) :
 
-| Dataset | Ce qui est mesuré | Artefacts |
+| Dataset | Éval & résultat mesuré | Où voir |
 |---|---|---|
-| **Droit** (3 cours) | **Récupération du RAG** : golden set de **30 questions** sur les 3 sources + **3 questions hors-corpus** (test du refus/fallback), notées en recall@k, MRR, fidélité de citation et RAGAS. | `tests/rag_eval/golden/golden_droit_v1.yaml` · `configs/eval_droit.yaml` |
-| **Finance** (prospectus + NAV Amundi) | **3 niveaux** : (1) récupération — golden de **30 questions** ; (2) bout-en-bout agentique — **20 questions / 9 catégories** exerçant toute la boîte à outils, **couverture d'outils 14/15 (Opus 4.8)**, sélection de métrique 5/5, garde-fous ✓ ; (3) unitaires — calcul déterministe des ratios. | `rag_eval/golden/golden_finance_v1.yaml` · `agent_eval/question_test.yaml` · `tests/unit/agent_finance/` |
+| **Droit** (3 cours) | **Récupération du RAG** — golden set de **30 questions** sur les 3 sources + **3 questions hors-corpus** (refus/fallback), à chunk IDs réels, noté recall@k / MRR / fidélité de citation / RAGAS. | `tests/rag_eval/golden/golden_droit_v1.yaml` · `configs/eval_droit.yaml` |
+| **Finance** (prospectus + NAV Amundi) | **Trois niveaux, tous exécutés :** • *Récupération* — 30 Q, comparaison **RAG rapide vs CRAG**, **3/3 pièges hors-corpus refusés** dans les deux modes. • *Bout-en-bout agentique* — 20 Q / 9 catégories, **couverture d'outils 14/15 (Opus 4.8)** contre 12/15 (Haiku 4.5), sélection de métrique **5/5**, garde-fous ✓. • *Unitaires* — calcul déterministe des ratios. | `demos/demo_comparaison.md` · `tests/agent_eval/reports/golden_report_question_test_*.md` · `tests/unit/agent_finance/` |
 
-> Le détail des passes agentiques (par question : outils appelés, latence, tokens) vit dans
-> `tests/agent_eval/reports/` ; la carte complète des tests est dans `tests/README.md`.
+> Les rapports agentiques donnent le détail **par question** (outils appelés, latence, tokens)
+> dans `tests/agent_eval/reports/` ; la comparaison rapide/CRAG question par question est dans
+> `demos/`. Carte complète des tests : `tests/README.md`.
 
 ---
 
