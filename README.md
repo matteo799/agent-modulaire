@@ -244,6 +244,7 @@ subordonnés : les docs de conception à la racine (`architecture.md`, `CHOIX_DE
 | **`architecture.md`** | Ce qu'est le système et comment il marche, composant par composant. |
 | **`CHOIX_DE_CONCEPTION.md`** | Le *pourquoi* : justification de chaque choix depuis la naissance du projet. |
 | **`GUARDRAILS.md`** | Récapitulatif des garde-fous (rejet hors-corpus, calcul honnête, robustesse…). |
+| `SECURITY.md` | Modèle de menace + table des contrôles OWASP LLM Top 10 (où chaque risque est traité dans le code). |
 | `metriques_optimisation_gold.md` | Définitions de référence des 6 métriques d'optimisation. |
 | **`demos/demo_Amundi.md`** | **Démo phare** : l'agent autonome sur 24 questions d'un gérant (dataset Amundi) — trajectoire détaillée par question. |
 | `demos/` | Autres sorties de démonstration rejouables (30 questions, comparaison, multi-tâches). |
