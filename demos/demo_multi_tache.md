@@ -1,4 +1,4 @@
-# Démo Harness — 5 tâches multi-étapes (dataset finance)
+# Démo Agent modulaire — 5 tâches multi-étapes (dataset finance)
 
 L'**agent** traite chaque tâche de bout en bout : **planification → boucle d'outils (`rag_search`, `calculator`, `write_file`…) → rapport final**. C'est ce qu'un RAG seul ne peut pas faire (enchaîner recherches + calcul + livrable).
 

@@ -1,4 +1,4 @@
-# Mini Deep Agent
+# Agent modulaire
 
 **Un agent d'analyse de fonds qui planifie, s'outille et — surtout — n'invente jamais un chiffre.**
 

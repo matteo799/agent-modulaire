@@ -34,7 +34,7 @@ from typing import Any
 
 # Racine du moteur rapatrié : ses configs et data sont en chemins relatifs
 # (./data, ./configs) pensés pour un cwd = racine du projet. L'agent, lui,
-# tourne depuis Harness/ : on force donc des chemins absolus.
+# tourne depuis la racine du dépôt : on force donc des chemins absolus.
 RAG_ENGINE_ROOT = Path(__file__).resolve().parent.parent / "rag_engine"
 
 NO_MATCH_MESSAGE = (

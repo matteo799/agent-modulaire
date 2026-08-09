@@ -1,6 +1,6 @@
 # Démo — 30 questions du dataset finance
 
-Réponses générées de bout en bout par le RAG modulaire de Harness (dense BGE-M3 → parent-child → reranker → génération ancrée par Claude).
+Réponses générées de bout en bout par le RAG modulaire de l'Agent modulaire (dense BGE-M3 → parent-child → reranker → génération ancrée par Claude).
 
 **Légende :** ✅ réponse ancrée dans les documents (citée) · 🚫 hors-corpus → le système refuse de répondre (pas d'hallucination).
 

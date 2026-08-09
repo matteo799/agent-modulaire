@@ -1,4 +1,4 @@
-# rag-engine — sous-package du projet Harness
+# rag-engine — sous-package du projet Agent modulaire
 
 > 📦 **Sous-package autonome.** Le point d'entrée du projet est le
 > [`README.md` racine](../README.md) ; ce fichier ne documente que le **moteur RAG**
@@ -46,11 +46,11 @@ RAG__EMBEDDER__MODEL=bge-m3  RAG__EMBEDDER__API_KEY=ollama  python …
 | **Choisir les modèles** (LLM, embeddings, reranker) | [`configs/default.yaml`](configs/default.yaml) (sections `llm`, `embedder`, `reranker`) |
 | **Paramètres RAG** (retrieval, reranker, CRAG) | [`configs/default.yaml`](configs/default.yaml) (sections `retrieval`, `crag`) |
 | **Schéma typé + valeurs par défaut commentées** | [`src/rag/config/settings.py`](src/rag/config/settings.py) — la référence des paramètres |
-| **Évaluation du moteur** (golden sets, runner) | **côté Harness** : `tests/rag_eval/golden/`, `tests/rag_eval/`, `tests/rag_eval/configs/eval*.yaml` — voir le `README.md` racine |
+| **Évaluation du moteur** (golden sets, runner) | **côté Agent modulaire** : `tests/rag_eval/golden/`, `tests/rag_eval/`, `tests/rag_eval/configs/eval*.yaml` — voir le `README.md` racine |
 | **Vue d'ensemble du code** | section [Structure du repo](#structure-du-repo) plus bas |
-| **Intégration dans l'agent Harness** | le `README.md` à la racine du dépôt + `agent/rag_adapter.py` |
+| **Intégration dans l'Agent modulaire** | le `README.md` à la racine du dépôt + `agent/rag_adapter.py` |
 
-> Ce moteur est **rapatrié comme module** dans le dépôt Harness : pas de `docs/`,
+> Ce moteur est **rapatrié comme module** dans le dépôt Agent modulaire : pas de `docs/`,
 > de `Makefile` ni de `.env.example` ici — la configuration passe par les fichiers
 > YAML de `configs/` et les variables d'environnement `RAG__SECTION__CLE`.
 
@@ -174,7 +174,7 @@ Journal de construction du moteur, conservé comme historique des milestones
 ## Quickstart
 
 ```bash
-# 1. Installer le moteur (rapatrié dans Harness) en éditable, depuis la racine du dépôt
+# 1. Installer le moteur (rapatrié dans Agent modulaire) en éditable, depuis la racine du dépôt
 pip install -e ./rag_engine          # extras : .[dev], .[qdrant]… selon besoin
 
 # 2. Configurer
@@ -234,7 +234,7 @@ configs/               # YAML par environnement (default / prod)
 ```
 
 > L'**évaluation** (golden sets + runner) ne vit pas dans le moteur : elle est
-> côté Harness (`tests/`), qui consomme le moteur comme un outil.
+> côté Agent modulaire (`tests/`), qui consomme le moteur comme un outil.
 
 ## Statut
 
@@ -244,7 +244,7 @@ Voir la roadmap ci-dessus pour le détail.
 
 ### Évaluation
 
-Les commandes d'évaluation vivent **côté Harness** (`tests/rag_eval/`) — voir
+Les commandes d'évaluation vivent **côté Agent modulaire** (`tests/rag_eval/`) — voir
 la section « Tests & éval » du `README.md` racine. Résultats actuels du moteur :
 
 Résultats actuels (corpus financier, 30 questions, k=5) :

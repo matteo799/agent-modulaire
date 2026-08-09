@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Démo client — le parcours COMPLET de Harness sur 3 questions du dataset finance.
+"""Démo client — le parcours COMPLET de l'Agent modulaire sur 3 questions du dataset finance.
 
 Montre, étape par étape, ce que fait le produit quand on lui pose une question :
 
@@ -159,7 +159,7 @@ def main() -> int:
     from agent.planner import make_plan
 
     settings = load_settings(configs_dir=RAG_ENGINE / "configs")
-    settings.data_dir = RAG_ENGINE / "data"  # chemins absolus (cwd = racine Harness)
+    settings.data_dir = RAG_ENGINE / "data"  # chemins absolus (cwd = racine du dépôt)
 
     # Étiquettes dérivées des providers réels (la narration dit la vérité du mode).
     if ALL_API:

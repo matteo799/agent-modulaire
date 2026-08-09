@@ -1,4 +1,4 @@
-# Présentation produit — *Mini Deep Agent* (rating fond)
+# Présentation produit — *Agent modulaire* (rating fond)
 
 > **Trame prête à copier dans PowerPoint / Google Slides.** Chaque slide donne :
 > le **titre**, les **puces** à afficher (courtes, lisibles de loin) et les **notes
@@ -13,7 +13,7 @@
 ## Slide 1 — Titre
 
 **Affiché :**
-- **Mini Deep Agent**
+- **Agent modulaire**
 - L'assistant qui analyse nos fonds — et qui *n'invente jamais un chiffre*
 - [Ton nom] · [Date] · [Équipe]
 
