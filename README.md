@@ -50,6 +50,50 @@ flowchart TD
 
 ---
 
+## Le principe : changer de domaine = 1 dataset + quelques outils
+
+Le cœur de l'agent est **agnostique au métier** : planification, boucle d'exécution,
+mémoire de travail, sécurité, synthèse ancrée — rien de tout cela ne connaît la finance
+ni le droit. Couvrir un nouveau domaine tient en **deux gestes**, sans toucher au cœur :
+
+1. **Déposer un corpus** dans `documents/<dataset>/` et le déclarer dans le registre
+   (`agent/datasets.py`) — il apparaît alors tout seul dans l'agent et l'UI, avec sa
+   propre collection RAG **étanche** (jamais mélangée à une autre).
+2. **Ajouter les outils** spécifiques au domaine dans `agent/tools.py` — ou aucun, si les
+   outils génériques (`rag_search`, `read/write_file`, `calculator`) suffisent.
+
+### Ce projet est né comme un agent *juridique*
+
+La **première version** ciblait des **cours de droit** (pénal spécial, procédure civile,
+droit public des affaires). Avec le seul outil `rag_search`, l'agent répondait déjà à des
+questions juridiques **sourcées sur le corpus**, et refusait le hors-sujet.
+
+Puis, **sans réécrire le cœur**, on l'a fait basculer vers le **rating de fonds** :
+
+```
+Agent juridique  ──►  + dataset finance (prospectus KID/DICI + historiques NAV Amundi)
+                 ──►  + famille d'outils metric_* (Sharpe, Sortino, STARR, Martin…)
+                 ══►  Agent capable de noter un fonds
+```
+
+Le même planner, la même boucle, la même mémoire, les mêmes garde-fous — **deux domaines
+très différents**. C'est *ça*, l'agent modulaire.
+
+### Ce qu'on a testé, dataset par dataset
+
+Chaque domaine est validé au niveau qui a du sens pour lui (récupération pour le droit,
+récupération **+** raisonnement outillé pour la finance) :
+
+| Dataset | Ce qui est mesuré | Artefacts |
+|---|---|---|
+| **Droit** (3 cours) | **Récupération du RAG** : golden set de **30 questions** sur les 3 sources + **3 questions hors-corpus** (test du refus/fallback), notées en recall@k, MRR, fidélité de citation et RAGAS. | `tests/rag_eval/golden/golden_droit_v1.yaml` · `configs/eval_droit.yaml` |
+| **Finance** (prospectus + NAV Amundi) | **3 niveaux** : (1) récupération — golden de **30 questions** ; (2) bout-en-bout agentique — **20 questions / 9 catégories** exerçant toute la boîte à outils, **couverture d'outils 14/15 (Opus 4.8)**, sélection de métrique 5/5, garde-fous ✓ ; (3) unitaires — calcul déterministe des ratios. | `rag_eval/golden/golden_finance_v1.yaml` · `agent_eval/question_test.yaml` · `tests/unit/agent_finance/` |
+
+> Le détail des passes agentiques (par question : outils appelés, latence, tokens) vit dans
+> `tests/agent_eval/reports/` ; la carte complète des tests est dans `tests/README.md`.
+
+---
+
 ## Organisation du dépôt
 
 Mono-dépôt à **deux niveaux** : un agent minimal écrit à la main, et un moteur RAG
