@@ -132,6 +132,10 @@ def cost(isin: str, field: str) -> float:
     return (amundi.load_summary(isin).get("costs") or {}).get(field)
 
 
+def _charac(isin: str, key: str) -> str:
+    return str((amundi.load_summary(isin).get("characteristics") or {}).get(key, ""))
+
+
 # ── Types de vérification ────────────────────────────────────────────────────
 
 
@@ -306,31 +310,79 @@ CHECKS: dict[str, callable] = {
         num(metrics.kurtosis_excess(_returns(A)), "kurtosis"),
     ],
     "g35-audit-nav": lambda: [num(len(amundi.load_navs(A)), "nombre de points NAV")],
+    "g03-gouvernance": lambda: [
+        text(_charac(B, "Gérant").split()[0], "gérant"),
+        text("caceis", "dépositaire"),
+    ],
+    "g12-ambigu": lambda: [
+        text("sharpe", "Sharpe évoqué"),
+        text("sortino", "Sortino évoqué"),
+    ],
+    "g16-adequation-defensif": lambda: [
+        num(summary_field(A, "risk_sri"), "SRI"),
+        num(vol(A), "volatilité"),
+        num(maxdd(A), "max drawdown"),
+    ],
+    "g17-adequation-tresorerie": lambda: [num(summary_field(M, "risk_sri"), "SRI")],
+    "g22-screening": lambda: [
+        text(amundi.screen("sortino", 5, "action", "8", rf=RF_STATED)[0][2][:24], "1er du classement"),
+    ],
+    "g25-recherche-par-nom": lambda: [
+        text("amundi actions france responsable", "fonds identifié"),
+    ],
+    # g27 et g29-g33 n'énoncent pas de taux sans risque → rf = 0.
+    "g27-comparaison-complete": lambda: [
+        num(vol(A), f"volatilité {A}"),
+        num(vol(B), f"volatilité {B}"),
+        num(maxdd(A), f"max drawdown {A}"),
+        num(cost(A, "ongoing_pct"), f"frais courants {A}"),
+    ],
+    "g29-rendements-calendaires": lambda: [
+        num(dict(amundi.calendar_returns(A)).get(2022), "année 2022"),
+        num(dict(amundi.calendar_returns(A)).get(2021), "année 2021"),
+    ],
+    "g30-regime-marche": lambda: [
+        num(dict(amundi.calendar_returns(A)).get(2022), "performance 2022"),
+        num(amundi.period_return(A, "19/02/2020", "23/03/2020")["cumulative"], "krach Covid"),
+    ],
+    "g31-stats-mensuelles": lambda: [
+        num(amundi.monthly_stats(A)["best"][1], "meilleur mois"),
+        num(amundi.monthly_stats(A)["worst"][1], "pire mois"),
+        num(amundi.monthly_stats(A)["pct_positive"], "% de mois positifs"),
+    ],
+    "g32-temps-sous-leau": lambda: [
+        num(amundi.underwater(A)["longest_underwater_days"], "jours sous l'eau"),
+        num(amundi.underwater(A)["max_drawdown"], "max drawdown"),
+    ],
+    "g33-sharpe-glissant": lambda: [
+        num(amundi.rolling_sharpe(A)["mean"], "Sharpe glissant moyen"),
+    ],
     "g37-alpha-tracking-error": lambda: [refuse("alpha/TE hors périmètre")],
     "g38-composition-holdings": lambda: [refuse("positions hors périmètre")],
     "g39-esg-profond": lambda: [refuse("ESG détaillé hors périmètre")],
     "g40-duration-credit": lambda: [refuse("duration hors périmètre")],
 }
 
-# Questions volontairement NON mécanisables : le critère est qualitatif.
+# Questions volontairement NON mécanisables : le critère reste qualitatif, et
+# aucune assertion déterministe ne le capturerait honnêtement.
 MANUAL = {
-    "g03-gouvernance": "champs gérant/dépositaire absents du summary structuré",
-    "g12-ambigu": "le critère est une demande de clarification, pas une valeur",
-    "g16-adequation-defensif": "jugement d'adéquation",
-    "g17-adequation-tresorerie": "jugement d'adéquation",
-    "g22-screening": "classement multi-fonds, vérité terrain coûteuse",
-    "g25-recherche-par-nom": "réponse libre",
-    "g27-comparaison-complete": "6 grandeurs × 2 fonds, partiellement couvert par g05/g15",
-    "g29-rendements-calendaires": "série annuelle complète",
-    "g30-regime-marche": "deux fenêtres datées",
-    "g31-stats-mensuelles": "meilleur/pire mois",
-    "g32-temps-sous-leau": "durée de récupération",
-    "g33-sharpe-glissant": "série glissante",
-    "g36-impact-frais": "projection sur 10 ans",
+    "g36-impact-frais": "la projection dépend d'hypothèses de rendement non fixées par la question",
 }
 
 
 # ── Extraction des réponses du rapport ───────────────────────────────────────
+
+
+def parse_coverage(path: Path) -> dict[str, bool | None]:
+    """Verdict de couverture d'outils par question, tel qu'écrit par run_golden."""
+    raw = path.read_text(encoding="utf-8")
+    out: dict[str, bool | None] = {}
+    for block in re.split(r"\n## (?=g\d)", raw)[1:]:
+        qid = block.split(" ")[0].strip()
+        m = re.search(r"\*\*couverture :\*\* (✓|✗|—)", block)
+        if m:
+            out[qid] = {"✓": True, "✗": False, "—": None}[m.group(1)]
+    return out
 
 
 def parse_report(path: Path) -> dict[str, str]:
@@ -427,6 +479,36 @@ def main() -> None:
     print(f"  aucune assertion    : {zero}")
     print(f"\nAssertions vérifiées : {checks_ok}/{checks_tot} "
           f"({100 * checks_ok / checks_tot:.0f} %)")
+
+    # ── Le croisement : la couverture d'outils prédit-elle la justesse ? ──
+    # C'est la question « so what ? ». Un agent peut appeler exactement les outils
+    # attendus et rendre une mauvaise réponse, ou prendre un chemin différent et
+    # rendre la bonne. Ce tableau dit à quelle fréquence les deux signaux divergent,
+    # et lequel se trompe quand ils divergent.
+    coverage = parse_coverage(report)
+    cells = {(True, True): [], (True, False): [], (False, True): [], (False, False): []}
+    for qid, score, _detail in rows:
+        if score is None or qid not in coverage or coverage[qid] is None:
+            continue
+        cells[(coverage[qid], score[0] == score[1])].append(qid)
+
+    print("\n" + "=" * 74)
+    print("La couverture d'outils prédit-elle la justesse de la réponse ?\n")
+    print("                        réponse exacte    réponse inexacte")
+    print(f"  outils attendus ✓        {len(cells[(True, True)]):>6}            "
+          f"{len(cells[(True, False)]):>6}")
+    print(f"  outils attendus ✗        {len(cells[(False, True)]):>6}            "
+          f"{len(cells[(False, False)]):>6}")
+    disagree = cells[(True, False)] + cells[(False, True)]
+    total_x = sum(len(v) for v in cells.values())
+    print(f"\n  Désaccord des deux signaux : {len(disagree)}/{total_x} questions")
+    if cells[(True, False)]:
+        print(f"    outils ✓ mais réponse fausse : {', '.join(cells[(True, False)])}")
+        print("      → la couverture d'outils a validé une réponse défectueuse.")
+    if cells[(False, True)]:
+        print(f"    outils ✗ mais réponse juste  : {', '.join(cells[(False, True)])}")
+        print("      → l'agent a pris un autre chemin et a eu raison ; la couverture")
+        print("        d'outils l'a pourtant compté en échec.")
 
     ctrl_ok, ctrl_tot = control_run(answers)
     print(
