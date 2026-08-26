@@ -15,7 +15,8 @@ request. Hard constraint: a wrong number is worse than no number.
 **Evaluated** on 19 finance tasks across 9 capability categories, plus a 40-question
 fund-manager set. Opus 4.8 selected the required tools in 14/15 cases, Haiku 4.5 in 12/15.
 On the fund-manager run, answers were also scored for **correctness** rather than process:
-45 of 46 assertions hold, against 26 % for a permuted-answer control.
+69 of 70 assertions hold across 39 of 40 questions, against 29 % for a permuted-answer
+control.
 
 **Four findings, one of them negative:**
 
@@ -31,12 +32,15 @@ On the fund-manager run, answers were also scored for **correctness** rather tha
    `calculator`, despite an explicit rule forbidding it (Opus 1 of 3 arithmetic tasks, Haiku
    3 of 3). Every invariant enforced in code held; the one left to an instruction did not.
 
-4. **Process conformance hides real defects.** Tool coverage asks whether the expected tools
-   were called; it cannot see a wrong figure in the synthesis. Scoring answers against
-   ground truth recomputed from the dataset — no LLM in the loop — found a question that
-   coverage marked as a pass while the answer shipped an incomplete fee schedule. The cause
-   was a substring filter in `summary_text` that silently dropped the performance fee. Now
-   fixed, with regression tests.
+4. **Tool routing is a poor proxy for task success.** Scoring answers against ground truth
+   recomputed from the dataset — no LLM in the grading loop — makes the two signals
+   comparable per question. They agree on 29 of 32 and disagree on 3, and in all three
+   disagreements *tool coverage is the one that misleads*: it passed a question whose answer
+   shipped an incomplete fee schedule (a substring filter in `summary_text` silently dropped
+   the performance fee — now fixed, with regression tests), and it failed two questions
+   whose answers were correct. The converse is equally true, which is why both are kept: one
+   of those "correct" answers is right only because the model bypassed `calculator` and got
+   lucky, and accuracy alone cannot see that.
 
 Finding 3 is the load-bearing one: it is measured evidence that "guarantee it in code, not
 in a prompt" is an engineering constraint rather than a stylistic preference. Finding 4 is

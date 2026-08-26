@@ -60,13 +60,20 @@ Il n'appelle **aucun LLM** : le dataset Amundi étant structuré et historisé, 
 est recalculée avec `agent/finance/` — le même code que les outils — puis comparée au texte
 du rapport déjà versionné. La justesse se mesure donc **a posteriori, sans accès API**.
 
-Dernière passe (run gérant, Opus 4.8) : **45/46 assertions vérifiées sur 27 des 40
-questions**, contre **26 % pour le témoin négatif** (chaque question notée avec la réponse
+Dernière passe (run gérant, Opus 4.8) : **69/70 assertions vérifiées sur 39 des 40
+questions**, contre **29 % pour le témoin négatif** (chaque question notée avec la réponse
 d'une autre). Ce témoin tourne à chaque exécution : s'il ne s'effondre pas, le barème valide
 du bruit. Résultat versionné dans `reports/accuracy_demo_gerant_claude-opus-4-8.md`.
 
-Les 13 questions non mécanisables (screening, adéquation, audit) sont nommées dans le script
-et comptées à part, jamais omises silencieusement.
+Le script imprime aussi le **croisement couverture d'outils × justesse**, qui répond à la
+seule question qui vaille : le bon routage d'outils prédit-il une bonne réponse ? Les deux
+signaux s'accordent sur 29 questions et divergent sur 3 — et sur ces 3, c'est **la
+couverture d'outils qui se trompe**. L'inverse est vrai aussi : une des réponses justes ne
+l'est que parce que le modèle a contourné `calculator`. Aucune des deux métriques ne suffit
+seule ; leurs désaccords sont précisément là où sont les défauts.
+
+La seule question non mécanisable (`g36-impact-frais`) est nommée dans le script avec sa
+raison, jamais omise silencieusement.
 
 ### Ablation architecturale — `run_ablation.py`
 
