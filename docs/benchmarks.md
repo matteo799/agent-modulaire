@@ -111,11 +111,11 @@ Scored against the 40-question fund-manager run (Opus 4.8):
 
 | | |
 |---|---|
-| Questions scored automatically | 27 of 40 (13 left to reading, and listed as such) |
-| Fully correct | 26 |
+| Questions scored automatically | 39 of 40 (1 left to reading, and named) |
+| Fully correct | 38 |
 | Partially correct | 1 |
-| Assertions verified | **45/46 (98 %)** |
-| Negative control, permuted answers | **12/46 (26 %)** |
+| Assertions verified | **69/70 (99 %)** |
+| Negative control, permuted answers | **20/70 (29 %)** |
 
 The negative control matters more than the headline. Re-scoring each question against a
 different question's answer collapses the result from 98 % to 26 %, which is what makes the
@@ -149,11 +149,43 @@ contain that word. The result was a fee disclosure that looked complete and was 
 in this domain is worse than refusing to answer.
 
 Fees are now returned as a whole block whenever any cost term is requested, with regression
-tests in `tests/unit/agent_finance/test_amundi.py`. The historical score stays at 45/46,
+tests in `tests/unit/agent_finance/test_amundi.py`. The historical score stays at 69/70,
 because fixing the tool does not retroactively change what a past run answered.
 
 This is the clearest argument for the distinction: a process-conformance metric scored this
 question as a success, and the answer shipped an incomplete fee schedule.
+
+### Does tool routing predict task success?
+
+The obvious challenge to a tool-coverage metric is "so what?". An agent can call exactly the
+expected tools and produce a bad answer, or take a different route and produce the right
+one. Having both signals per question makes that testable rather than rhetorical:
+
+| | answer correct | answer wrong |
+|---|:---:|:---:|
+| **expected tools called** | 29 | 1 |
+| **expected tools not called** | 2 | 0 |
+
+The two signals agree on 29 of 32 scorable questions and disagree on 3. In **all three
+disagreements, tool coverage is the misleading signal**:
+
+- `g02-frais` — coverage passed, answer was wrong (the fee filter bug above).
+- `g15-compare-frais` and `g18-sans-historique` — coverage failed, answers were correct.
+
+So tool coverage on its own would have ranked a defective answer above two good ones. That
+is the concrete version of the objection, and it holds.
+
+**The reverse conclusion does not follow, and this is the part worth being careful about.**
+Accuracy alone would be just as misleading. `g15` is correct *because the model did the
+arithmetic itself instead of calling `calculator`* — the exact failure documented in the
+next section. The answer happens to be right; the process is unsafe, and only the trajectory
+metric can see that. A run that silently stops routing arithmetic to a deterministic tool
+will keep scoring well on accuracy right up until the day it does not.
+
+Neither metric dominates. Coverage without accuracy validates broken answers; accuracy
+without coverage hides unsafe paths that are currently getting lucky. The reason to keep
+both is that their disagreements are where the actual defects live: three questions, three
+findings, one of which turned into a code fix.
 
 ## The failure mode that keeps recurring
 
@@ -245,10 +277,13 @@ repository**, and the table above describes a protocol rather than a finding.
 
 ## What this does not establish
 
-- Accuracy is measured on 27 of 40 questions only, and only as "the exact value appears in
-  the answer". It says nothing about the reasoning around that value or the soundness of a
-  recommendation. The 13 unmechanised questions (screening, suitability, audit) are listed
-  by name in the scorer rather than quietly dropped.
+- Accuracy is measured only as "the exact value appears in the answer". It says nothing
+  about the reasoning around that value or the soundness of a recommendation. One question
+  (`g36-impact-frais`) resists mechanisation because its projection depends on return
+  assumptions the question never fixes; it is named in the scorer rather than dropped.
+- The accuracy rubric covers one run, on the Amundi dataset, where ground truth is
+  computable. It does not extend to the prospectus corpus, where no structured answer key
+  exists.
 - There is no quantified no-agent baseline. The section above argues the scope difference
   without measuring it.
 - No component-level result exists. The five-arm ablation above is specified, implemented

@@ -17,11 +17,19 @@ jobs:
       # (calcul des métriques, outils, sélection, résilience). Les évals LLM/RAG
       # (run_golden, rag_eval) nécessitent une clé API et des modèles lourds —
       # elles ne tournent pas en CI.
+      #
+      # pyyaml est requis : test_ablation_harness.py charge run_ablation.py, qui
+      # lit les jeux de questions en YAML. Sans lui, la collecte pytest échoue —
+      # un poste de dev l'a souvent déjà (anaconda), la CI non. Toute dépendance
+      # importée par un test doit donc figurer ici explicitement.
+      #
+      # ruff est ÉPINGLÉ : en flottant, une nouvelle version introduisant une
+      # règle fait rougir la CI sans qu'aucune ligne du dépôt n'ait changé.
       - name: Installer l'outillage
-        run: pip install ruff pytest httpx
+        run: pip install ruff==0.16.4 pytest httpx pyyaml
 
       - name: Lint (ruff, conventions du dépôt)
-        run: ruff check agent main.py tests/unit
+        run: ruff check agent main.py tests/unit tests/agent_eval
 
       - name: Tests déterministes (sans réseau)
         run: pytest tests/unit
