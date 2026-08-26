@@ -89,5 +89,5 @@ protections ne dépend du bon vouloir du modèle.*
 - **In-sample.** Les métriques sont calculées dans l'échantillon ; lecture honnête = backtest
   walk-forward (hors périmètre du présent agent).
 
-*Voir aussi `CHOIX_DE_CONCEPTION.md` (justifications de conception détaillées) et
-`metriques_optimisation_gold.md` (définitions des métriques).*
+*Voir aussi `design-decisions.md` (justifications de conception détaillées) et
+`metrics-reference.md` (définitions des métriques).*

@@ -5,7 +5,7 @@
 raisonnement derrière les choix faits **depuis la naissance du projet**, et les
 alternatives écartées. Pour **ce qu'est** chaque composant et **comment** il marche,
 voir `architecture.md` (même découpage en parties). Pour les règles de sûreté
-consolidées, voir `GUARDRAILS.md`.*
+consolidées, voir `guardrails.md`.*
 
 > **Note d'évolution.** Le projet est né **100 % local** (Ollama, `qwen2.5:7b`,
 > index NumPy maison). Beaucoup de choix ci-dessous sont nés de la **contrainte d'un
@@ -183,7 +183,7 @@ erreur de contenu (par un type dédié) permet à chaque étage de la rattraper 
 
 ## 8. Garde-fous & robustesse : pourquoi consolider et durcir
 
-- **Pourquoi un `GUARDRAILS.md` consolidé** : les règles de sûreté étaient éparpillées dans
+- **Pourquoi un `guardrails.md` consolidé** : les règles de sûreté étaient éparpillées dans
   les prompts, l'adaptateur RAG et les outils. Les rassembler dans un document unique
   (chacune pointant son lieu d'application) rend le système **auditable et professionnel** —
   doc seule, zéro changement de comportement.
@@ -219,6 +219,19 @@ Trois applications, toutes nées du même échec « le prompt ne suffit pas » :
    choix (descriptions cadrées + `raison` obligatoire), mais ce sont encore des leviers de
    prompt. La garantie complète (imposer l'outil dès la planification) a été écartée : trop de
    souplesse perdue. Tout ne peut pas être verrouillé sans coût.
+
+**Ce point 3 est le seul des trois qui échoue en pratique — et c'est mesuré.** Le prompt de
+sélection contient une « RÈGLE ABSOLUE » interdisant au modèle de calculer lui-même
+(`agent/executor.py`). Sur trois runs indépendants, c'est la **seule** défaillance
+récurrente : le modèle récupère les bons chiffres puis fait l'arithmétique dans le texte
+qu'il rédige, au lieu d'appeler `calculator` — Opus sur 1 tâche arithmétique sur 3, Haiku
+sur 3 sur 3 (détail et traces : [`benchmarks.md`](benchmarks.md) §4). Les invariants confiés
+au **code** (refus hors-corpus, confinement des chemins, calculateur AST) ne fléchissent
+sur aucun run ; le seul invariant confié à une **consigne** fléchit sur tous. Le principe
+énoncé ici n'est donc pas une préférence de style : il a un coût observable quand on y
+déroge. Correctif identifié, non encore implémenté : refuser une expression arithmétique
+détectée dans le contenu de `write_file`, au niveau de l'outil — comme est déjà refusée
+une traversée de chemin.
 
 **La leçon et son revers** : faire respecter un invariant par le code est plus robuste que
 toute formulation de prompt — mais une garantie structurelle est plus « bête » (la réflexion ne

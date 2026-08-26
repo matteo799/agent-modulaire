@@ -1,7 +1,7 @@
 """Catalogue des métriques d'optimisation — métadonnées + branchement calcul.
 
 Source unique de vérité, reprise fidèlement de
-`metriques_optimisation_gold.md`. Sert à :
+`docs/metrics-reference.md`. Sert à :
 
 1. générer les **descriptions d'outils** (pour que le planner choisisse par
    caractéristiques) — voir `agent/tools.py` ;
