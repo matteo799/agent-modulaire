@@ -1,39 +1,104 @@
-# Agent modulaire
+# Modular Agent
 
-**Un agent d'analyse de fonds qui planifie, s'outille et — surtout — n'invente jamais un chiffre.**
+A framework-free agent that turns a RAG pipeline into a tool-using, auditable workflow.
+RAG is not the system, it is one tool out of 28.
 
 [![CI](https://github.com/matteo799/agent-modulaire/actions/workflows/ci.yml/badge.svg)](https://github.com/matteo799/agent-modulaire/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
 ![LLM](https://img.shields.io/badge/LLM-Claude%20Opus%204.8-D97757)
-![Sécurité](https://img.shields.io/badge/sécurité-OWASP%20LLM%20Top%2010-2E7D32)
-![Licence](https://img.shields.io/badge/licence-tous%20droits%20réservés-lightgrey)
+![Security](https://img.shields.io/badge/security-OWASP%20LLM%20Top%2010-2E7D32)
 
-Un agent minimal, **écrit à la main sans framework agentique** (pas de LangChain, pas
-d'AutoGPT), qui transforme un RAG classique en système **agentique** : le LLM planifie,
-choisit ses outils, exécute en boucle, garde une mémoire de travail sur disque et synthétise
-une réponse finale sourcée. Le RAG n'est plus le cœur du système — c'est **un outil parmi 28**.
+**Task.** Answer fund-analyst questions over French regulatory documents (KID/DICI) and NAV
+histories: retrieve a figure, compute a risk ratio, produce a deliverable, often in one
+request. Hard constraint: a wrong number is worse than no number.
 
-> **Cas d'usage — *rating fond*** : répondre à des questions sur des prospectus de fonds
-> (KID/DICI) et sur les **métriques d'optimisation** (Sharpe, Sortino, STARR, Martin, budget
-> CVaR/drawdown), avec un garde-fou strict : **ne jamais inventer un chiffre absent du corpus.**
+**Evaluated** on 19 finance tasks across 9 capability categories, plus a 40-question
+fund-manager set. Opus 4.8 selected the required tools in 14/15 cases, Haiku 4.5 in 12/15.
+On the fund-manager run, answers were also scored for **correctness** rather than process:
+45 of 46 assertions hold, against 26 % for a permuted-answer control.
 
-## Comment ça marche
+**Four findings, one of them negative:**
+
+1. **A smaller model was not cheaper.** Haiku and Opus consumed 274 897 and 273 916 tokens
+   on identical work, 0.4 % apart, with comparable median latency. Context volume is set by
+   retrieved passages and tool output, not by model verbosity, so swapping the model does
+   not move the bill. Haiku loses on tool routing and tail latency, not on price.
+2. **The corrective retrieval loop (CRAG) bought nothing.** 19/30 answered in both modes,
+   3/3 out-of-corpus traps refused in both. It changes 8 answers, but recovers and loses in
+   equal measure, at the cost of one extra LLM pass per query.
+3. **The only recurring failure is a prompt-enforced rule being ignored.** Across three
+   runs, the sole consistent defect is the model doing arithmetic itself instead of calling
+   `calculator`, despite an explicit rule forbidding it (Opus 1 of 3 arithmetic tasks, Haiku
+   3 of 3). Every invariant enforced in code held; the one left to an instruction did not.
+
+4. **Process conformance hides real defects.** Tool coverage asks whether the expected tools
+   were called; it cannot see a wrong figure in the synthesis. Scoring answers against
+   ground truth recomputed from the dataset — no LLM in the loop — found a question that
+   coverage marked as a pass while the answer shipped an incomplete fee schedule. The cause
+   was a substring filter in `summary_text` that silently dropped the performance fee. Now
+   fixed, with regression tests.
+
+Finding 3 is the load-bearing one: it is measured evidence that "guarantee it in code, not
+in a prompt" is an engineering constraint rather than a stylistic preference. Finding 4 is
+the reason the evaluation grew a second axis. Protocol, matrices and limits:
+**[`docs/benchmarks.md`](docs/benchmarks.md)**.
+
+**Known gaps.** No automated accuracy score (correctness is read, not judged), no quantified
+no-agent baseline, one run per arm, no production traffic. The component ablation
+(RAG → +tools → +planning → full agent → +reflection) is specified and harnessed in
+`tests/agent_eval/run_ablation.py` but **not yet run**, so no component-level claim is made
+here.
+
+---
+
+## Why an agent and not retrieval
+
+Plain RAG cannot express this, at any retrieval quality:
+
+> Compare the management fees of three funds, compute the spread in percentage points
+> between the most and least expensive, and write a report recommending the cheapest.
+
+There is no mechanism for chaining three scoped retrievals, feeding the results into a
+calculation and emitting a file. That gap is the reason for a planner and a tool loop, and
+the overhead it costs on single lookups is visible in the token figures above.
+
+The grounding constraint drives the rest. A KID contains no return series, so most risk
+ratios genuinely cannot be computed from one. The system refuses instead of fabricating,
+and that refusal is deterministic code, not a prompt instruction.
+
+## Guarantees in code, not in prompts
+
+"Never do X" in a prompt lowers the frequency of X without removing it. Wherever a behaviour
+had to hold, it was taken from the LLM and given to the code.
+
+| Behaviour | Prompt version | Structural version |
+|---|---|---|
+| Step reflection | "only judge real failures insufficient" produced constant false positives on a 7B and parasitic retries | deterministic rule: empty result, or one starting with `Erreur`. No LLM call. |
+| Synthesis consistency | "add nothing beyond the deliverable", after which RAG chunks leaked back in | the memory is not passed once a deliverable exists, so the model cannot add to it |
+| Arithmetic routing | "always use `calculator`" | not written yet, and it is the one that fails |
+
+The reflection step in the diagram below is therefore a deterministic rule, not an LLM
+judge. That was a reversal after the judge version kept marking correct results
+insufficient, and it saves one LLM call per step. Reasoning:
+[`docs/design-decisions.md`](docs/design-decisions.md) §5 and §9.
+
+## Architecture
 
 ```mermaid
 flowchart TD
-    Q([Question]) --> G{Gate sécurité<br/>jailbreak · périmètre}
-    G -->|hors périmètre| STOP([Refus déterministe])
-    G -->|ok| S[0 · Sélection de métrique<br/><i>clarification si ambigu</i>]
-    S --> P[1 · Planification<br/>→ liste d'étapes]
-    P --> L{{2 · Boucle agentique}}
-    L --> T[Choix d'un outil]
+    Q([Question]) --> G{Security gate<br/>jailbreak · scope}
+    G -->|out of scope| STOP([Deterministic refusal])
+    G -->|ok| S[0 · Metric selection<br/><i>asks for clarification if ambiguous</i>]
+    S --> P[1 · Planning<br/>→ list of steps]
+    P --> L{{2 · Agentic loop}}
+    L --> T[Tool choice]
     T --> RAG[rag_search]
     T --> IO[read / write_file]
     T --> CALC[calculator AST]
     T --> MET[metric_*]
-    RAG & IO & CALC & MET --> R[Réflexion + mémoire<br/><i>workspace/</i>]
-    R -->|étape suivante| L
-    R -->|plan terminé| SYN([3 · Synthèse ancrée<br/>workspace/rapport.md])
+    RAG & IO & CALC & MET --> R[Deterministic check + memory<br/><i>no LLM call · workspace/</i>]
+    R -->|next step| L
+    R -->|plan complete| SYN([3 · Grounded synthesis<br/>workspace/rapport.md])
 
     classDef stop fill:#fde8e8,stroke:#c0392b,color:#7b241c;
     classDef done fill:#e8f6ef,stroke:#1e8449,color:#145a32;
@@ -41,221 +106,125 @@ flowchart TD
     class SYN done;
 ```
 
-| Étape | Où |
+| Stage | Where |
 |---|---|
-| **0.** Sélection de métrique — clarification éventuelle | `agent/finance/` |
-| **1.** Planification → liste d'étapes | `agent/planner.py` |
-| **2.** Boucle : choix d'outil → exécution → réflexion → mémoire | `agent/executor.py` · `agent/tools.py` |
-| **3.** Synthèse finale ancrée sur le livrable | `main.py` |
+| 0. Metric selection, with clarification if needed | `agent/finance/` |
+| 1. Planning into a list of steps | `agent/planner.py` |
+| 2. Loop: tool choice, execution, deterministic check, memory | `agent/executor.py`, `agent/tools.py` |
+| 3. Final synthesis grounded on the deliverable | `main.py` |
 
----
+The core is domain-agnostic. Adding a domain takes a corpus in `documents/<dataset>/`
+declared in `agent/datasets.py`, which gets its own sealed RAG collection, plus whatever
+domain tools are needed in `agent/tools.py`, or none if `rag_search`, `read/write_file` and
+`calculator` suffice.
 
-## Le principe : changer de domaine = 1 dataset + quelques outils
-
-Le cœur de l'agent est **agnostique au métier** : planification, boucle d'exécution,
-mémoire de travail, sécurité, synthèse ancrée — rien de tout cela ne connaît la finance
-ni le droit. Couvrir un nouveau domaine tient en **deux gestes**, sans toucher au cœur :
-
-1. **Déposer un corpus** dans `documents/<dataset>/` et le déclarer dans le registre
-   (`agent/datasets.py`) — il apparaît alors tout seul dans l'agent et l'UI, avec sa
-   propre collection RAG **étanche** (jamais mélangée à une autre).
-2. **Ajouter les outils** spécifiques au domaine dans `agent/tools.py` — ou aucun, si les
-   outils génériques (`rag_search`, `read/write_file`, `calculator`) suffisent.
-
-### Ce projet est né comme un agent *juridique*
-
-La **première version** ciblait des **cours de droit** (pénal spécial, procédure civile,
-droit public des affaires). Avec le seul outil `rag_search`, l'agent répondait déjà à des
-questions juridiques **sourcées sur le corpus**, et refusait le hors-sujet.
-
-Puis, **sans réécrire le cœur**, on l'a fait basculer vers le **rating de fonds** :
+The project started as a legal agent over French law course material, with `rag_search` as
+its only tool, and was moved to fund rating without rewriting the core:
 
 ```
-Agent juridique  ──►  + dataset finance (prospectus KID/DICI + historiques NAV Amundi)
-                 ──►  + famille d'outils metric_* (Sharpe, Sortino, STARR, Martin…)
-                 ══►  Agent capable de noter un fonds
+Legal agent  ──►  + finance dataset (KID/DICI prospectuses + Amundi NAV history)
+             ──►  + metric_* tool family (Sharpe, Sortino, STARR, Martin…)
+             ══►  Agent able to rate a fund
 ```
 
-Le même planner, la même boucle, la même mémoire, les mêmes garde-fous — **deux domaines
-très différents**. C'est *ça*, l'agent modulaire.
+## Results per dataset
 
-### Ce qu'on a testé, dataset par dataset
+**Finance.** Retrieval measured over 30 questions, fast RAG against CRAG, 3/3 out-of-corpus
+traps refused in both. End-to-end over 19 of the 20 tool-coverage questions, the
+`multi-etapes` one not having been replayed in the last pass: tool coverage 14/15 for Opus
+against 12/15 for Haiku. Separately, a 40-question fund-manager set at 31/33 coverage with
+23 of 28 tools exercised. Ratio computation covered by unit tests.
 
-Chaque domaine est validé au niveau qui a du sens pour lui (récupération pour le droit,
-récupération **+** raisonnement outillé pour la finance) :
+**Law.** Golden set of 30 questions over three sources plus 3 out-of-corpus questions,
+pinned to real chunk IDs. The harness computes recall@k, MRR, citation fidelity and RAGAS,
+but no report is committed, so no retrieval score is claimed.
 
-| Dataset | Éval & résultat mesuré | Où voir |
-|---|---|---|
-| **Droit** (3 cours) | **Récupération du RAG** — golden set de **30 questions** sur les 3 sources + **3 questions hors-corpus** (refus/fallback), à chunk IDs réels, noté recall@k / MRR / fidélité de citation / RAGAS. | `tests/rag_eval/golden/golden_droit_v1.yaml` · `configs/eval_droit.yaml` |
-| **Finance** (prospectus + NAV Amundi) | **Trois niveaux, tous exécutés :** • *Récupération* — 30 Q, comparaison **RAG rapide vs CRAG**, **3/3 pièges hors-corpus refusés** dans les deux modes. • *Bout-en-bout agentique* — 20 Q / 9 catégories, **couverture d'outils 14/15 (Opus 4.8)** contre 12/15 (Haiku 4.5), sélection de métrique **5/5**, garde-fous ✓. • *Unitaires* — calcul déterministe des ratios. | `demos/demo_comparaison.md` · `tests/agent_eval/reports/golden_report_question_test_*.md` · `tests/unit/agent_finance/` |
+Per-question detail, with tools called, latency and tokens, is in
+`tests/agent_eval/reports/`. Interpretation in [`docs/benchmarks.md`](docs/benchmarks.md).
 
-> Les rapports agentiques donnent le détail **par question** (outils appelés, latence, tokens)
-> dans `tests/agent_eval/reports/` ; la comparaison rapide/CRAG question par question est dans
-> `demos/`. Carte complète des tests : `tests/README.md`.
+## Layout
 
----
-
-## Organisation du dépôt
-
-Mono-dépôt à **deux niveaux** : un agent minimal écrit à la main, et un moteur RAG
-réutilisable traité comme une brique.
-
-| Chemin | Rôle |
+| Path | Role |
 |---|---|
-| `agent/` | L'agent : `llm.py` (accès LLM + résilience + budget), `planner.py`, `tools.py` (28 outils), `executor.py`, `rag_adapter.py` (adaptateur sur le moteur), `security.py` (anti-détournement), `audit.py` (piste d'audit). |
-| `agent/finance/` | Couche métriques *rating fond* : `metrics.py` (calcul pur), `metric_catalog.py`, `select.py` (sélection + clarification). |
-| `main.py` | Point d'entrée CLI + synthèse finale. |
-| `rag_engine/` | Moteur RAG modulaire (bge-m3 → parent-child → reranker + juge de pertinence LLM). **Sous-package autonome, avec son propre `README.md`** (ce README-ci reste le point d'entrée du projet). |
-| `documents/<dataset>/` | Corpus source, **un dossier par dataset**. `finance/` & `droit/` : PDF (KID/prospectus, cours). `amundi/` : **un sous-dossier par ISIN** avec `nav.csv` (historique NAV) + `summary.json` (résumé structuré, remplace le RAG). |
-| `workspace/` | Mémoire de l'agent (régénérée à chaque run) : `plan.md`, `notes.md`, `rapport.md`. |
-| `tests/` | Trois zones : `unit/` (pytest, rapide), `agent_eval/` (éval de l'agent), `rag_eval/` (éval du moteur) — voir `tests/README.md`. |
-| `architecture.md` · `CHOIX_DE_CONCEPTION.md` · `GUARDRAILS.md` | Documentation (voir plus bas). |
+| `agent/` | `llm.py` (access, resilience, budget), `planner.py`, `tools.py` (28 tools), `executor.py`, `rag_adapter.py`, `security.py`, `audit.py` |
+| `agent/finance/` | `metrics.py` (pure computation), `metric_catalog.py`, `select.py` (selection and clarification) |
+| `main.py`, `app.py`, `demo.py` | one pipeline, three entry points: CLI, Streamlit chat, guided walkthrough |
+| `rag_engine/` | RAG engine (bge-m3, parent-child, reranker, LLM relevance judge), self-contained |
+| `documents/<dataset>/` | one folder per dataset; `amundi/` holds one folder per ISIN with `nav.csv` and `summary.json` |
+| `workspace/` | agent memory, regenerated per run: `plan.md`, `notes.md`, `rapport.md` |
+| `tests/` | `unit/` (fast, no network), `agent_eval/`, `rag_eval/` |
+| `docs/` | architecture, design decisions, guardrails, metric reference, benchmarks |
 
----
-
-## Démarrage rapide
+## Run it
 
 ```bash
-# 1. Installer le moteur RAG (tire les dépendances de récupération : bge-m3, reranker, Qdrant)
 pip install -e ./rag_engine
+echo 'RAG__LLM__OPENAI__API_KEY=sk-...' > .env     # gitignored, never in YAML
 
-# 2. Clé API (jamais dans la config versionnée) — dans un .env gitignoré à la racine
-echo 'RAG__LLM__OPENAI__API_KEY=sk-...' > .env
-
-# 3. Lancer l'agent
 python main.py "Analyse les documents internes et fais un résumé des risques."
+streamlit run app.py                                # live chat UI
+python demo.py                                      # guided walkthrough, 3 questions
 ```
 
-Les documents source vivent dans `documents/<dataset>/`. Pour ajouter un corpus :
-déposer les PDF puis (ré)indexer avec le moteur (`python -m rag.ingestion.cli` — voir
-`rag_engine/README.md`). L'outil `rag_search` interroge la collection configurée
-(**un dataset à la fois**).
+Config lives in `rag_engine/configs/default.yaml`, shared by agent and engine;
+`RAG__SECTION__KEY` environment variables override it. `llm.provider` defaults to an
+OpenAI-compatible gateway, `ollama` runs fully local. `vector_store.collection` selects the
+corpus, one dataset at a time.
 
----
-
-## Configuration
-
-Tout se règle dans `rag_engine/configs/default.yaml` (l'agent **et** le moteur partagent
-le LLM). Les variables d'env `RAG__SECTION__KEY` priment sur la config.
-
-| Clé | Défaut | Effet |
-|---|---|---|
-| `llm.provider` | `openai` | Passerelle OpenAI-compatible (Claude). `ollama` pour du 100 % local. |
-| `llm.openai.model` | `claude-opus-4-8` | Modèle de l'agent **et** du moteur. |
-| `llm.max_tokens` | `4096` | Plafond de génération. |
-| `vector_store.collection` | `dataset_finance` | Corpus interrogé. `dataset_droit` pour les cours de droit. |
-
-- **Clé API** : uniquement via `.env` (`RAG__LLM__OPENAI__API_KEY`), jamais dans le YAML.
-- **Mode 100 % local** : `provider: ollama` + [Ollama](https://ollama.com)
-  (`ollama pull qwen2.5:7b`).
-- **Éval économe** : forcer un modèle léger via `RAG__LLM__OPENAI__MODEL=claude-haiku-4-5`.
-
----
-
-## Métriques *rating fond*
-
-Chaque métrique de `metriques_optimisation_gold.md` est exposée comme **un outil**
-(`metric_sharpe`, `metric_sortino`, …). Comportement :
-
-- **Calcul best-effort** : calcule si on fournit les entrées (R/σ, ou une série de
-  rendements), ou les lit dans le document via `source` (ISIN).
-- **Garde-fou honnête** : un KID/DICI ne contient pas de série de rendements → si le calcul
-  est impossible, l'outil **explique la métrique sans inventer de chiffre**.
-- **Sélection par caractéristiques** : le planner choisit le bon ratio selon l'intention
-  (Sharpe vs Sortino…) et **demande une clarification** quand deux se valent.
-
-Détails et règles : `GUARDRAILS.md` et `architecture.md` §7.
-
----
-
-## Sécurité, gouvernance & observabilité
-
-Les briques attendues d'un agent en production, chacune **garantie par le code** (pas par une
-consigne de prompt) — détail complet et lieu d'application dans `GUARDRAILS.md` :
-
-- **Anti-détournement (couche 6, `agent/security.py`)** — gate d'entrée (motifs jailbreak +
-  classifieur de périmètre), confinement des lectures/écritures de fichiers, calculateur AST (pas
-  `eval`), neutralisation de l'injection indirecte (contenu documentaire = données), normalisation
-  anti-obfuscation. Aligné OWASP LLM Top 10.
-- **Ancrage / anti-hallucination** — le corpus est le plafond d'information : refus déterministe
-  hors-corpus, synthèse ancrée sur le livrable, métriques honnêtes (jamais de chiffre inventé).
-- **Budget de run (kill-switch)** — borne dure sur le nb d'appels LLM et le temps mural
-  (`AGENT_MAX_LLM_CALLS`, `AGENT_MAX_SECONDS`) : un plan aberrant ne consomme jamais sans plafond.
-- **Piste d'audit** — chaque run est journalisé (`logs/audit.jsonl` : requête, sécurité, plan,
-  chaque outil + args + résultat, usage, durée) pour tracer une décision et investiguer un
-  incident. Best-effort, désactivable `AGENT_AUDIT=0`.
-- **Résilience** — dégradation gracieuse par étage : un appel LLM qui échoue ne tue jamais le run.
-
-## Tests & éval
-
-Système non déterministe → tests unitaires sur les parties déterministes + golden sets +
-démos rejouables.
+## Tests and evaluation
 
 ```bash
-# Tests unitaires (calcul des métriques, outils, sélection, résilience) — rapides, sans réseau
-pytest tests/unit
-
-# Agent de bout en bout (golden set)
-python tests/agent_eval/run_golden.py
-
-# Récupération du moteur (par dataset, jamais combinés)
+pytest tests/unit                                    # fast, no network, what CI runs
+python tests/agent_eval/run_golden.py                # end-to-end, golden set
+python tests/agent_eval/run_ablation.py --arms A,B,C,D,E   # component ablation
+python tests/agent_eval/score_accuracy.py            # answer correctness, no LLM
 python -m tests.rag_eval.run --config tests/rag_eval/configs/eval_finance.yaml
 ```
 
-### Évaluation — couverture d'outils & ablation modèle
+`run_golden.py` measures, per question, whether the expected tools were called, plus latency
+and tokens, aggregated by category. Correctness is read rather than scored, since
+`expected_answer` is a criterion and not an exact string.
 
-`tests/agent_eval/question_test.yaml` exerce **toute la boîte à outils** (20 questions, 9 catégories) ;
-`run_golden.py` mesure automatiquement, par question, la **couverture d'outils**
-(`expected_tools ⊆ outils réellement appelés`), la latence et les tokens, agrégés par
-catégorie + une matrice des outils exercés. Dernière passe (19 questions, set v2.0) :
+`run_ablation.py` runs the same questions through five architectures, from plain retrieval
+to the full agent with reflection, and scores refusal correctness and numeric grounding
+deterministically. It is implemented and unit-tested against a stub LLM; it has not been run
+against a live model, so this repository publishes no component-level results.
 
-| Modèle | Couverture d'outils | Outils exercés | Sélection métrique | Garde-fous |
-|---|---|---|---|---|
-| **Claude Opus 4.8** | **14/15** | 10/11 | 5/5 ✓ | ✓ |
-| Claude Haiku 4.5 | 12/15 | 10/11 | 5/5 ✓ | ✓ |
+`score_accuracy.py` measures the second axis: not whether the right tools were called, but
+whether the answer is right. Ground truth is recomputed from `documents/amundi/` with
+`agent/finance/`, so no LLM takes part in the grading, and the score is produced from a
+report that already exists — no API needed. It ships with a negative control that re-scores
+each question against another question's answer; the score has to collapse, and it does.
 
-**Lecture :**
-- **Routage arithmétique** — Opus envoie le calcul vers `calculator` sur 14/15 questions ;
-  Haiku le néglige sur les 3 tâches multi-étapes (comparaison + calcul) → 12/15. Signal de
-  capacité net : le petit modèle sous-utilise l'outil de calcul.
-- **Identique sur les deux modèles** — sélection de métrique par l'intention
-  (baisse→Sortino, queue→STARR, régularité→Martin, ambigu→clarification), garde-fou honnête
-  (Sharpe/Sortino sur un KID = pas de chiffre inventé), refus hors-corpus.
-- **Latence/tokens** — la passe Haiku a subi des coupures passerelle (une question ~60 min) :
-  le temps mural n'est **pas** une comparaison de vitesse fiable ici, et le harness résilient a
-  tout de même terminé. Détail complet : `tests/agent_eval/reports/golden_report_<set>_<modèle>.md`.
+## Security and observability
 
-```bash
-python tests/agent_eval/run_golden.py                                          # modèle par défaut (Opus)
-RAG__LLM__OPENAI__MODEL=claude-haiku-4-5 python tests/agent_eval/run_golden.py # ablation Haiku
-```
+`agent/security.py` holds the input gate (jailbreak patterns plus a scope classifier), file
+read/write confinement, an AST calculator that never calls `eval`, indirect-injection
+neutralisation treating document content as data, and anti-obfuscation normalisation,
+aligned with the OWASP LLM Top 10.
 
----
+Runs are bounded by `AGENT_MAX_LLM_CALLS` and `AGENT_MAX_SECONDS`, and logged to
+`logs/audit.jsonl` with query, security verdict, plan, every tool call with arguments and
+result, usage and duration. Disable with `AGENT_AUDIT=0`. A failed LLM call degrades the run
+rather than killing it.
 
 ## Documentation
 
-**Ce `README.md` est le point d'entrée unique du projet.** Les autres documents sont
-subordonnés : les docs de conception à la racine (`architecture.md`, `CHOIX_DE_CONCEPTION.md`,
-`GUARDRAILS.md`), `demos/` pour les démos, `tests/README.md` pour les tests, et
-`rag_engine/README.md` pour le moteur en tant que sous-package réutilisable.
-
-| Fichier | Contenu |
+| File | Contents |
 |---|---|
-| **`architecture.md`** | Ce qu'est le système et comment il marche, composant par composant. |
-| **`CHOIX_DE_CONCEPTION.md`** | Le *pourquoi* : justification de chaque choix depuis la naissance du projet. |
-| **`GUARDRAILS.md`** | Récapitulatif des garde-fous (rejet hors-corpus, calcul honnête, robustesse…). |
-| `SECURITY.md` | Modèle de menace + table des contrôles OWASP LLM Top 10 (où chaque risque est traité dans le code). |
-| `metriques_optimisation_gold.md` | Définitions de référence des 6 métriques d'optimisation. |
-| **`demos/demo_Amundi.md`** | **Démo phare** : l'agent autonome sur 24 questions d'un gérant (dataset Amundi) — trajectoire détaillée par question. |
-| `demos/` | Autres sorties de démonstration rejouables (30 questions, comparaison, multi-tâches). |
-| `tests/README.md` | Carte des tests : `unit/` · `agent_eval/` · `rag_eval/`. |
-| `rag_engine/README.md` | Le moteur RAG (sous-package) : ingestion, stack de récupération, éval. |
+| [`docs/benchmarks.md`](docs/benchmarks.md) | what the runs measured, what came out negative, what is not established |
+| [`docs/architecture.md`](docs/architecture.md) | the system component by component |
+| [`docs/design-decisions.md`](docs/design-decisions.md) | why each choice was made |
+| [`docs/guardrails.md`](docs/guardrails.md) | refusal, honest computation, robustness |
+| [`docs/metrics-reference.md`](docs/metrics-reference.md) | definitions of the 6 optimisation metrics |
+| [`SECURITY.md`](SECURITY.md) | threat model, OWASP LLM Top 10 control table |
+| [`demos/`](demos/) | replayable outputs, including 40 fund-manager questions over 474 funds |
+| [`tests/README.md`](tests/README.md) | test map |
+| [`rag_engine/README.md`](rag_engine/README.md) | the RAG engine as a reusable subpackage |
 
----
+## Limits
 
-## Statut & limites
-
-Projet de démonstration, limites assumées (détaillées dans `CHOIX_DE_CONCEPTION.md` §10) :
-plan figé (pas de re-planification globale), ingestion manuelle hors agent, calcul
-multi-étapes fiabilisé mais non verrouillé, **pas plus d'information que le corpus**
-(les ratios exigeant une série de rendements ne se calculent que si on la fournit).
+The plan is frozen once set, with no global re-planning. Ingestion is manual. Arithmetic
+routing is not enforced in code, which is the one known and measured hole. Nothing produces
+more information than the corpus holds. There is no production traffic behind any of this:
+no users, no request volume, no incident history.

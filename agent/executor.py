@@ -91,6 +91,46 @@ def reflect(step: str, result: str) -> dict:
     return {"sufficient": True, "feedback": ""}
 
 
+JUDGE_SYSTEM = "Tu évalues si le résultat d'une étape suffit. Tu réponds uniquement en JSON valide."
+
+JUDGE_PROMPT = """Étape demandée :
+{step}
+
+Résultat obtenu :
+{result}
+
+Ce résultat permet-il de considérer l'étape comme accomplie ?
+
+Retourne uniquement : {{"sufficient": true|false, "feedback": "<quoi corriger si false>"}}
+"""
+
+
+def llm_reflect(step: str, result: str) -> dict:
+    """Variante LLM de `reflect` : un juge sémantique au lieu de la règle.
+
+    C'est la version ÉCARTÉE en conception (cf. docs/design-decisions.md §5) :
+    sur un petit modèle, elle produisait des faux positifs (« insuffisant » sur
+    des résultats corrects) et un appel LLM supplémentaire par étape. Conservée
+    ici pour que l'ablation puisse MESURER ce que coûte et rapporte ce choix,
+    au lieu de s'appuyer sur un souvenir d'expérimentation.
+
+    En cas d'indisponibilité LLM, on retombe sur la règle déterministe : le
+    bras d'ablation ne doit pas s'effondrer à cause du juge lui-même.
+    """
+    try:
+        verdict = llm.chat_json(
+            JUDGE_PROMPT.format(step=step, result=result[:1500]), system=JUDGE_SYSTEM
+        )
+    except (LLMUnavailable, ValueError, TypeError):
+        return reflect(step, result)
+    if not isinstance(verdict, dict):
+        return reflect(step, result)
+    return {
+        "sufficient": bool(verdict.get("sufficient", True)),
+        "feedback": str(verdict.get("feedback", ""))[:200],
+    }
+
+
 def execute_step(choice: dict) -> str:
     name = choice.get("tool", "")
     if name not in TOOLS:
@@ -107,8 +147,20 @@ def execute_step(choice: dict) -> str:
         return f"Erreur d'arguments pour {name} : {exc}"
 
 
-def run(user_query: str, plan: list[str]) -> list[dict]:
-    """Boucle agentique : pour chaque étape — choix d'outil, exécution, réflexion."""
+def run(
+    user_query: str,
+    plan: list[str],
+    max_retries: int = MAX_RETRIES,
+    reflect_fn=reflect,
+) -> list[dict]:
+    """Boucle agentique : pour chaque étape — choix d'outil, exécution, réflexion.
+
+    `max_retries` et `reflect_fn` sont paramétrables pour l'ablation
+    (`tests/agent_eval/run_ablation.py`) : `max_retries=0` retire la boucle de
+    correction, `reflect_fn=llm_reflect` remplace la règle déterministe par un
+    juge LLM. Les valeurs par défaut reproduisent exactement le comportement de
+    production — aucun appelant existant n'est affecté.
+    """
     WORKSPACE_DIR.mkdir(exist_ok=True)
     write_file(
         "plan.md",
@@ -121,7 +173,7 @@ def run(user_query: str, plan: list[str]) -> list[dict]:
         print(f"\n--- Étape {i}/{len(plan)} : {step}")
         feedback = ""
         choice, result = {}, ""
-        for _attempt in range(MAX_RETRIES + 1):
+        for _attempt in range(max_retries + 1):
             # Robustesse : un appel LLM qui échoue (réseau) ne tue pas le run —
             # l'étape est marquée en erreur et la boucle passe à la suivante.
             try:
@@ -147,7 +199,7 @@ def run(user_query: str, plan: list[str]) -> list[dict]:
                 print(f"    Raison : {choice['raison']}")
             print(f"    Outil : {choice.get('tool')} | args : {choice.get('args')}")
             result = execute_step(choice)
-            verdict = reflect(step, result)
+            verdict = reflect_fn(step, result)
             if verdict["sufficient"]:
                 break
             feedback = verdict["feedback"]

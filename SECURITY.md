@@ -10,7 +10,7 @@ sous quelques jours ouvrés.
 ## Modèle de menace
 
 Cet agent LLM manipule un corpus de documents financiers et exécute des outils.
-Deux surfaces d'attaque sont traitées explicitement (voir `GUARDRAILS.md` §6,
+Deux surfaces d'attaque sont traitées explicitement (voir `docs/guardrails.md` §6,
 couche 6 — aligné sur l'OWASP LLM Top 10) :
 
 - **L'utilisateur** peut tenter de détourner l'agent de sa mission (jailbreak,
@@ -45,4 +45,4 @@ lire ce `.env`.
 La normalisation anti-obfuscation ne prétend pas couvrir tous les encodages
 (base64, langues rares) ; le classifieur de périmètre est *fail-open* sur panne
 LLM (la couche déterministe a déjà bloqué les attaques connues). Ces choix sont
-documentés dans `GUARDRAILS.md`.
+documentés dans `docs/guardrails.md`.

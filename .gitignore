@@ -23,3 +23,6 @@ rag_engine/data/qdrant/
 rag_engine/data/chroma/
 rag_engine/data/parents.sqlite
 rag_engine/data/fund_summaries.csv
+
+# Outillage assistant local
+.claude/

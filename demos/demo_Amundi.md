@@ -74,7 +74,7 @@ Pour chaque question, l'agent travaille **en autonomie** en 3 temps :
 2. **il établit un plan** puis, étape par étape, **choisit l'outil adapté** (la *raison* de chaque choix est affichée) et l'exécute ;
 3. **il rédige la réponse finale** à partir des résultats.
 
-Le bloc « 🧭 Comment l'agent a procédé » montre cette trajectoire ; « ✅ Réponse de l'agent » donne le livrable. Les chiffres sont **calculés sur les vraies données** (historique NAV, fiches structurées) — jamais inventés.
+Le bloc « Comment l'agent a procédé » montre cette trajectoire ; « Réponse de l'agent » donne le livrable. Les chiffres sont **calculés sur les vraies données** (historique NAV, fiches structurées) — jamais inventés.
 
 **Couverture d'outils globale : 31/33 questions** (les outils attendus ont bien été appelés).
 
@@ -112,7 +112,7 @@ Le bloc « 🧭 Comment l'agent a procédé » montre cette trajectoire ; « ✅
 
 **Outils appelés :** ['fund_summary']  ·  **couverture :** ✓  ·  **latence :** 38.1s  ·  **tokens :** ~15811
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Récupérer la classification SFDR, l'indicateur de risque SRI et l'indice de référence du… → Vérifier que les trois informations ont bien été retrouvées dans la fiche structurée → Restituer les résultats : classification SFDR, indicateur SRI, indice de référence du…
 - **Étape 1 → `fund_summary`** : L'étape demande de récupérer des données structurées exactes (SFDR, SRI, indice de référence) pour un ISIN spécifique. L'outil fund_summary est explicitement conçu pour lire ces informations depuis…
@@ -122,7 +122,7 @@ Le bloc « 🧭 Comment l'agent a procédé » montre cette trajectoire ; « ✅
 - **Étape 3 → `fund_summary`** : L'étape demande de restituer les résultats déjà obtenus aux étapes précédentes. Les trois informations (SFDR, SRI, indice de référence) sont déjà en mémoire de travail grâce aux appels fund_summary…
     ↳ _résultat :_ Fiche FR0011223569 : • Classification SFDR : Art. 6 • Indicateur de risque (SRI) : 3 • Indice de référence : Non benchmarké • Indice de référence : Non benchmarké
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 ## Fonds FR0011223569 — Informations clés
 
@@ -147,13 +147,13 @@ Voici les informations demandées pour ce fonds :
 
 **Outils appelés :** ['fund_summary']  ·  **couverture :** ✓  ·  **latence :** 17.3s  ·  **tokens :** ~7571
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Utiliser fund_summary avec l'ISIN FR0011223569 et le champ 'frais' pour récupérer les…
 - **Étape 1 → `fund_summary`** : L'étape demande de récupérer les frais structurés (entrée, courants, surperformance) d'un fonds identifié par son ISIN. fund_summary est l'outil adapté car il lit les données structurées d'une fiche…
     ↳ _résultat :_ Fiche FR0011223569 : • Frais d'entrée : 5.0 % • Frais de sortie : 0.0 % • Frais courants : 1.295 %
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 Voici les frais du fonds FR0011223569 :
 
@@ -170,7 +170,7 @@ Voici les frais du fonds FR0011223569 :
 
 **Outils appelés :** ['fund_summary', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 20.3s  ·  **tokens :** ~11769
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Récupérer les informations structurées du fonds LU1882473009 via fund_summary (gérant,… → Synthétiser et écrire la réponse finale
 - **Étape 1 → `fund_summary`** : L'étape demande de récupérer des informations structurées d'un fonds précis (gérant, dépositaire, date de création) à partir de son ISIN LU1882473009. L'outil fund_summary est spécifiquement conçu…
@@ -178,7 +178,7 @@ Voici les frais du fonds FR0011223569 :
 - **Étape 2 → `write_file`** : L'étape demande de synthétiser et écrire la réponse finale. Toutes les informations requises (gérant, dépositaire, date de création) sont déjà présentes dans la mémoire de travail issues du…
     ↳ _résultat :_ Fichier écrit : workspace/reponse_fonds_LU1882473009.md (341 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 ## Fiche d'identité du fonds LU1882473009
 
@@ -202,7 +202,7 @@ Voici les frais du fonds FR0011223569 :
 
 **Outils appelés :** ['fund_summary', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 25.1s  ·  **tokens :** ~11841
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Utiliser fund_summary avec l'ISIN FR0011585629 pour récupérer les données structurées :… → Synthétiser les informations obtenues dans une réponse clévale (classe d'actifs, devise,…
 - **Étape 1 → `fund_summary`** : L'étape demande de récupérer des données structurées (classe d'actifs, devise, durée recommandée et encours) pour le fonds identifié par l'ISIN FR0011585629. L'outil fund_summary est exactement conçu…
@@ -210,7 +210,7 @@ Voici les frais du fonds FR0011223569 :
 - **Étape 2 → `write_file`** : L'étape demande de synthétiser les informations déjà obtenues lors de l'étape précédente (fund_summary) dans un format clair. Il s'agit d'une étape de rédaction/formatage des données déjà présentes…
     ↳ _résultat :_ Fichier écrit : workspace/synthese_fond_FR0011585629.md (405 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 **Fiche du fonds FR0011585629**
 
@@ -232,7 +232,7 @@ Voici ses caractéristiques principales :
 
 **Outils appelés :** ['fund_summary', 'fund_stats', 'fund_performance', 'fund_rolling_sharpe', 'fund_tail_risk', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 87.6s  ·  **tokens :** ~33449
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Récupérer les informations de base du fonds FR0011223569 (nom, classification, frais,… → Calculer le profil risque/rendement complet (rendement annualisé, volatilité, Sharpe,… → Obtenir la performance par période (YTD, 1 an, 3 ans, 5 ans, depuis création) via… → Analyser la stabilité du Sharpe glissant (moyenne, écart-type, min, max) via… → Évaluer le risque de queue et la forme de la distribution (VaR 95/99, CVaR, skewness,… → Synthétiser l'ensemble des résultats dans un rapport complet écrit via write_file
 - **Étape 1 → `fund_summary`** : L'étape demande de récupérer les informations de base structurées d'un fonds (nom, classification, frais, NAV) à partir de son ISIN. L'outil fund_summary est explicitement conçu pour lire ces faits…
@@ -248,7 +248,7 @@ Voici ses caractéristiques principales :
 - **Étape 6 → `write_file`** : L'étape demande de synthétiser l'ensemble des résultats dans un rapport complet écrit. C'est une étape de production du livrable final, ce qui correspond exactement à l'usage prévu de write_file.…
     ↳ _résultat :_ Fichier écrit : workspace/rapport_profil_risque_rendement_FR0011223569.md (5530 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 # Profil risque/rendement — AMUNDI EUROZONE MICROCAPS - I
 
@@ -378,7 +378,7 @@ Ce fonds est adapté à un investisseur **offensif**, disposant d'un **horizon l
 
 **Outils appelés :** ['fund_stats', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 65.8s  ·  **tokens :** ~12536
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **0. Métrique retenue :** `sharpe`
 - **Plan :** Calculer les statistiques complètes du fonds FR0011223569 avec fund_stats (volatilité… → Extraire et présenter la volatilité annualisée et le drawdown maximal historique obtenus…
@@ -387,7 +387,7 @@ Ce fonds est adapté à un investisseur **offensif**, disposant d'un **horizon l
 - **Étape 2 → `write_file`** : L'étape demande d'extraire et de présenter les valeurs de volatilité annualisée et de drawdown maximal déjà calculées lors de l'étape précédente. Aucun calcul supplémentaire n'est nécessaire,…
     ↳ _résultat :_ Fichier écrit : workspace/extraction_volatilite_drawdown_FR0011223569.txt (111 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 Pour le fonds **FR0011223569**, les données historiques indiquent :
 
@@ -402,7 +402,7 @@ Pour le fonds **FR0011223569**, les données historiques indiquent :
 
 **Outils appelés :** ['metric_sharpe', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 38.3s  ·  **tokens :** ~12265
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **0. Métrique retenue :** `sharpe`
 - **Plan :** Appeler metric_sharpe avec l'ISIN FR0011223569 et un taux sans risque rf=2 pour calculer… → Restituer le résultat obtenu : le ratio de Sharpe du fonds FR0011223569 avec rf=2 %
@@ -411,7 +411,7 @@ Pour le fonds **FR0011223569**, les données historiques indiquent :
 - **Étape 2 → `write_file`** : L'étape demande de RESTITUER un résultat déjà calculé (Sharpe = 0.4367, rf=2%). Il n'y a aucun calcul supplémentaire à effectuer : le résultat est déjà présent dans la mémoire de travail. write_file…
     ↳ _résultat :_ Fichier écrit : workspace/resultat_sharpe_FR0011223569.md (170 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 # Ratio de Sharpe du fonds FR0011223569
 
@@ -427,14 +427,14 @@ Ce calcul a été effectué sur la base de **2 501 rendements quotidiens**.
 
 **Outils appelés :** ['metric_sortino']  ·  **couverture :** ✓  ·  **latence :** 25.0s  ·  **tokens :** ~8622
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **0. Métrique retenue :** `sortino`
 - **Plan :** Calculer le ratio de Sortino du fonds LU1882473009 avec un taux sans risque de 2 % via…
 - **Étape 1 → `metric_sortino`** : L'étape demande explicitement de calculer le ratio de Sortino du fonds LU1882473009 avec un taux sans risque de 2 %. L'outil metric_sortino est conçu pour cela : il calcule le vrai ratio depuis…
     ↳ _résultat :_ Ratio de Sortino = -0.2993 (calculé sur 1764 rendements quotidiens de LU1882473009, rf=2.00%)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 # Ratio de Sortino — Fonds LU1882473009
 
@@ -460,7 +460,7 @@ Un **ratio de Sortino de -0,2993** indique que :
 
 ---
 
-> ⚠️ **Note** : Un ratio de Sortino négatif est généralement considéré comme défavorable. Pour un jugement plus complet, il serait pertinent de comparer ce ratio avec celui d'un indice de référence et d'analyser la période considérée.
+> **Note** : Un ratio de Sortino négatif est généralement considéré comme défavorable. Pour un jugement plus complet, il serait pertinent de comparer ce ratio avec celui d'un indice de référence et d'analyser la période considérée.
 
 ---
 
@@ -470,7 +470,7 @@ Un **ratio de Sortino de -0,2993** indique que :
 
 **Outils appelés :** ['fund_summary', 'metric_sortino', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 59.0s  ·  **tokens :** ~18885
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **0. Métrique retenue :** `sortino`
 - **Plan :** Récupérer les informations générales du fonds FR0011223569 (nom, classification, frais,… → Calculer le ratio de Sortino du fonds FR0011223569 à partir de son historique NAV via… → Rédiger et écrire le rapport final synthétisant le profil du fonds et la valeur du…
@@ -481,7 +481,7 @@ Un **ratio de Sortino de -0,2993** indique que :
 - **Étape 3 → `write_file`** : L'étape demande de rédiger et écrire le rapport final synthétisant les informations déjà obtenues (fiche du fonds et ratio de Sortino). Aucun calcul supplémentaire n'est requis. L'outil write_file…
     ↳ _résultat :_ Fichier écrit : workspace/rapport_fonds_FR0011223569.md (2806 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 # Analyse du fonds AMUNDI EUROZONE MICROCAPS - I (FR0011223569)
 
@@ -536,7 +536,7 @@ Le fonds AMUNDI EUROZONE MICROCAPS - I, avec son ratio de Sortino de **0,78**, p
 
 **Outils appelés :** ['metric_starr', 'rag_search', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 203.1s  ·  **tokens :** ~21532
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **0. Métrique retenue :** `starr`
 - **Plan :** Calculer le ratio STARR pour le fonds LU1882473009 en utilisant metric_starr avec l'ISIN… → Rechercher des informations qualitatives sur pourquoi le ratio STARR est adapté pour les… → Écrire le rapport final en utilisant write_file pour présenter la valeur calculée du…
@@ -547,7 +547,7 @@ Le fonds AMUNDI EUROZONE MICROCAPS - I, avec son ratio de Sortino de **0,78**, p
 - **Étape 3 → `write_file`** : L'étape demande explicitement d'écrire le rapport final avec write_file. C'est l'outil de production de livrable. Je ne peux que constater dans ce rapport que le calcul du STARR a échoué (erreur…
     ↳ _résultat :_ Fichier écrit : workspace/rapport_STARR_LU1882473009.md (1377 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 # Réponse finale
 
@@ -561,7 +561,7 @@ Le ratio **STARR (Stable Tail Adjusted Risk-Return)** est la métrique la plus r
 
 ## Résultat du calcul pour le fonds LU1882473009
 
-⚠️ **Le calcul du ratio STARR n'a pas pu être effectué pour ce fonds.** Une erreur technique est survenue : le paramètre alpha (seuil de confiance pour le CVaR) n'était pas dans l'intervalle attendu (0,1). Cela peut être lié à la nature des données NAV disponibles ou à une configuration de calcul.
+**Le calcul du ratio STARR n'a pas pu être effectué pour ce fonds.** Une erreur technique est survenue : le paramètre alpha (seuil de confiance pour le CVaR) n'était pas dans l'intervalle attendu (0,1). Cela peut être lié à la nature des données NAV disponibles ou à une configuration de calcul.
 
 ## Interprétation générale du ratio STARR
 
@@ -581,7 +581,7 @@ Pour ce client, le STARR reste la métrique de référence. Afin d'obtenir sa va
 
 **Outils appelés :** ['metric_martin', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 67.8s  ·  **tokens :** ~17013
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **0. Métrique retenue :** `martin`
 - **Plan :** Utiliser metric_martin avec l'ISIN FR0011585629 pour calculer le Ratio de Martin… → Synthétiser la valeur obtenue et son interprétation pour répondre à la question du client → Écrire le rapport final dans un fichier avec write_file
@@ -592,7 +592,7 @@ Pour ce client, le STARR reste la métrique de référence. Afin d'obtenir sa va
 - **Étape 3 → `write_file`** : L'étape demande explicitement d'écrire le rapport final dans un fichier, et l'outil write_file est conçu pour produire le livrable final en enregistrant du texte dans un fichier. Il ne s'agit pas de…
     ↳ _résultat :_ Fichier écrit : workspace/rapport_final_FR0011585629.md (695 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 Pour un fonds régulier minimisant le temps passé sous l'eau, la métrique pertinente est le **Ratio de Martin**.
 
@@ -610,7 +610,7 @@ Cette valeur a été calculée sur 2499 rendements quotidiens avec un taux sans 
 
 **Outils appelés :** ['rag_search', 'fund_stats', 'metric_sharpe', 'write_file']  ·  **couverture :** —  ·  **latence :** 137.0s  ·  **tokens :** ~22975
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **0. Métrique retenue :** `sharpe`
 - **Plan :** Utiliser rag_search pour rechercher des informations qualitatives sur le fonds… → Utiliser fund_stats avec l'ISIN FR0011223569 pour obtenir le profil risque/rendement… → Utiliser metric_sharpe avec l'ISIN FR0011223569 pour calculer spécifiquement le ratio de… → Rédiger le rapport final avec write_file, expliquant pourquoi le ratio de Sharpe est la…
@@ -623,7 +623,7 @@ Cette valeur a été calculée sur 2499 rendements quotidiens avec un taux sans 
 - **Étape 4 → `write_file`** : L'étape demande de rédiger le rapport final en écrivant un fichier (write_file). Cet outil est le seul à pouvoir produire un livrable textuel. Je n'ai aucune opération arithmétique à effectuer,…
     ↳ _résultat :_ Fichier écrit : workspace/rapport_sharpe_fonds_FR0011223569.md (3547 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 **Réponse finale : Métrique rendement/risque recommandée pour le fonds FR0011223569**
 
@@ -687,7 +687,7 @@ Le ratio de Sharpe (0,591) est la métrique rendement/risque la plus appropriée
 
 **Outils appelés :** ['metric_sharpe', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 63.1s  ·  **tokens :** ~17143
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **0. Métrique retenue :** `sharpe`
 - **Plan :** Calculer le ratio de Sharpe (rf=2%) du fonds actions FR0011223569 avec metric_sharpe → Calculer le ratio de Sharpe (rf=2%) du fonds monétaire LU0568620214 avec metric_sharpe → Comparer les deux ratios et rédiger le rapport de conclusion dans write_file
@@ -698,7 +698,7 @@ Le ratio de Sharpe (0,591) est la métrique rendement/risque la plus appropriée
 - **Étape 3 → `write_file`** : L'étape demande de rédiger un rapport de conclusion comparant les deux ratios de Sharpe déjà calculés. Les valeurs sont en mémoire de travail (FR0011223569 : Sharpe = 0.4367, LU0568620214 : Sharpe =…
     ↳ _résultat :_ Fichier écrit : workspace/rapport_comparaison_sharpe.md (1184 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 # Comparaison du Ratio de Sharpe (rf = 2 %)
 
@@ -713,7 +713,7 @@ Le ratio de Sharpe (0,591) est la métrique rendement/risque la plus appropriée
 
 Le fonds actions **FR0011223569** présente un ratio de Sharpe de **0.4367**, contre **-1.4206** pour le fonds monétaire **LU0568620214**.
 
-👉 **Le fonds actions FR0011223569 offre le meilleur rapport rendement/risque** selon le critère de Sharpe.
+**Le fonds actions FR0011223569 offre le meilleur rapport rendement/risque** selon le critère de Sharpe.
 
 ## Interprétation
 
@@ -733,7 +733,7 @@ Pour un investisseur cherchant à optimiser le rendement ajusté au risque, **le
 
 **Outils appelés :** ['metric_sortino', 'calculator']  ·  **couverture :** ✓  ·  **latence :** 42.2s  ·  **tokens :** ~16342
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **0. Métrique retenue :** `sortino`
 - **Plan :** Calculer le ratio de Sortino (rf 2%) du fonds LU1882473009 via metric_sortino → Calculer le ratio de Sortino (rf 2%) du fonds LU1882469403 via metric_sortino → Comparer les deux ratios et déterminer lequel est le meilleur via calculator
@@ -744,7 +744,7 @@ Pour un investisseur cherchant à optimiser le rendement ajusté au risque, **le
 - **Étape 3 → `calculator`** : L'étape demande de comparer les deux ratios de Sortino déjà calculés (-0.2993 et -0.8135). Même si la comparaison paraît triviale, les instructions imposent d'utiliser calculator pour toute opération…
     ↳ _résultat :_ 0.5142
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 ### Comparaison des ratios de Sortino (rf = 2%)
 
@@ -767,7 +767,7 @@ Le fonds **LU1882473009** a le meilleur ratio de Sortino.
 
 **Outils appelés :** ['compare_funds', 'calculator', 'write_file']  ·  **couverture :** ✗  ·  **latence :** 61.1s  ·  **tokens :** ~15582
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Appeler compare_funds avec les ISINs FR0011223569 et FR0011585629 pour obtenir les frais… → Utiliser calculator pour calculer la différence entre les frais courants du fonds… → Écrire le résultat final (écart des frais courants) dans un fichier nommé…
 - **Étape 1 → `compare_funds`** : L'étape demande explicitement d'appeler compare_funds avec les deux ISINs pour obtenir les frais courants des deux fonds. L'outil compare_funds est conçu pour comparer plusieurs fonds côte à côte…
@@ -777,14 +777,14 @@ Le fonds **LU1882473009** a le meilleur ratio de Sortino.
 - **Étape 3 → `write_file`** : L'étape demande explicitement d'écrire le résultat final dans un fichier. Les valeurs sont déjà disponibles dans la mémoire de travail : frais FR0011223569 = 1.29%, frais FR0011585629 = 0.96%, écart…
     ↳ _résultat :_ Fichier écrit : workspace/comparaison_frais.txt (245 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 Voici la comparaison des frais courants entre les deux fonds :
 
-- **Fond 1 :** FR0011223569 — AMUNDI EUROZONE MICROCAPS - I  
+- **Fond 1 :** FR0011223569 — AMUNDI EUROZONE MICROCAPS - I
   **Frais courants :** 1,29 %
 
-- **Fond 2 :** FR0011585629 — AMUNDI EQUILIBRE CLIMAT - S (C)  
+- **Fond 2 :** FR0011585629 — AMUNDI EQUILIBRE CLIMAT - S (C)
   **Frais courants :** 0,96 %
 
 **Écart :** **0,33 point(s)**
@@ -797,7 +797,7 @@ Voici la comparaison des frais courants entre les deux fonds :
 
 **Outils appelés :** ['fund_summary', 'fund_stats', 'metric_martin', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 91.7s  ·  **tokens :** ~22539
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **0. Métrique retenue :** `martin`
 - **Plan :** Récupérer les informations structurées du fonds FR0011223569 via fund_summary, en ciblant… → Calculer les statistiques risque/rendement complètes du fonds via fund_stats pour obtenir… → Calculer le ratio de Martin via metric_martin pour évaluer la régularité et l'adéquation… → Rédiger un rapport JSON synthétisant l'adéquation du fonds au profil défensif avec…
@@ -810,7 +810,7 @@ Voici la comparaison des frais courants entre les deux fonds :
 - **Étape 4 → `write_file`** : L'étape demande explicitement de rédiger un rapport JSON via write_file pour synthétiser l'adéquation du fonds FR0011223569 au profil défensif. Toutes les données nécessaires (SRI, volatilité, max…
     ↳ _résultat :_ Fichier écrit : workspace/rapport_adéquation_FR0011223569_profil_défensif.json (2645 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 # Fonds FR0011223569 — Adéquation à un profil défensif
 
@@ -829,7 +829,7 @@ Le fonds FR0011223569 **n'est PAS adapté** à un profil défensif. Les trois in
 | | |
 |---|---|
 | **Valeur** | 3 / 7 |
-| **Conforme au profil ?** | ❌ Non |
+| **Conforme au profil ?** | ✗ Non |
 
 L'indicateur de risque SRI de 3 sur 7 place le fonds dans la catégorie de risque **modéré**. Pour un client défensif, un SRI de **1 ou 2** serait plus approprié. Un niveau 3 implique une exposition à des fluctuations significatives, incompatible avec une recherche de préservation du capital.
 
@@ -840,7 +840,7 @@ L'indicateur de risque SRI de 3 sur 7 place le fonds dans la catégorie de risqu
 | | |
 |---|---|
 | **Valeur** | 12,96 % |
-| **Conforme au profil ?** | ❌ Non |
+| **Conforme au profil ?** | ✗ Non |
 
 Une volatilité de 12,96 % est **élevée** pour un profil défensif. Ce niveau est typique d'un fonds/actions mixte avec une forte composante actions. Un client défensif attend généralement une volatilité **inférieure à 5-8 %**.
 
@@ -851,7 +851,7 @@ Une volatilité de 12,96 % est **élevée** pour un profil défensif. Ce niveau 
 | | |
 |---|---|
 | **Valeur** | -40,81 % |
-| **Conforme au profil ?** | ❌ Non |
+| **Conforme au profil ?** | ✗ Non |
 
 Un drawdown maximal de 40,81 % est **inacceptable** pour un investisseur défensif. Cela signifie qu'à un moment donné, le fonds a perdu près de la moitié de sa valeur. Un profil défensif ne tolère généralement pas de perte supérieure à **10-15 %**.
 
@@ -862,7 +862,7 @@ Un drawdown maximal de 40,81 % est **inacceptable** pour un investisseur défens
 | | |
 |---|---|
 | **Valeur** | 0,471 |
-| **Conforme au profil ?** | ❌ Non |
+| **Conforme au profil ?** | ✗ Non |
 
 Le ratio de Martin (Rendement / Ulcer) de 0,471 reflète une **régularité insuffisante**. Ce ratio mesure la performance ajustée au temps passé sous l'eau. Une valeur inférieure à 1 indique que le fonds génère des à-coups importants et passe trop de temps en phase de baisse, ce qui est pénalisant pour un profil défensif recherchant la stabilité.
 
@@ -872,10 +872,10 @@ Le ratio de Martin (Rendement / Ulcer) de 0,471 reflète une **régularité insu
 
 | Critère | Valeur | Seuil défensif attendu | Conforme ? |
 |---|---|---|---|
-| SRI | 3 | 1-2 | ❌ |
-| Volatilité annualisée | 12,96 % | < 5-8 % | ❌ |
-| Drawdown maximal | -40,81 % | > -10 à -15 % | ❌ |
-| Ratio de Martin | 0,471 | > 1 | ❌ |
+| SRI | 3 | 1-2 | ✗ |
+| Volatilité annualisée | 12,96 % | < 5-8 % | ✗ |
+| Drawdown maximal | -40,81 % | > -10 à -15 % | ✗ |
+| Ratio de Martin | 0,471 | > 1 | ✗ |
 
 ---
 
@@ -901,7 +901,7 @@ Pour un client défensif, il convient d'orienter vers des **fonds obligataires i
 
 **Outils appelés :** ['fund_summary', 'fund_stats', 'metric_martin', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 83.2s  ·  **tokens :** ~24700
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **0. Métrique retenue :** `martin`
 - **Plan :** Récupérer les informations structurées du fonds LU0568620214 via fund_summary (SRI, durée… → Calculer le profil risque/rendement complet du fonds via fund_stats (volatilité, max… → Calculer le ratio Martin via metric_martin pour mesurer la régularité et le temps passé… → Synthétiser les résultats (SRI, durée recommandée, volatilité, ratio Martin) et écrire le…
@@ -914,7 +914,7 @@ Pour un client défensif, il convient d'orienter vers des **fonds obligataires i
 - **Étape 4 → `write_file`** : L'étape demande de synthétiser les résultats déjà obtenus et d'écrire le rapport final via write_file. Toutes les données nécessaires (SRI, durée recommandée, volatilité, ratio Martin, frais,…
     ↳ _résultat :_ Fichier écrit : workspace/rapport_conclusion_tresorerie_LU0568620214.md (5357 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 # Analyse d'adéquation du fonds LU0568620214 pour un placement de trésorerie court terme
 
@@ -938,17 +938,17 @@ Pour un client défensif, il convient d'orienter vers des **fonds obligataires i
 
 ### 1. Indicateur de risque SRI
 - **SRI = 1** (sur 7), le niveau le plus bas.
-- **Verdict** : ✅ **Parfaitement adapté** — niveau de risque minimal, conforme aux exigences de prudence d'une trésorerie.
+- **Verdict** : ✓ **Parfaitement adapté** — niveau de risque minimal, conforme aux exigences de prudence d'une trésorerie.
 
 ### 2. Durée de placement recommandée
 - **Durée minimale = 0 an**, aucune contrainte de détention.
-- **Verdict** : ✅ **Parfaitement adapté** — liquidité immédiate, compatible avec un besoin de court terme.
+- **Verdict** : ✓ **Parfaitement adapté** — liquidité immédiate, compatible avec un besoin de court terme.
 
 ### 3. Volatilité
 - **Volatilité annualisée = 1.44 %** (très faible).
 - **Max drawdown historique = 3.56 %**.
 - **CVaR 5 % quotidien = 0.07 %**.
-- **Verdict** : ✅ **Adapté** — volatilité contenue et variations quotidiennes infimes.
+- **Verdict** : ✓ **Adapté** — volatilité contenue et variations quotidiennes infimes.
 
 ---
 
@@ -980,7 +980,7 @@ Pour un client défensif, il convient d'orienter vers des **fonds obligataires i
 Le rendement annualisé historique (-0.04 %) est un artefact lié aux périodes de taux négatifs passés. La performance actuelle (+1.91 % YTD) est cohérente avec un environnement de taux positifs.
 
 ### Recommandation finale
-**✅ Le fonds LU0568620214 est recommandé pour un placement de trésorerie court terme.** Il combine sécurité, liquidité et coût maîtrisé.
+**✓ Le fonds LU0568620214 est recommandé pour un placement de trésorerie court terme.** Il combine sécurité, liquidité et coût maîtrisé.
 
 ---
 
@@ -990,7 +990,7 @@ Le rendement annualisé historique (-0.04 %) est un artefact lié aux périodes 
 
 **Outils appelés :** ['rag_search', 'metric_sortino', 'write_file']  ·  **couverture :** ✗  ·  **latence :** 134.5s  ·  **tokens :** ~21602
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **0. Métrique retenue :** `sortino`
 - **Plan :** Récupérer la classification SFDR du fonds FR0010655704 via fund_summary → Calculer le ratio de Sortino du fonds FR0010655704 via metric_sortino → Synthétiser les deux résultats dans une réponse finale
@@ -1001,7 +1001,7 @@ Le rendement annualisé historique (-0.04 %) est un artefact lié aux périodes 
 - **Étape 3 → `write_file`** : L'étape demande de 'synthétiser les deux résultats dans une réponse finale'. Il s'agit de rédiger le livrable final en compilant les résultats déjà obtenus (classification SFDR et ratio de Sortino)…
     ↳ _résultat :_ Fichier écrit : workspace/resultat_final_FR0010655704.md (1484 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 # Réponse concernant le fonds FR0010655704
 
@@ -1022,7 +1022,7 @@ Aucune des deux informations n'a pu être obtenue. Il est recommandé de **véri
 
 **Outils appelés :** ['fund_stats', 'fund_performance', 'fund_summary', 'write_file']  ·  **couverture :** —  ·  **latence :** 67.4s  ·  **tokens :** ~32084
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Calculer le profil risque/rendement complet du fonds ZZ0000000000 avec fund_stats… → Récupérer la performance par période (YTD, 1 an, 3 ans, 5 ans, depuis création) avec… → Obtenir les informations de base du fonds (nom, devise, frais, classification SFDR, SRI)… → Écrire le rapport final de synthèse du profil risque/rendement avec write_file
 - **Étape 1 → `fund_stats`** : L'étape demande explicitement de calculer le profil risque/rendement COMPLET du fonds ZZ0000000000 avec fund_stats (rendement annualisé, volatilité, Sharpe, Sortino, STARR, Martin, max drawdown,…
@@ -1034,7 +1034,7 @@ Aucune des deux informations n'a pu être obtenue. Il est recommandé de **véri
 - **Étape 4 → `write_file`** : L'étape demande explicitement d'écrire le rapport final de synthèse du profil risque/rendement. L'outil write_file est le bon choix pour produire ce livrable. La mémoire de travail ne contient que…
     ↳ _résultat :_ Fichier écrit : workspace/rapport_profil_risque_rendement_ZZ0000000000.md (1343 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 **Réponse finale concernant le profil risque/rendement du fonds ZZ0000000000 :**
 
@@ -1058,13 +1058,13 @@ Ces échecs s'expliquent par l'absence totale de données pour ce fonds dans le 
 
 **Outils appelés :** ['fund_performance']  ·  **couverture :** ✓  ·  **latence :** 24.2s  ·  **tokens :** ~7826
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Calculer la performance du fonds FR0011223569 sur les périodes YTD, 1 an et 3 ans via…
 - **Étape 1 → `fund_performance`** : L'outil fund_performance est spécifiquement conçu pour calculer la performance d'un fonds Amundi sur des périodes définies (YTD, 1 an, 3 ans, etc.) à partir de son historique NAV. L'étape demande…
     ↳ _résultat :_ Performance de FR0011223569 (calculée sur l'historique NAV) : • YTD : cumulée +4.53%, annualisée +10.38% (0.4 an(s), 2026-01-02 → 2026-06-15) • 1Y : cumulée +9.20%, annualisée…
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 ## Performance du fonds FR0011223569
 
@@ -1094,13 +1094,13 @@ Voici les performances du fonds sur les trois périodes demandées, au **15 juin
 
 **Outils appelés :** ['fund_performance']  ·  **couverture :** ✓  ·  **latence :** 19.1s  ·  **tokens :** ~7633
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Obtenir la performance du fonds LU1882473009 sur 5 ans et depuis sa création via…
 - **Étape 1 → `fund_performance`** : L'étape demande explicitement la performance (rendement annualisé) du fonds LU1882473009 sur 5 ans et depuis sa création via l'outil fund_performance. Cet outil est spécifiquement conçu pour calculer…
     ↳ _résultat :_ Performance de LU1882473009 (calculée sur l'historique NAV) : • 5Y : cumulée +1.59%, annualisée +0.32% (5.0 an(s), 2021-06-17 → 2026-06-16) • ALL : cumulée +6.22%, annualisée…
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 Voici les rendements annualisés du fonds **LU1882473009** :
 
@@ -1124,7 +1124,7 @@ N'hésitez pas si vous avez d'autres questions.
 
 **Outils appelés :** ['screen_funds', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 77.0s  ·  **tokens :** ~18362
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **0. Métrique retenue :** `sortino`
 - **Plan :** Utiliser screen_funds avec les paramètres sort_by='sortino', asset_class='action',… → Synthétiser les résultats obtenus en formatant clairement les noms des fonds, leurs ISIN… → Écrire le rapport final dans un fichier avec les résultats du classement
@@ -1135,7 +1135,7 @@ N'hésitez pas si vous avez d'autres questions.
 - **Étape 3 → `write_file`** : L'étape demande d'écrire le rapport final dans un fichier. L'outil `write_file` est spécifiquement conçu pour produire un livrable final en écrivant du contenu dans un fichier du workspace. Les…
     ↳ _résultat :_ Fichier écrit : workspace/rapport_final_top5_fonds_actions_article8_sortino.md (1797 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 Voici le rapport final basé sur le livrable fourni :
 
@@ -1171,7 +1171,7 @@ Voici le rapport final basé sur le livrable fourni :
 
 ---
 
-*Date du rapport : calcul basé sur l'historique NAV disponible dans le corpus.*  
+*Date du rapport : calcul basé sur l'historique NAV disponible dans le corpus.*
 *Rendement annualisé, volatilité et ratios calculés sur la NAV du fonds.*
 
 ---
@@ -1182,7 +1182,7 @@ Voici le rapport final basé sur le livrable fourni :
 
 **Outils appelés :** ['rag_search', 'fund_summary']  ·  **couverture :** ✓  ·  **latence :** 98.3s  ·  **tokens :** ~12566
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Rechercher dans les documents la note Morningstar et le nombre d'étoiles du fonds… → Extraire et présenter les deux informations demandées : la note Morningstar et le nombre…
 - **Étape 1 → `rag_search`** : L'étape demande explicitement de rechercher dans les documents via rag_search pour trouver la note Morningstar et le nombre d'étoiles du fonds FR0011223569. Il s'agit d'une information qualitative…
@@ -1190,7 +1190,7 @@ Voici le rapport final basé sur le livrable fourni :
 - **Étape 2 → `fund_summary`** : La note Morningstar et le nombre d'étoiles sont des informations structurées sur un fonds spécifique (FR0011223569). L'outil fund_summary est conçu pour extraire les faits exacts d'un fonds Amundi…
     ↳ _résultat :_ Fiche FR0011223569 : • Nom : AMUNDI EUROZONE MICROCAPS - I • ISIN : FR0011223569 • Devise : EUR • NAV : 203120.53 • Date NAV : 15/06/2026 • Encours (AUM) : 77717850.51 •…
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 D'après les documents consultés, **aucune information concernant la note ou le nombre d'étoiles Morningstar** n'a été trouvée pour le fonds avec l'ISIN **FR0011223569**.
 
@@ -1211,7 +1211,7 @@ La recherche dans les documents n'a pas permis d'extraire la notation Morningsta
 
 **Outils appelés :** ['fund_summary', 'fund_performance', 'rag_search', 'calculator', 'write_file']  ·  **couverture :** —  ·  **latence :** 161.4s  ·  **tokens :** ~29302
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Utiliser fund_summary avec l'ISIN LU1882473009 pour récupérer le nom de l'indice de… → Utiliser fund_performance avec l'ISIN LU1882473009 et periods='1y' pour obtenir le… → Utiliser rag_search pour rechercher la performance de l'indice de référence identifié à… → Utiliser calculator pour calculer l'écart de performance (rendement fonds - rendement… → Utiliser write_file pour rédiger le rapport final avec le surperformance du fonds par…
 - **Étape 1 → `fund_summary`** : L'étape demande explicitement d'utiliser fund_summary avec l'ISIN LU1882473009 pour récupérer le nom de l'indice de référence. Cet outil est conçu pour renvoyer des données structurées précises (dont…
@@ -1222,21 +1222,21 @@ La recherche dans les documents n'a pas permis d'extraire la notation Morningsta
     ↳ _résultat :_ [FR0013245115.pdf] 30 % MSCI World en Euros (dividendes réinvestis). L’indice Bloomberg Euro-Aggregate 3-5 Year TR Index mesure la performance du marché des obligations de qualité…
 - **Étape 4 → `calculator`** : L'étape demande explicitement de calculer l'écart de performance (rendement fonds - rendement indice). C'est une opération arithmétique, donc je dois utiliser calculator conformément aux règles. Le…
     ↳ _résultat :_ Erreur : expression non autorisée : 2.29 - rendement_indice_1y_non_disponible
-- **Étape 5 → `write_file`** : 
+- **Étape 5 → `write_file`** :
     ↳ _résultat :_ Fichier écrit : workspace/rapport_surperformance_LU1882473009.md (1021 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
-**Rendement du fonds LU1882473009 sur 1 an**  
+**Rendement du fonds LU1882473009 sur 1 an**
 Le fonds a enregistré un rendement cumulé et annualisé de **+2,29 %** sur la période allant du 16/06/2025 au 16/06/2026.
 
-**Comparaison à l’indice de référence**  
+**Comparaison à l’indice de référence**
 Le fonds est adossé à l’indice Bloomberg Euro Aggregate Corporate (pondération 100%). Toutefois, le rendement exact de cet indice sur la même période n’est pas disponible dans les sources consultées.
 
-**Calcul de la surperformance**  
-La surperformance ne peut être déterminée actuellement, car elle nécessite de soustraire le rendement de l’indice au rendement du fonds (+2,29 %).  
-Le calcul serait :  
-**Surperformance = Rendement du fonds − Rendement de l’indice**  
+**Calcul de la surperformance**
+La surperformance ne peut être déterminée actuellement, car elle nécessite de soustraire le rendement de l’indice au rendement du fonds (+2,29 %).
+Le calcul serait :
+**Surperformance = Rendement du fonds − Rendement de l’indice**
 Il est donc nécessaire de se référer à Bloomberg ou à la source officielle de l’indice pour obtenir la valeur manquante et évaluer l’écart réel.
 
 ---
@@ -1247,7 +1247,7 @@ Il est donc nécessaire de se référer à Bloomberg ou à la source officielle 
 
 **Outils appelés :** ['find_fund', 'fund_summary', 'fund_stats', 'fund_performance', 'rag_search', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 142.0s  ·  **tokens :** ~29543
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Retrouver l'ISIN du fonds 'Amundi Actions France Responsable' via find_fund → Récupérer les faits structurés du fonds (nom, NAV, encours, classification SFDR/SRI,… → Calculer le profil risque/rendement complet (rendement annualisé, volatilité, Sharpe,… → Obtenir la performance par période (YTD, 1 an, 3 ans, 5 ans, depuis création) via… → Rechercher les informations qualitatives sur la stratégie responsable, les critères ESG,… → Compiler l'ensemble des informations collectées dans un rapport de synthèse via write_file
 - **Étape 1 → `find_fund`** : L'étape demande explicitement de retrouver l'ISIN du fonds 'Amundi Actions France Responsable' via find_fund. Cet outil est conçu pour retrouver l'ISIN d'un fonds à partir de son nom avec une…
@@ -1263,7 +1263,7 @@ Il est donc nécessaire de se référer à Bloomberg ou à la source officielle 
 - **Étape 6 → `write_file`** : L'étape demande explicitement de compiler les informations collectées dans un rapport de synthèse via write_file. Cet outil est conçu pour la production du livrable final et je ne fais que recopier…
     ↳ _résultat :_ Fichier écrit : workspace/rapport_amundi_actions_france_responsable.md (2606 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 Plusieurs fonds correspondent à « Amundi Actions France Responsable » (préciser lequel) :
   - FR0010844365 — AMUNDI ACTIONS FRANCE RESPONSABLE - P (C)
@@ -1281,7 +1281,7 @@ Merci de préciser la part souhaitée (par son ISIN ou son libellé) pour que je
 
 **Outils appelés :** ['fund_summary', 'invested_value', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 58.1s  ·  **tokens :** ~16071
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Utiliser l'outil fund_summary avec l'argument isin='FR0011223569' pour vérifier les… → Utiliser l'outil invested_value avec les arguments fund='FR0011223569', amount=10000,… → Écrire le résultat final dans un fichier nommé 'valeur_investissement.txt' en utilisant…
 - **Étape 1 → `fund_summary`** : L'étape demande explicitement d'utiliser fund_summary avec l'ISIN FR0011223569 pour vérifier les informations du fonds. Cet outil est le bon choix car il renvoie les faits structurés d'un fonds…
@@ -1291,7 +1291,7 @@ Merci de préciser la part souhaitée (par son ISIN ou son libellé) pour que je
 - **Étape 3 → `write_file`** : L'étape demande explicitement d'écrire le résultat final dans un fichier via write_file. La valeur calculée est déjà disponible dans la mémoire de travail (11 163 €, issue de l'outil invested_value…
     ↳ _résultat :_ Fichier écrit : workspace/valeur_investissement.txt (512 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 **Investissement dans le fonds FR0011223569**
 
@@ -1315,7 +1315,7 @@ Un investissement de 10 000 € effectué il y a 3 ans dans ce fonds vaut aujour
 
 **Outils appelés :** ['compare_funds', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 47.3s  ·  **tokens :** ~14065
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **0. Métrique retenue :** `sharpe` — *ambiguïté → l'agent a demandé une clarification*
 - **Plan :** Comparer les fonds FR0011223569 et LU1882473009 côte à côte avec compare_funds pour… → Écrire le rapport final avec write_file en synthétisant les résultats de la comparaison
@@ -1324,7 +1324,7 @@ Un investissement de 10 000 € effectué il y a 3 ans dans ce fonds vaut aujour
 - **Étape 2 → `write_file`** : L'étape demande d'écrire le rapport final avec write_file en synthétisant les résultats de la comparaison. L'outil write_file est spécifiquement conçu pour produire le livrable final, en ne…
     ↳ _résultat :_ Fichier écrit : workspace/rapport_comparaison_fonds.md (2176 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 # Comparaison des fonds
 
@@ -1393,7 +1393,7 @@ Le fonds AMUNDI EUROZONE MICROCAPS offre un rendement et une performance ajusté
 
 **Outils appelés :** ['fund_summary', 'funds_correlation', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 60.9s  ·  **tokens :** ~22780
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Obtenir la fiche synthétique du fonds actions FR0011223569 via fund_summary pour… → Obtenir la fiche synthétique du fonds monétaire LU0568620214 via fund_summary pour… → Calculer la corrélation des rendements quotidiens entre les deux fonds FR0011223569 et… → Rédiger et écrire le rapport final synthétisant les informations des deux fonds et…
 - **Étape 1 → `fund_summary`** : L'étape demande d'obtenir la fiche synthétique du fonds FR0011223569 pour identifier sa nature et ses caractéristiques. L'outil fund_summary est exactement conçu pour cela : il renvoie les faits…
@@ -1405,7 +1405,7 @@ Le fonds AMUNDI EUROZONE MICROCAPS offre un rendement et une performance ajusté
 - **Étape 4 → `write_file`** : L'étape demande de rédiger et d'écrire le rapport final synthétisant les informations des deux fonds et l'analyse de leur corrélation. C'est une étape de production du livrable, ce qui correspond…
     ↳ _résultat :_ Fichier écrit : workspace/rapport_correlation_fonds_FR0011223569_LU0568620214.md (3506 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 # Réponse : Corrélation entre le fonds actions FR0011223569 et le fonds monétaire LU0568620214
 
@@ -1470,7 +1470,7 @@ La corrélation de **-0,01** entre AMUNDI EUROZONE MICROCAPS et AMUNDI FUNDS CAS
 
 **Outils appelés :** ['fund_summary', 'fund_calendar', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 46.4s  ·  **tokens :** ~17092
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Vérifier l'identité du fonds FR0011223569 avec fund_summary pour confirmer le nom et les… → Récupérer les rendements année par année du fonds avec fund_calendar en utilisant l'ISIN… → Présenter les résultats du calendrier de rendements de manière claire et structurée
 - **Étape 1 → `fund_summary`** : L'étape demande explicitement de vérifier l'identité du fonds FR0011223569 en utilisant fund_summary pour confirmer le nom et les informations de base. L'outil fund_summary est conçu pour renvoyer…
@@ -1480,7 +1480,7 @@ La corrélation de **-0,01** entre AMUNDI EUROZONE MICROCAPS et AMUNDI FUNDS CAS
 - **Étape 3 → `write_file`** : L'étape demande de PRÉSENTER les résultats du calendrier de rendements de manière claire et structurée. Les données sont déjà disponibles dans la mémoire de travail (résultat de fund_calendar). Il…
     ↳ _résultat :_ Fichier écrit : workspace/AMUNDI_EUROZONE_MICROCAPS_rendements_annee.txt (2257 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 **Rendements annuels - Amundi Eurozone Microcaps - I (ISIN : FR0011223569)**
 
@@ -1522,7 +1522,7 @@ Voici les rendements année par année, calculés sur la valeur liquidative (NAV
 
 **Outils appelés :** ['rag_search', 'fund_period', 'fund_underwater', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 118.3s  ·  **tokens :** ~24714
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Rechercher des informations qualitatives sur la stratégie et la nature du fonds… → Calculer le rendement du fonds FR0011223569 sur l'année 2022 avec fund_period (start:… → Calculer le rendement du fonds FR0011223569 pendant le krach Covid avec fund_period… → Analyser le max drawdown et le temps sous l'eau du fonds avec fund_underwater → Écrire un rapport synthétique des performances du fonds sur ces deux périodes avec…
 - **Étape 1 → `rag_search`** : L'étape demande explicitement de rechercher des informations QUALITATIVES (stratégie, nature) sur le fonds via rag_search. Cet outil est conçu pour lire du texte libre (description, objectif,…
@@ -1536,7 +1536,7 @@ Voici les rendements année par année, calculés sur la valeur liquidative (NAV
 - **Étape 5 → `write_file`** : L'étape demande explicitement d'écrire un rapport synthétique des performances avec write_file. Toutes les données nécessaires sont déjà présentes dans la mémoire de travail : rendement 2022…
     ↳ _résultat :_ Fichier écrit : workspace/rapport_performances_FR0011223569.md (2030 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 # Comportement du fonds FR0011223569 lors des crises de 2022 et de 2020
 
@@ -1571,7 +1571,7 @@ Le fonds FR0011223569 affiche une forte sensibilité aux chocs de marché, avec 
 
 **Outils appelés :** ['fund_monthly', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 34.0s  ·  **tokens :** ~11451
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Appeler fund_monthly avec le fonds FR0011223569 pour obtenir le meilleur mois, le pire… → Écrire le rapport final avec les résultats obtenus
 - **Étape 1 → `fund_monthly`** : L'outil fund_monthly est explicitement conçu pour fournir les statistiques mensuelles d'un fonds : meilleur mois, pire mois et pourcentage de mois positifs — ce qui correspond exactement à la demande…
@@ -1579,7 +1579,7 @@ Le fonds FR0011223569 affiche une forte sensibilité aux chocs de marché, avec 
 - **Étape 2 → `write_file`** : L'étape demande d'écrire le rapport final avec les résultats déjà obtenus (meilleur mois, pire mois, pourcentage de mois positifs). L'outil write_file est conçu pour produire des fichiers en…
     ↳ _résultat :_ Fichier écrit : workspace/rapport_final_fonds_FR0011223569.txt (153 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 # Analyse du fonds FR0011223569
 
@@ -1601,14 +1601,14 @@ En résumé, ce fonds a enregistré des mois positifs dans près de deux tiers d
 
 **Outils appelés :** ['fund_underwater']  ·  **couverture :** ✓  ·  **latence :** 32.0s  ·  **tokens :** ~8579
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **0. Métrique retenue :** `martin`
 - **Plan :** Utiliser l'outil `fund_underwater` avec l'ISIN FR0011223569 pour obtenir le drawdown…
 - **Étape 1 → `fund_underwater`** : L'outil fund_underwater est spécifiquement conçu pour répondre à la question « combien de temps le fonds a-t-il mis à récupérer son drawdown maximal / temps sous l'eau ». Sa description indique qu'il…
     ↳ _résultat :_ Drawdown & temps sous l'eau de FR0011223569 : • Max drawdown : -40.81% (sommet 2018-06-14 → creux 2020-03-18) • Plus longue phase sous l'eau : 1624 jours — PAS encore récupéré…
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 # Drawdown maximal du fonds FR0011223569
 
@@ -1637,7 +1637,7 @@ Après **plus de 4 ans et demi** sous l'eau, le fonds FR0011223569 est toujours 
 
 **Outils appelés :** ['rag_search', 'fund_rolling_sharpe', 'calculator', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 298.0s  ·  **tokens :** ~29043
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **0. Métrique retenue :** `sharpe`
 - **Plan :** Rechercher dans les documents les informations qualitatives sur le fonds FR0011223569… → Calculer le Sharpe glissant sur 12 mois (252 jours) du fonds FR0011223569 avec… → Interpréter la stabilité du Sharpe : un écart-type faible et un écart min/max étroit… → Synthétiser les résultats dans un rapport final avec write_file
@@ -1650,7 +1650,7 @@ Après **plus de 4 ans et demi** sous l'eau, le fonds FR0011223569 est toujours 
 - **Étape 4 → `write_file`** : L'étape demande de synthétiser les résultats dans un rapport final. L'outil write_file est spécifiquement conçu pour écrire un fichier texte dans le workspace, ce qui correspond exactement à la…
     ↳ _résultat :_ Fichier écrit : workspace/rapport_sharpe_FR0011223569.md (1312 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 # Réponse finale : Analyse du ratio de Sharpe du fonds FR0011223569
 
@@ -1698,7 +1698,7 @@ Le Sharpe glissant du fonds FR0011223569 **n'offre pas de stabilité rassurante*
 
 **Outils appelés :** ['fund_tail_risk', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 75.2s  ·  **tokens :** ~12329
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Appeler fund_tail_risk avec l'ISIN FR0011223569 pour obtenir la VaR 95%, VaR 99%,… → Restituer les résultats obtenus dans une réponse claire
 - **Étape 1 → `fund_tail_risk`** : L'étape demande explicitement d'obtenir la VaR 95%, VaR 99%, skewness et kurtosis du fonds FR0011223569. L'outil fund_tail_risk est spécifiquement conçu pour calculer ces métriques de risque de queue…
@@ -1706,7 +1706,7 @@ Le Sharpe glissant du fonds FR0011223569 **n'offre pas de stabilité rassurante*
 - **Étape 2 → `write_file`** : L'étape demande de restituer les résultats obtenus dans une réponse claire. Toutes les valeurs sont déjà calculées en mémoire (VaR, skewness, kurtosis). L'outil write_file permet de produire le…
     ↳ _résultat :_ Fichier écrit : workspace/resultats_risque_queue_FR0011223569.md (1265 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 # Analyse du Risque de Queue - Fond FR0011223569
 
@@ -1728,13 +1728,13 @@ Les moments de la distribution des rendements indiquent une forte déviation par
 
 **Outils appelés :** ['fund_nav_series']  ·  **couverture :** ✓  ·  **latence :** 29.9s  ·  **tokens :** ~7822
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Extraire la série NAV brute du fonds FR0011223569 via fund_nav_series pour obtenir le…
 - **Étape 1 → `fund_nav_series`** : L'étape demande d'extraire la série NAV brute du fonds FR0011223569 pour obtenir le nombre de points, la plage de dates et un échantillon des valeurs. L'outil fund_nav_series est exactement conçu…
     ↳ _résultat :_ Série NAV de FR0011223569 (source : nav.csv) : • 2502 points, du 2016-06-20 au 2026-06-15 ; NAV min 99434.56, max 221524.33 • Premiers : 2016-06-20=103329.01 ;…
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 Voici la série NAV exacte pour le fonds **FR0011223569** (source : `nav.csv`) :
 
@@ -1768,7 +1768,7 @@ Voici les 5 premières et les 5 dernières lignes de la série :
 
 **Outils appelés :** ['fees_projection', 'calculator', 'write_file']  ·  **couverture :** ✓  ·  **latence :** 72.0s  ·  **tokens :** ~15876
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Utiliser l'outil fees_projection pour calculer le coût cumulé des frais courants du fonds… → Calculer le pourcentage du coût par rapport au montant initial en utilisant l'outil… → Écrire un rapport résumant l'impact dans un fichier avec l'outil write_file.
 - **Étape 1 → `fees_projection`** : L'étape demande explicitement de calculer l'impact des frais courants du fonds sur 10 ans pour 100 000 €. L'outil fees_projection est spécifiquement conçu pour cet usage (coût cumulé d'un placement…
@@ -1778,7 +1778,7 @@ Voici les 5 premières et les 5 dernières lignes de la série :
 - **Étape 3 → `write_file`** : L'étape demande explicitement d'écrire un rapport dans un fichier, ce qui correspond exactement au rôle de l'outil write_file. Le rapport reprend uniquement les résultats déjà calculés en mémoire de…
     ↳ _résultat :_ Fichier écrit : workspace/rapport_impact_frais_FR0011223569.md (776 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 ### Impact des frais courants du fonds FR0011223569 sur 10 ans
 
@@ -1790,7 +1790,7 @@ Pour un placement initial de **100 000 €** sur une durée de **10 ans**, l'imp
 | Coût cumulé sur 10 ans | **12 221 €** |
 | Impact en % du capital initial | **12.22 %** |
 
-**Conclusion :**  
+**Conclusion :**
 Sur 10 ans, les frais courants représentent un coût cumulé de **12 221 €**, soit **12.22 %** du capital initial investi. Ces chiffres concernent uniquement les frais récurrents (frais de gestion courants) et ne tiennent pas compte de la performance du fonds ni des éventuels frais d'entrée.
 
 ---
@@ -1801,7 +1801,7 @@ Sur 10 ans, les frais courants représentent un coût cumulé de **12 221 €**,
 
 **Outils appelés :** ['fund_summary', 'rag_search', 'fund_performance', 'fund_nav_series']  ·  **couverture :** —  ·  **latence :** 209.8s  ·  **tokens :** ~32340
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Récupérer les informations de base du fonds LU1882473009, notamment son indice de… → Rechercher dans les documents internes (rag_search) des informations sur la performance… → Obtenir les rendements du fonds LU1882473009 sur la période d'un an (1y) via l'outil… → Calculer l'alpha du fonds sur 1 an (rendement du fonds moins rendement de l'indice) en… → Obtenir la série NAV du fonds sur la dernière année via fund_nav_series pour pouvoir… → Calculer la série des rendements quotidiens du fonds et de l'indice (si disponible) à…
 - **Étape 1 → `fund_summary`** : L'étape demande de récupérer les informations de base du fonds LU1882473009, notamment son indice de référence. L'outil fund_summary est conçu pour renvoyer les faits structurés d'un fonds Amundi à…
@@ -1817,7 +1817,7 @@ Sur 10 ans, les frais courants représentent un coût cumulé de **12 221 €**,
 - **Étape 6 → `fund_nav_series`** : L'étape demande de calculer les rendements quotidiens du fonds et de l'indice, puis la tracking error. Nous avons déjà la série NAV du fonds (étape 6), mais il nous manque les données NAV de l'indice…
     ↳ _résultat :_ Série NAV de LU1882473009 (source : nav.csv) : • 1765 points, du 2019-06-03 au 2026-06-16 ; NAV min 43.88, max 53.59 • Premiers : 2019-06-03=49.97 ; 2019-06-04=50.06 ;…
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 ## Réponse
 
@@ -1848,7 +1848,7 @@ Pour obtenir ces métriques précises, il est nécessaire de :
 
 **Outils appelés :** ['rag_search', 'write_file']  ·  **couverture :** —  ·  **latence :** 96.2s  ·  **tokens :** ~15479
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Rechercher les 10 principales positions (titres en portefeuille) du fonds FR0011223569… → Rechercher la répartition sectorielle du fonds FR0011223569 via rag_search → Synthétiser les informations collectées et écrire le rapport final avec write_file
 - **Étape 1 → `rag_search`** : L'étape demande explicitement de rechercher les 10 principales positions du fonds FR0011223569 via rag_search. Bien que les positions en portefeuille soient des données structurées, l'étape prescrit…
@@ -1858,7 +1858,7 @@ Pour obtenir ces métriques précises, il est nécessaire de :
 - **Étape 3 → `write_file`** : L'étape demande explicitement d'écrire le rapport final avec write_file. Les recherches précédentes n'ont trouvé aucune donnée sur les positions ni la répartition sectorielle du fonds FR0011223569.…
     ↳ _résultat :_ Fichier écrit : workspace/rapport_FR0011223569.md (1086 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 Les documents fournis ne permettent pas de répondre à cette question.
 
@@ -1869,7 +1869,7 @@ Les documents fournis ne permettent pas de répondre à cette question.
 
 **Outils appelés :** ['rag_search', 'write_file']  ·  **couverture :** —  ·  **latence :** 215.6s  ·  **tokens :** ~22635
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Utiliser rag_search avec la requête 'pourcentage investissement durable FR0011585629'… → Utiliser rag_search avec la requête 'alignement taxonomie FR0011585629' pour obtenir les… → Utiliser rag_search avec la requête 'intensité carbone FR0011585629' pour découvrir… → Écrire un rapport synthétique avec write_file en compilant les données récupérées sur le…
 - **Étape 1 → `rag_search`** : L'étape demande explicitement d'utiliser rag_search pour trouver le pourcentage d'investissement durable, ce qui est une information qualitative (donnée descriptive) qui serait formulée en toutes…
@@ -1881,7 +1881,7 @@ Les documents fournis ne permettent pas de répondre à cette question.
 - **Étape 4 → `write_file`** : L'étape demande explicitement d'écrire un rapport synthétique avec write_file en compilant les données récupérées sur le fonds FR0011585629. C'est un outil de production de livrable qui ne fait que…
     ↳ _résultat :_ Fichier écrit : workspace/rapport_fonds_FR0011585629.md (1423 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 # Réponse Finale - Fonds FR0011585629
 
@@ -1915,7 +1915,7 @@ Non communiquée dans les documents disponibles pour ce fonds. L'intensité carb
 
 **Outils appelés :** ['rag_search', 'fund_summary', 'write_file']  ·  **couverture :** —  ·  **latence :** 101.5s  ·  **tokens :** ~21900
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **0. Métrique retenue :** `sharpe`
 - **Plan :** Rechercher la duration du fonds dans les documents du corpus via rag_search avec la… → Rechercher la qualité de crédit moyenne du portefeuille via rag_search avec la requête… → Récupérer la fiche structurée du fonds avec fund_summary (isin: LU1882473009) pour… → Synthétiser les informations collectées sur la duration et la qualité de crédit pour…
@@ -1928,7 +1928,7 @@ Non communiquée dans les documents disponibles pour ce fonds. L'intensité carb
 - **Étape 4 → `write_file`** : L'étape demande de synthétiser les informations collectées pour présenter la réponse finale. Or, les deux recherches rag_search sur la duration et la qualité de crédit ont retourné 'Aucun passage…
     ↳ _résultat :_ Fichier écrit : workspace/reponse_fonds_LU1882473009.md (1316 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 Pour le fonds **AMUNDI FUNDS EURO CORPORATE BOND SELECT - R2 EUR (C)** (ISIN : LU1882473009), voici les informations demandées :
 

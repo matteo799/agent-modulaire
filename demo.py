@@ -141,7 +141,7 @@ def narrate_node(node: str, update, dt: float) -> None:
         ans = get(update, "answer", None)
         grounded = get(ans, "grounded", None) if ans else None
         tag = (f"{C['g']}✓ ancrée (grounded){C['x']}" if grounded
-               else f"{C['r']}⚠ non ancrée{C['x']}")
+               else f"{C['r']}non ancrée{C['x']}")
         print(f"   {C['cy']}● ground_check{C['x']} — vérification anti-hallucination : {tag}{_lat(dt)}")
     elif node == "fallback_no_answer":
         print(f"   {C['r']}● fallback{C['x']} — hors corpus : le système refuse d'inventer{_lat(dt)}")

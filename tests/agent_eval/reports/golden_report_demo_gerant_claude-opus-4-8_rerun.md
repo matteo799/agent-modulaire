@@ -9,7 +9,7 @@ Pour chaque question, l'agent travaille **en autonomie** en 3 temps :
 2. **il établit un plan** puis, étape par étape, **choisit l'outil adapté** (la *raison* de chaque choix est affichée) et l'exécute ;
 3. **il rédige la réponse finale** à partir des résultats.
 
-Le bloc « 🧭 Comment l'agent a procédé » montre cette trajectoire ; « ✅ Réponse de l'agent » donne le livrable. Les chiffres sont **calculés sur les vraies données** (historique NAV, fiches structurées) — jamais inventés.
+Le bloc « Comment l'agent a procédé » montre cette trajectoire ; « Réponse de l'agent » donne le livrable. Les chiffres sont **calculés sur les vraies données** (historique NAV, fiches structurées) — jamais inventés.
 
 **Couverture d'outils globale : 0/0 questions** (les outils attendus ont bien été appelés).
 
@@ -31,7 +31,7 @@ Le bloc « 🧭 Comment l'agent a procédé » montre cette trajectoire ; « ✅
 
 **Outils appelés :** ['rag_search', 'write_file']  ·  **couverture :** —  ·  **latence :** 96.2s  ·  **tokens :** ~15479
 
-### 🧭 Comment l'agent a procédé (en autonomie)
+### Comment l'agent a procédé (en autonomie)
 
 - **Plan :** Rechercher les 10 principales positions (titres en portefeuille) du fonds FR0011223569… → Rechercher la répartition sectorielle du fonds FR0011223569 via rag_search → Synthétiser les informations collectées et écrire le rapport final avec write_file
 - **Étape 1 → `rag_search`** : L'étape demande explicitement de rechercher les 10 principales positions du fonds FR0011223569 via rag_search. Bien que les positions en portefeuille soient des données structurées, l'étape prescrit…
@@ -41,7 +41,7 @@ Le bloc « 🧭 Comment l'agent a procédé » montre cette trajectoire ; « ✅
 - **Étape 3 → `write_file`** : L'étape demande explicitement d'écrire le rapport final avec write_file. Les recherches précédentes n'ont trouvé aucune donnée sur les positions ni la répartition sectorielle du fonds FR0011223569.…
     ↳ _résultat :_ Fichier écrit : workspace/rapport_FR0011223569.md (1086 caractères)
 
-### ✅ Réponse de l'agent
+### Réponse de l'agent
 
 Les documents fournis ne permettent pas de répondre à cette question.
 

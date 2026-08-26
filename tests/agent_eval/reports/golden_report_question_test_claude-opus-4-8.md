@@ -97,13 +97,13 @@ Le niveau SRI (ou SRRI) sur 7 tel qu'indiqué ; refus si absent du document.
 
 **Réponse obtenue :**
 
-**Réponse à la question initiale :**  
+**Réponse à la question initiale :**
 Quel est l'indicateur synthétique de risque (SRI) du fonds FR0010272377, sur une échelle de 1 à 7 ?
 
-**Réponse obtenue :**  
+**Réponse obtenue :**
 La valeur du SRI du fonds FR0010272377 sur une échelle de 1 à 7 n'a pas été trouvée dans les documents consultés. Ces documents ne contiennent pas cet indicateur spécifique.
 
-**Note :**  
+**Note :**
 Le SRI (Synthetic Risk Indicator) est généralement fourni dans les documents KIID ou DICI des fonds. Il n'a pas été identifié dans les extraits consultés.
 
 ---
@@ -363,7 +363,7 @@ Cependant, l'interprétation de cette métrique pour ce fonds est la suivante :
 - **Famille** : Ratio défensif ++ (refuge monétaire / obligataire).
 - **Mesure de risque** : Volatilité totale (hausses ET baisses).
 - **Pénalisation de la hausse** : Oui, le ratio pénalise la volatilité haussière autant que la baissière.
-- **Pertinence pour ce fonds** : Le fonds ayant un profil très défensif (monétaire et obligations d'entreprises investment grade 1-5 ans), le Ratio de Sharpe est la métrique standard et universelle pour ce type d'actif. Il est particulièrement adapté pour comparer des portefeuilles obligataires où la distribution des rendements est supposée quasi-normale. 
+- **Pertinence pour ce fonds** : Le fonds ayant un profil très défensif (monétaire et obligations d'entreprises investment grade 1-5 ans), le Ratio de Sharpe est la métrique standard et universelle pour ce type d'actif. Il est particulièrement adapté pour comparer des portefeuilles obligataires où la distribution des rendements est supposée quasi-normale.
 - **Limites** : Il suppose des rendements quasi-normaux, est aveugle aux queues épaisses, et sa tendance au refuge monétaire/obligataire en régime de taux élevés peut masquer la valeur ajoutée d'une gestion active du crédit ou des ajustements actions.
 
 ## 3. Conclusion
@@ -485,15 +485,15 @@ La métrique **STARR** est la mesure la plus appropriée pour répondre à ce be
 
 ## Avantages pour vous
 
-- ✅ **Alignement direct** avec votre objectif de protection contre les événements extrêmes.
-- ✅ **Comparaison fiable** des profils de risque de queue entre différents fonds.
+- ✓ **Alignement direct** avec votre objectif de protection contre les événements extrêmes.
+- ✓ **Comparaison fiable** des profils de risque de queue entre différents fonds.
 
 ---
 
 ## Points de vigilance
 
-- ⚠️ L'estimation de la CVaR nécessite une **série de rendements historiques suffisamment longue** pour être stable. Sur des historiques courts, la mesure peut être instable.
-- ⚠️ En tant que ratio, il conserve une **tendance défensive globale**.
+- L'estimation de la CVaR nécessite une **série de rendements historiques suffisamment longue** pour être stable. Sur des historiques courts, la mesure peut être instable.
+- En tant que ratio, il conserve une **tendance défensive globale**.
 
 ---
 

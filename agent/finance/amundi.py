@@ -151,16 +151,29 @@ def summary_text(isin: str, fields: str = "") -> str:
     for k, v in (d.get("characteristics") or {}).items():
         if keep(k):
             lines.append(f"{k} : {v}")
-    # Frais (bloc `costs`) — central pour un gérant.
+    # Frais (bloc `costs`) — central pour un gérant, et traité comme un TOUT.
+    #
+    # Le filtrage par sous-chaîne ne convient pas ici : demander « frais » ne
+    # matchait ni « Commission de surperformance » ni « Coûts de transaction »,
+    # et renvoyait donc une tarification silencieusement incomplète. Une fiche de
+    # frais tronquée est pire qu'une absence de réponse : elle a l'air complète.
+    # Dès qu'un terme de coût est demandé, on rend le bloc entier.
     costs = d.get("costs") or {}
     cost_labels = [
         ("Frais d'entrée", "entry_pct"), ("Frais de sortie", "exit_pct"),
         ("Frais courants", "ongoing_pct"), ("Coûts de transaction", "transaction_pct"),
         ("Commission de surperformance", "performance_pct"),
     ]
-    for lbl, key in cost_labels:
-        if costs.get(key) is not None and keep(lbl):
-            lines.append(f"{lbl} : {costs[key]} %")
+    cost_terms = ("frais", "cout", "coût", "cost", "commission", "charge", "tarif")
+    wants_costs = any(
+        any(term in w for term in cost_terms)
+        or any(w in lbl.lower() for lbl, _ in cost_labels)
+        for w in wanted
+    )
+    if not wanted or wants_costs:
+        for lbl, key in cost_labels:
+            if costs.get(key) is not None:
+                lines.append(f"{lbl} : {costs[key]} %")
     # Performance YTD (depuis asset_allocation).
     for item in d.get("asset_allocation") or []:
         lbl = item.get("label", "")
@@ -169,6 +182,9 @@ def summary_text(isin: str, fields: str = "") -> str:
 
     if not lines:
         return f"Aucun champ correspondant à « {fields} » dans la fiche de {isin}."
+    # `characteristics` redonde parfois un champ de base (ex. l'indice de
+    # référence) : on dédoublonne en gardant l'ordre.
+    lines = list(dict.fromkeys(lines))
     return f"Fiche {isin} :\n" + "\n".join(f"  • {ln}" for ln in lines)
 
 

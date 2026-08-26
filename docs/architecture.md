@@ -2,8 +2,8 @@
 
 *Ce document décrit **ce qu'est** le système et **comment** il fonctionne, composant
 par composant. Pour le **pourquoi** de chaque choix (et les alternatives écartées),
-voir `CHOIX_DE_CONCEPTION.md`, qui suit le même découpage en parties. Pour le détail
-des règles de sûreté, voir `GUARDRAILS.md`.*
+voir `design-decisions.md`, qui suit le même découpage en parties. Pour le détail
+des règles de sûreté, voir `guardrails.md`.*
 
 ---
 
@@ -118,7 +118,7 @@ description complète de chaque outil) ; ce tableau en donne la carte.
 | **Multi-fonds** | `compare_funds(funds)` · `funds_correlation(funds)` · `screen_funds(sort_by, top, …)` | Comparaison côte à côte ; corrélation des rendements ; screening / palmarès (filtres classe d'actifs, SFDR, SRI) → top N. |
 | **Placement & frais** | `invested_value(fund, amount, period)` · `fees_projection(fund, amount, years)` | Valeur aujourd'hui d'une somme investie ; coût cumulé des frais courants dans le temps. |
 | **Métriques *rating fond*** | `metric_<clé>` ×6 (Sharpe, Sortino, STARR, Martin, budget CVaR/drawdown) | Outils métriques (→ §7), générés depuis le catalogue ; description portant les caractéristiques décisives (pénalise-hausse, tendance…). |
-| **Utilitaires** | `write_file(path, content)` · `calculator(expression)` | Écrit le livrable — **confiné à `workspace/`**, recopie seulement, aucun calcul. Évalue une expression arithmétique (AST en liste blanche, jamais `eval` — cf. `GUARDRAILS.md` §6.5) ; **obligatoire pour tout calcul**. |
+| **Utilitaires** | `write_file(path, content)` · `calculator(expression)` | Écrit le livrable — **confiné à `workspace/`**, recopie seulement, aucun calcul. Évalue une expression arithmétique (AST en liste blanche, jamais `eval` — cf. `guardrails.md` §6.5) ; **obligatoire pour tout calcul**. |
 
 L'agent **choisit ces outils en autonomie** d'après leur description : une question factuelle sur
 un fonds Amundi → `fund_summary` ; un ratio → `metric_*` ; un nom de fonds → `find_fund` d'abord ;
@@ -169,7 +169,7 @@ active via `RAG__VECTOR_STORE__COLLECTION` (`dataset_finance` par défaut). Inde
 
 ## 7. Couche métriques — *rating fond* (`agent/finance/`)
 
-Expose chaque métrique d'optimisation de `metriques_optimisation_gold.md` comme **un
+Expose chaque métrique d'optimisation de `metrics-reference.md` comme **un
 outil**. Trois modules :
 
 | Module | Rôle |
@@ -193,7 +193,7 @@ options)` tranche — interactif (`stdin_ask`) en CLI, non bloquant (`auto_ask`)
 
 ## 8. Garde-fous & robustesse
 
-- **Garde-fous métier** — voir `GUARDRAILS.md` : récapitulatif unique de toutes les règles
+- **Garde-fous métier** — voir `guardrails.md` : récapitulatif unique de toutes les règles
   (rejet hors-corpus, `calculator` obligatoire, garde-fou métriques honnête, synthèse ancrée sur
   le livrable…), chacune indiquant son lieu d'application. Principe : *le corpus est le plafond
   d'information ; dire « je ne sais pas » est un succès, pas un échec.*
@@ -206,13 +206,13 @@ options)` tranche — interactif (`stdin_ask`) en CLI, non bloquant (`auto_ask`)
   `AGENT_MAX_SECONDS=1200`, surchargables par env). `chat()` la vérifie AVANT chaque appel : au
   dépassement, il lève `BudgetExceeded` — **sous-classe de `LLMUnavailable`**, donc traitée par
   les mêmes replis gracieux (la boucle s'arrête proprement, la synthèse retombe sur le livrable).
-  Garantit qu'un plan aberrant ne consomme jamais sans borne. Voir `GUARDRAILS.md` §5.4.
+  Garantit qu'un plan aberrant ne consomme jamais sans borne. Voir `guardrails.md` §5.4.
 - **Observabilité / piste d'audit** — `agent/audit.py` journalise chaque run dans un JSONL
   append-only (`logs/audit.jsonl`, hors git) : `run_id`, requête, verdict sécurité, métrique
   retenue, plan, chaque étape (outil, args, aperçu du résultat, succès), clôture (statut, usage
   tokens, durée). Best-effort — une erreur d'écriture ne casse jamais un run ; désactivable par
   `AGENT_AUDIT=0`. C'est la trace **auditable** (traçabilité, investigation d'incident) que
-  `workspace/notes.md` (éphémère) ne fournit pas. Voir `GUARDRAILS.md` §5.5.
+  `workspace/notes.md` (éphémère) ne fournit pas. Voir `guardrails.md` §5.5.
 
 ---
 
@@ -253,8 +253,8 @@ Carte détaillée des tests : `tests/README.md`.
 - **Ingestion manuelle**, hors agent (`python -m rag.ingestion.cli`).
 - **Pas plus d'info que le corpus** : les ratios exigeant une série de rendements (Sortino, STARR,
   Martin) ne se calculent que si on **fournit** la série ; la famille « budget » et un `rf`
-  variable dans le temps sont des extensions V2 (cf. `GUARDRAILS.md` → Limites).
+  variable dans le temps sont des extensions V2 (cf. `guardrails.md` → Limites).
 - **Calcul multi-étapes : fiabilisé, pas garanti** (leviers de prompt, pas verrous durs).
 
 *Chaque limite indique l'extension naturelle suivante. Justifications détaillées :
-`CHOIX_DE_CONCEPTION.md`.*
+`design-decisions.md`.*
