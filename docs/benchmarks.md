@@ -93,6 +93,68 @@ becoming the default.
 Both modes refused all three out-of-corpus traps, which is the property that actually
 matters here: grounding does not depend on the corrective loop.
 
+## Conformance is not usefulness
+
+Tool coverage measures whether the agent followed the expected process. It is blind in both
+directions: an agent can call every expected tool and state a wrong figure in its synthesis,
+or reach a correct figure by the wrong route. Both score as passes.
+
+`tests/agent_eval/score_accuracy.py` measures the other thing — whether the final answer is
+right. It calls no LLM. The Amundi dataset is structured (`summary.json`) and historical
+(`nav.csv`), so the correct answer is computable deterministically with `agent/finance/`,
+the same code the tools use, invoked directly. That ground truth is then compared to the
+agent's text, extracted from the evaluation report already committed here. The useful
+consequence: **accuracy is measured after the fact, on a run already paid for, with no API
+access.**
+
+Scored against the 40-question fund-manager run (Opus 4.8):
+
+| | |
+|---|---|
+| Questions scored automatically | 27 of 40 (13 left to reading, and listed as such) |
+| Fully correct | 26 |
+| Partially correct | 1 |
+| Assertions verified | **45/46 (98 %)** |
+| Negative control, permuted answers | **12/46 (26 %)** |
+
+The negative control matters more than the headline. Re-scoring each question against a
+different question's answer collapses the result from 98 % to 26 %, which is what makes the
+98 % meaningful rather than a rubber stamp. A lenient rubric would have stayed high under
+permutation. The residual 26 % is expected: refusal checks match other refusals, and some
+figures coincide.
+
+Three of the first failures turned out to be defects in the *rubric*, not in the agent, and
+they are worth recording because each is a trap:
+
+- Answers were truncated at their first markdown horizontal rule, cutting half the content.
+- Refusals phrased "Non disponible" or "Impossible à calculer" were not recognised.
+- Ground truth applied a 2 % risk-free rate to questions that never state one. The agent used
+  rf = 0, which is the correct convention there, and was being marked wrong for it.
+
+The rubric is now split accordingly: `RF_STATED` only applies to questions that name the
+rate. Building a scorer means debugging the scorer first, and a measurement instrument that
+was never wrong about anything has not been tested.
+
+### What the accuracy scorer found that tool coverage could not
+
+One genuine defect, on `g02-frais`, which asked for entry fees, ongoing charges and the
+performance fee. Tool coverage marked it a pass: the agent called `fund_summary`, exactly as
+expected. The answer, however, stated that the fund sheet mentions no performance fee.
+
+The data contains one, at 20 %. The agent was not hallucinating; it reported faithfully what
+the tool returned. The bug was in `summary_text`, whose `fields` filter matched by
+substring: asking for `frais` matched "Frais d'entrée" and "Frais courants" but silently
+dropped "Commission de surperformance" and "Coûts de transaction", whose labels do not
+contain that word. The result was a fee disclosure that looked complete and was not, which
+in this domain is worse than refusing to answer.
+
+Fees are now returned as a whole block whenever any cost term is requested, with regression
+tests in `tests/unit/agent_finance/test_amundi.py`. The historical score stays at 45/46,
+because fixing the tool does not retroactively change what a past run answered.
+
+This is the clearest argument for the distinction: a process-conformance metric scored this
+question as a success, and the answer shipped an incomplete fee schedule.
+
 ## The failure mode that keeps recurring
 
 Across three independent runs there is essentially one defect, and it is the same one each
@@ -183,8 +245,10 @@ repository**, and the table above describes a protocol rather than a finding.
 
 ## What this does not establish
 
-- There is no automated accuracy score. Coverage, latency and tokens are measured; whether
-  the answer was right was checked by reading. No LLM judge, no exact matching.
+- Accuracy is measured on 27 of 40 questions only, and only as "the exact value appears in
+  the answer". It says nothing about the reasoning around that value or the soundness of a
+  recommendation. The 13 unmechanised questions (screening, suitability, audit) are listed
+  by name in the scorer rather than quietly dropped.
 - There is no quantified no-agent baseline. The section above argues the scope difference
   without measuring it.
 - No component-level result exists. The five-arm ablation above is specified, implemented
@@ -211,5 +275,7 @@ repository**, and the table above describes a protocol rather than a finding.
    in advance, so it can be wrong: most of the measured benefit will come from A→B, tool
    use, and C→D will be close to noise on this question set, because the deterministic
    reflection only fires on hard tool errors and those are rare.
-3. Commit one `rag_eval` report so the retrieval claims rest on an artifact.
+3. Extend the accuracy rubric to the 13 unmechanised questions, and run it on the Haiku
+   report to get an accuracy comparison rather than a tool-routing one.
+4. Commit one `rag_eval` report so the retrieval claims rest on an artifact.
 4. Three repetitions per arm, for a variance estimate on the coverage figures.

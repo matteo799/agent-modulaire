@@ -14,8 +14,10 @@ request. Hard constraint: a wrong number is worse than no number.
 
 **Evaluated** on 19 finance tasks across 9 capability categories, plus a 40-question
 fund-manager set. Opus 4.8 selected the required tools in 14/15 cases, Haiku 4.5 in 12/15.
+On the fund-manager run, answers were also scored for **correctness** rather than process:
+45 of 46 assertions hold, against 26 % for a permuted-answer control.
 
-**Three findings, one of them negative:**
+**Four findings, one of them negative:**
 
 1. **A smaller model was not cheaper.** Haiku and Opus consumed 274 897 and 273 916 tokens
    on identical work, 0.4 % apart, with comparable median latency. Context volume is set by
@@ -29,9 +31,17 @@ fund-manager set. Opus 4.8 selected the required tools in 14/15 cases, Haiku 4.5
    `calculator`, despite an explicit rule forbidding it (Opus 1 of 3 arithmetic tasks, Haiku
    3 of 3). Every invariant enforced in code held; the one left to an instruction did not.
 
+4. **Process conformance hides real defects.** Tool coverage asks whether the expected tools
+   were called; it cannot see a wrong figure in the synthesis. Scoring answers against
+   ground truth recomputed from the dataset — no LLM in the loop — found a question that
+   coverage marked as a pass while the answer shipped an incomplete fee schedule. The cause
+   was a substring filter in `summary_text` that silently dropped the performance fee. Now
+   fixed, with regression tests.
+
 Finding 3 is the load-bearing one: it is measured evidence that "guarantee it in code, not
-in a prompt" is an engineering constraint rather than a stylistic preference. Protocol,
-matrices and limits: **[`docs/benchmarks.md`](docs/benchmarks.md)**.
+in a prompt" is an engineering constraint rather than a stylistic preference. Finding 4 is
+the reason the evaluation grew a second axis. Protocol, matrices and limits:
+**[`docs/benchmarks.md`](docs/benchmarks.md)**.
 
 **Known gaps.** No automated accuracy score (correctness is read, not judged), no quantified
 no-agent baseline, one run per arm, no production traffic. The component ablation
@@ -167,6 +177,7 @@ corpus, one dataset at a time.
 pytest tests/unit                                    # fast, no network, what CI runs
 python tests/agent_eval/run_golden.py                # end-to-end, golden set
 python tests/agent_eval/run_ablation.py --arms A,B,C,D,E   # component ablation
+python tests/agent_eval/score_accuracy.py            # answer correctness, no LLM
 python -m tests.rag_eval.run --config tests/rag_eval/configs/eval_finance.yaml
 ```
 
@@ -178,6 +189,12 @@ and tokens, aggregated by category. Correctness is read rather than scored, sinc
 to the full agent with reflection, and scores refusal correctness and numeric grounding
 deterministically. It is implemented and unit-tested against a stub LLM; it has not been run
 against a live model, so this repository publishes no component-level results.
+
+`score_accuracy.py` measures the second axis: not whether the right tools were called, but
+whether the answer is right. Ground truth is recomputed from `documents/amundi/` with
+`agent/finance/`, so no LLM takes part in the grading, and the score is produced from a
+report that already exists — no API needed. It ships with a negative control that re-scores
+each question against another question's answer; the score has to collapse, and it does.
 
 ## Security and observability
 

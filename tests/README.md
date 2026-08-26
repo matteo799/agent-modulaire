@@ -46,6 +46,28 @@ référence. `demo_gerant.yaml` est le jeu long (40 questions de gérant, datase
 **Interprétation des résultats — ce qu'ils montrent et ce qu'ils ne montrent pas :**
 [`../docs/benchmarks.md`](../docs/benchmarks.md).
 
+### Justesse des réponses — `score_accuracy.py`
+
+La couverture d'outils mesure la **conformité de trajectoire**, pas la valeur livrée : un
+agent peut appeler les bons outils et énoncer un chiffre faux. Ce script mesure l'autre axe.
+
+```bash
+python tests/agent_eval/score_accuracy.py                 # rapport gérant par défaut
+python tests/agent_eval/score_accuracy.py chemin/rapport.md
+```
+
+Il n'appelle **aucun LLM** : le dataset Amundi étant structuré et historisé, la bonne réponse
+est recalculée avec `agent/finance/` — le même code que les outils — puis comparée au texte
+du rapport déjà versionné. La justesse se mesure donc **a posteriori, sans accès API**.
+
+Dernière passe (run gérant, Opus 4.8) : **45/46 assertions vérifiées sur 27 des 40
+questions**, contre **26 % pour le témoin négatif** (chaque question notée avec la réponse
+d'une autre). Ce témoin tourne à chaque exécution : s'il ne s'effondre pas, le barème valide
+du bruit. Résultat versionné dans `reports/accuracy_demo_gerant_claude-opus-4-8.md`.
+
+Les 13 questions non mécanisables (screening, adéquation, audit) sont nommées dans le script
+et comptées à part, jamais omises silencieusement.
+
 ### Ablation architecturale — `run_ablation.py`
 
 Fait passer les mêmes questions par cinq architectures pour isoler l'apport de chaque

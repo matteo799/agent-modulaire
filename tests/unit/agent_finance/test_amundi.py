@@ -66,6 +66,43 @@ def test_fund_summary_missing(amundi_tmp):
     assert "aucune fiche" in TOOLS["fund_summary"]["function"]("NOPE0000000").lower()
 
 
+# Régression : demander « frais » ne renvoyait que les libellés contenant ce mot,
+# donc ni la commission de surperformance ni les coûts de transaction. Une fiche
+# de frais tronquée a l'air complète — c'est pire qu'une absence de réponse.
+# Détecté par tests/agent_eval/score_accuracy.py (question g02) ; la couverture
+# d'outils, elle, notait cette question conforme.
+_COSTS = {
+    "entry_pct": 5.0, "exit_pct": 0.0, "ongoing_pct": 1.295,
+    "transaction_pct": 0.044, "performance_pct": 20.0,
+}
+
+
+@pytest.mark.parametrize("asked", ["frais", "coûts", "commission de surperformance", ""])
+def test_summary_fees_are_returned_as_a_whole_block(amundi_tmp, asked):
+    _write_fund(amundi_tmp, "COSTS0000001",
+                summary={"isin": "COSTS0000001", "name": "Fee Fund", "costs": _COSTS})
+    out = amundi.summary_text("COSTS0000001", fields=asked)
+    assert "Commission de surperformance : 20.0 %" in out
+    assert "Coûts de transaction : 0.044 %" in out
+    assert "Frais courants : 1.295 %" in out
+
+
+def test_summary_unrelated_field_does_not_pull_in_the_fee_block(amundi_tmp):
+    _write_fund(amundi_tmp, "COSTS0000002",
+                summary={"isin": "COSTS0000002", "name": "Fee Fund",
+                         "sfdr": "Art. 8", "costs": _COSTS})
+    out = amundi.summary_text("COSTS0000002", fields="sfdr")
+    assert "Art. 8" in out
+    assert "Commission" not in out and "Frais" not in out
+
+
+def test_summary_does_not_repeat_a_field_present_in_characteristics(amundi_tmp):
+    _write_fund(amundi_tmp, "DUPE00000001",
+                summary={"isin": "DUPE00000001", "benchmark": "MSCI World",
+                         "characteristics": {"Indice de référence": "MSCI World"}})
+    assert amundi.summary_text("DUPE00000001").count("MSCI World") == 1
+
+
 def test_fund_stats_panel(amundi_tmp):
     _write_fund(amundi_tmp, "STATS0000001",
                 navs=[(f"{i:02d}/01/2020", 100 + (i % 3)) for i in range(1, 20)])
