@@ -46,6 +46,26 @@ référence. `demo_gerant.yaml` est le jeu long (40 questions de gérant, datase
 **Interprétation des résultats — ce qu'ils montrent et ce qu'ils ne montrent pas :**
 [`../docs/benchmarks.md`](../docs/benchmarks.md).
 
+### Ablation architecturale — `run_ablation.py`
+
+Fait passer les mêmes questions par cinq architectures pour isoler l'apport de chaque
+composant : `A` récupération seule, `B` + outillage, `C` + planification, `D` + boucle de
+correction (config de production), `E` avec un juge LLM à la place de la règle déterministe.
+
+```bash
+python tests/agent_eval/run_ablation.py --arms A,B,C,D,E
+python tests/agent_eval/run_ablation.py --arms A,D --limit 3   # passe courte
+```
+
+La notation est **entièrement déterministe** — aucun juge LLM — : couverture d'outils, refus
+correct sur les questions hors-corpus, et un proxy d'ancrage numérique (tout nombre de la
+réponse doit se retrouver dans un résultat d'outil ou dans la question).
+
+**Ce harness n'a jamais été exécuté** faute d'accès API. Il est couvert par
+`tests/unit/agent/test_ablation_harness.py`, qui vérifie contre un LLM factice que les cinq
+bras s'exécutent, que `C` ne retente jamais une étape là où `D` la retente une fois, et que
+les métriques se comportent comme annoncé. Aucun résultat par composant n'est revendiqué.
+
 ## `rag_eval/` — éval de la récupération
 
 Package autonome (imports relatifs). Configs dans `rag_eval/configs/`, golden sets dans

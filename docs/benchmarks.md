@@ -150,15 +150,47 @@ tasks plain RAG cannot express, and pays measurable overhead on the class where 
 would have been enough. A production version would route between the two instead of sending
 every question through the planner. That routing does not exist.
 
+### The ablation that would settle it
+
+`tests/agent_eval/run_ablation.py` puts the same questions through five architectures and
+isolates one component at a time:
+
+| Arm | Architecture | Isolates |
+|---|---|---|
+| A | one `rag_search`, then grounded synthesis | the retrieval baseline |
+| B | a single tool-selection pass, no plan | A→B: tool use |
+| C | planner and execution loop, no retry | B→C: planning |
+| D | C plus deterministic reflection and one retry (production config) | C→D: the correction loop |
+| E | D with an LLM judge replacing the deterministic rule | D→E: the cost of a semantic judge |
+
+Security, grounded synthesis and the out-of-corpus guardrail are identical across all five,
+so the only variable is the agentic architecture rather than the guardrails.
+
+Scoring is deterministic, with no LLM judge anywhere in the measurement, which avoids both
+the cost and the circularity of grading a model with a model. It records tool coverage,
+refusal correctness on out-of-corpus questions, and a numeric grounding proxy: every number
+in the final answer must appear in a tool result or in the question, and anything else is
+flagged as unsupported. That proxy catches a figure conjured from nowhere, not a correct
+figure used in the wrong place, and integers below 10 are ignored because they are
+overwhelmingly step numbers and scales.
+
+**This harness has not been run.** It is implemented and covered by unit tests against a
+stub LLM, which verifies that all five arms execute, that arm C performs exactly one attempt
+per step while arm D retries once, and that the grounding and refusal metrics behave as
+described. Producing actual numbers needs 5 arms × 19 questions against a live model, and no
+API access was available. **No component-level result is claimed anywhere in this
+repository**, and the table above describes a protocol rather than a finding.
+
 ## What this does not establish
 
 - There is no automated accuracy score. Coverage, latency and tokens are measured; whether
   the answer was right was checked by reading. No LLM judge, no exact matching.
 - There is no quantified no-agent baseline. The section above argues the scope difference
   without measuring it.
-- The loop itself is not ablated. Planner alone versus planner with retry is not measured.
-  The retry policy is deterministic, which caps its cost at one extra attempt per failing
-  step, but the benefit is unquantified.
+- No component-level result exists. The five-arm ablation above is specified, implemented
+  and unit-tested, but never executed against a live model, so nothing here says which
+  component pays for itself. The retry policy being deterministic caps its cost at one extra
+  attempt per failing step; the benefit remains unquantified.
 - One run per arm, so no variance. With n=19 and a single sample, 14 against 12 is
   suggestive and nothing more.
 - Token counts are estimates from the client's `count_tokens`, meant for comparing arms.
@@ -174,7 +206,10 @@ every question through the planner. That routing does not exist.
    prediction is falsifiable: coverage should reach 15/15 on both and the Opus/Haiku gap on
    this axis should disappear, which would mean it was never a capability gap at all, just
    an invariant nobody enforced.
-2. Add a plain-RAG arm over the questions both architectures can attempt, scored on accuracy
-   per token, and replace the scope argument above with a number.
+2. Run the five-arm ablation. The harness is ready, so this is one command and an API key:
+   `python tests/agent_eval/run_ablation.py --arms A,B,C,D,E`. The hypothesis worth stating
+   in advance, so it can be wrong: most of the measured benefit will come from A→B, tool
+   use, and C→D will be close to noise on this question set, because the deterministic
+   reflection only fires on hard tool errors and those are rare.
 3. Commit one `rag_eval` report so the retrieval claims rest on an artifact.
 4. Three repetitions per arm, for a variance estimate on the coverage figures.
