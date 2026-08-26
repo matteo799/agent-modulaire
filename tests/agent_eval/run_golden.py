@@ -139,9 +139,9 @@ def main():
             f"**Question :** {question}\n\n"
             f"**Outils appelés :** {used or '—'}  ·  **couverture :** {mark}  ·  "
             f"**latence :** {latency:.1f}s  ·  **tokens :** ~{tokens}\n\n"
-            f"### 🧭 Comment l'agent a procédé (en autonomie)\n\n"
+            f"### Comment l'agent a procédé (en autonomie)\n\n"
             f"{_trajectory_md(trace)}\n\n"
-            f"### ✅ Réponse de l'agent\n\n{obtained}\n\n---\n"
+            f"### Réponse de l'agent\n\n{obtained}\n\n---\n"
         )
 
     dt = time.time() - t0
@@ -201,8 +201,8 @@ def _build_report(golden_path, data, rows, tools_seen, dt) -> str:
         "2. **il établit un plan** puis, étape par étape, **choisit l'outil adapté** "
         "(la *raison* de chaque choix est affichée) et l'exécute ;\n"
         "3. **il rédige la réponse finale** à partir des résultats.\n\n"
-        "Le bloc « 🧭 Comment l'agent a procédé » montre cette trajectoire ; "
-        "« ✅ Réponse de l'agent » donne le livrable. Les chiffres sont **calculés sur "
+        "Le bloc « Comment l'agent a procédé » montre cette trajectoire ; "
+        "« Réponse de l'agent » donne le livrable. Les chiffres sont **calculés sur "
         "les vraies données** (historique NAV, fiches structurées) — jamais inventés.\n\n"
         f"**Couverture d'outils globale : {cov_pass}/{cov_tot} questions** "
         f"(les outils attendus ont bien été appelés).\n\n"

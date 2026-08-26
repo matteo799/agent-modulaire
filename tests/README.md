@@ -4,9 +4,9 @@ Trois zones distinctes, par **nature** de ce qui est vérifié :
 
 | Dossier | Quoi | Déterministe ? | Lancer |
 |---|---|---|---|
-| **`unit/`** | Tests unitaires des parties **déterministes** de l'agent : calcul des métriques, outils, sélection, résilience réseau. Rapides, **sans réseau** — c'est ce que joue la CI. | ✅ | `pytest tests/unit` |
-| **`agent_eval/`** | Évaluation **bout-en-bout de l'agent** : exerce toute la boîte à outils et mesure la **couverture d'outils**, la latence et les tokens. Nécessite une clé API. | ❌ (LLM) | `python tests/agent_eval/run_golden.py` |
-| **`rag_eval/`** | Évaluation de la **récupération du moteur** RAG (recall@k, MRR, citations, RAGAS). Nécessite les modèles + données du moteur. **Aucun rapport n'est versionné** — le harness existe, ses résultats ne sont donc pas revendiqués. | ❌ (RAG) | `python -m tests.rag_eval.run --config tests/rag_eval/configs/eval_finance.yaml` |
+| **`unit/`** | Tests unitaires des parties **déterministes** de l'agent : calcul des métriques, outils, sélection, résilience réseau. Rapides, **sans réseau** — c'est ce que joue la CI. | ✓ | `pytest tests/unit` |
+| **`agent_eval/`** | Évaluation **bout-en-bout de l'agent** : exerce toute la boîte à outils et mesure la **couverture d'outils**, la latence et les tokens. Nécessite une clé API. | ✗ (LLM) | `python tests/agent_eval/run_golden.py` |
+| **`rag_eval/`** | Évaluation de la **récupération du moteur** RAG (recall@k, MRR, citations, RAGAS). Nécessite les modèles + données du moteur. **Aucun rapport n'est versionné** — le harness existe, ses résultats ne sont donc pas revendiqués. | ✗ (RAG) | `python -m tests.rag_eval.run --config tests/rag_eval/configs/eval_finance.yaml` |
 
 > Pourquoi séparer : les tests **unitaires** doivent rester rapides et verts en CI ;
 > les **évals** (agent et moteur) sont coûteuses (LLM, modèles) et produisent des

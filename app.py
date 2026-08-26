@@ -38,9 +38,9 @@ def log_exchange(question: str, answer: str, trace: dict, dataset: str = "") -> 
     with CHAT_LOG.open("a", encoding="utf-8") as f:
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
-st.set_page_config(page_title="Agent finance", page_icon="📊", layout="centered")
+st.set_page_config(page_title="Agent finance", page_icon="", layout="centered")
 
-st.title("📊 Agent finance")
+st.title("Agent finance")
 st.caption(
     "Posez une question sur les fonds / métriques de risque-rendement. "
     "L'agent planifie, exécute ses outils, puis synthétise une réponse sourcée."
@@ -70,7 +70,7 @@ def render_trace(trace: dict) -> None:
     """Affiche ce que l'agent a réellement fait (transparence)."""
     if not trace:
         return
-    with st.expander("🔍 Détail de l'agent (plan, outils, métrique)"):
+    with st.expander("Détail de l'agent (plan, outils, métrique)"):
         if trace.get("metric"):
             st.markdown(f"**Métrique retenue :** `{trace['metric']}`")
             if trace.get("clarification_asked"):

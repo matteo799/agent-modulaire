@@ -191,7 +191,7 @@ CHACUN, puis l'écart calculé via calculator (pas de soustraction « de tête �
 
 ## Fonds 2
 
-⚠️ **Aucune donnée disponible** sur les frais courants dans les documents fournis.
+**Aucune donnée disponible** sur les frais courants dans les documents fournis.
 
 ---
 
@@ -407,7 +407,7 @@ de clarification au lieu de trancher arbitrairement.
 
 ## Métrique recommandée : Ratio de Sharpe
 
-**Résultat du calcul : IMPOSSIBLE**  
+**Résultat du calcul : IMPOSSIBLE**
 Le calcul du Ratio de Sharpe n'a pas pu être effectué pour ce fonds, car les données requises (rendement annualisé R et volatilité σ) ne sont pas disponibles dans son KID/DICI.
 
 ---
@@ -415,7 +415,7 @@ Le calcul du Ratio de Sharpe n'a pas pu être effectué pour ce fonds, car les d
 ## Présentation du Ratio de Sharpe
 
 ### Formule
-**Sharpe = (R − rf) / σ**  
+**Sharpe = (R − rf) / σ**
 Où :
 - **R** = rendement annualisé du fonds
 - **rf** = taux sans risque
@@ -576,27 +576,27 @@ rendements (non disponible).
 
 ### Rendement maximal sous budget de CVaR
 
-**Définition et Objectif**  
-Cet objectif vise à **maximiser le rendement attendu** d'un portefeuille multi-fonds, sous une contrainte définie par l'utilisateur : le **CVaR à 5% (la perte extrême moyenne) ne doit pas dépasser un budget fixé**.  
+**Définition et Objectif**
+Cet objectif vise à **maximiser le rendement attendu** d'un portefeuille multi-fonds, sous une contrainte définie par l'utilisateur : le **CVaR à 5% (la perte extrême moyenne) ne doit pas dépasser un budget fixé**.
 Formule : `Max R` sous contrainte `CVaR_5% ≤ budget`.
 
-**Caractéristiques**  
+**Caractéristiques**
 *   **Famille** : Budget (approche offensive, avec un tilt actions jusqu'à la saturation du budget de risque).
 *   **Mesure de risque** : Le budget de perte de queue est **fixé directement par l'utilisateur**.
 *   **Pénalise la hausse** : Non, cet objectif ne pénalise pas la surperformance.
 *   **Données requises** : Nécessite un univers multi-fonds et une matrice de rendements historiques.
 *   *Note* : Le calcul réel de cet objectif n'est pas disponible dans le repository actuel, car il nécessite ces données d'entrée spécifiques.
 
-**Quand l'utiliser (Cas d'usage)**  
-À utiliser lorsque le client souhaite **maximiser le rendement tout en imposant un plafond strict à la perte extrême**. L'allocation résultante sera **offensive mais maîtrisée**.  
+**Quand l'utiliser (Cas d'usage)**
+À utiliser lorsque le client souhaite **maximiser le rendement tout en imposant un plafond strict à la perte extrême**. L'allocation résultante sera **offensive mais maîtrisée**.
 *Exemple concret* : Un client qui raisonne en termes de seuil de perte extrême accepté et fixe une contrainte du type `CVaR ≤ 8 %`.
 
-**Avantages**  
+**Avantages**
 *   **Pilotable** : Le risque de queue est directement contrôlé via le budget, tandis que l'optimiseur se concentre sur le rendement.
 *   **Performant** : Ne punissant pas la hausse, il exploite pleinement le potentiel des actions.
 *   **Interprétable** : Le budget est exprimé directement en termes de perte extrême, ce qui est parlant pour le client.
 
-**Inconvénients**  
+**Inconvénients**
 *   **Dépendance au budget** : Le résultat est sensible au niveau du budget choisi, ce qui doit être justifié.
 *   **Sensibilité aux données** : Le CVaR historique est dépendant de l'échantillon de rendements passé, notamment de la queue de distribution.
 

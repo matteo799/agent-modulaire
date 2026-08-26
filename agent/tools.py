@@ -227,7 +227,7 @@ def fund_stats(isin: str = "", rf=None) -> str:
         warn = ""
         if amundi.has_anomaly(r):
             warn = (
-                f"⚠️ Historique NAV anormal pour {isin} (variation quotidienne > 50 % détectée — "
+                f"Historique NAV anormal pour {isin} (variation quotidienne > 50 % détectée — "
                 "données probablement corrompues). Profil ci-dessous NON FIABLE.\n"
             )
         return warn + "\n".join([

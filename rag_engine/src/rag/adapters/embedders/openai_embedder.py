@@ -5,7 +5,7 @@ vLLM, ou Ollama via son endpoint OpenAI (`http://localhost:11434/v1`). C'est le
 pendant « API / serveur » de `SentenceTransformersEmbedder` (in-process) : on
 choisit l'un ou l'autre via `embedder.provider` — d'où la modularité local ↔ API.
 
-⚠️ L'espace vectoriel doit correspondre à l'index : si on change de *modèle*
+L'espace vectoriel doit correspondre à l'index : si on change de *modèle*
 d'embedding (pas seulement de fournisseur), il faut RÉ-INGÉRER le corpus.
 
 La clé éventuelle vient de la config (`RAG__EMBEDDER__API_KEY`), jamais en clair.

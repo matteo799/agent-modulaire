@@ -78,7 +78,7 @@ def stdin_ask(question: str, options: list[str]) -> str:
 
     Accepte un numéro ou une `key`. Entrée vide / invalide → 1re option.
     """
-    print(f"\n❓ {question}")
+    print(f"\n{question}")
     for i, key in enumerate(options, 1):
         print(f"   {i}. {key} — {CATALOG[key].nom}")
     try:

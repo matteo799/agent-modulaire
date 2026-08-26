@@ -1,6 +1,6 @@
 # rag-engine — sous-package du projet Agent modulaire
 
-> 📦 **Sous-package autonome.** Le point d'entrée du projet est le
+> **Sous-package autonome.** Le point d'entrée du projet est le
 > [`README.md` racine](../README.md) ; ce fichier ne documente que le **moteur RAG**
 > en tant que brique réutilisable.
 >
@@ -35,7 +35,7 @@ RAG__EMBEDDER__BASE_URL=http://localhost:11434/v1 \
 RAG__EMBEDDER__MODEL=bge-m3  RAG__EMBEDDER__API_KEY=ollama  python …
 ```
 
-> ⚠️ **Embeddings** : l'index Qdrant est lié au *modèle* d'embedding. Changer de
+> **Embeddings** : l'index Qdrant est lié au *modèle* d'embedding. Changer de
 > fournisseur servant le **même** modèle (bge-m3) est gratuit ; changer de **modèle**
 > impose de **ré-ingérer** le corpus (sinon l'espace vectoriel ne correspond plus).
 
